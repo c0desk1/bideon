@@ -12,7 +12,7 @@ export default defineConfig({
 vite: {
     plugins: [tailwindcss()],
   },
-  site: 'bimaakbar.my.id',
+  site: 'https://bima-akbar.vercel.app',
   integrations: [solid()],
 
   
