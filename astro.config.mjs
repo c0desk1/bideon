@@ -13,7 +13,7 @@ vite: {
     plugins: [tailwindcss()],
   },
   site: 'https://bima-akbar.vercel.app',
-  integrations: [solid()],
+  integrations: [solid()]
 
   
 });
