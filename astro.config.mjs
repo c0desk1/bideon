@@ -12,8 +12,8 @@ export default defineConfig({
 vite: {
     plugins: [tailwindcss()],
   },
-  site: 'https://example.com',
-  integrations: [solid()]
+  site: 'bimaakbar.my.id',
+  integrations: [solid()],
 
   
 });
