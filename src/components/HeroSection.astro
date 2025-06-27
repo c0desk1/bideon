@@ -1,0 +1,29 @@
+---
+import { SITE_TITLE } from '../consts';
+---
+
+<section class="pt-36 pb-24 text-center fade-in">
+  <div class="max-w-3xl mx-auto px-6">
+    <h1 class="text-5xl sm:text-6xl font-semibold tracking-tight text-[var(--color-text)]">
+      {SITE_TITLE}
+    </h1>
+    <p class="mt-6 text-lg text-[var(--color-muted)] leading-relaxed max-w-xl mx-auto">
+      Sebuah ruang yang tenang dan elegan untuk menjelajahi konten, ide, dan inspirasi kreatif — dirancang dengan kejelasan dan fokus.
+    </p>
+
+    <div class="mt-12 flex justify-center gap-4">
+      <a
+        href="/blog"
+        class="px-6 py-2 rounded-full border border-[--color-border] text-[var(--color-text)] hover:bg-white/10 transition-default"
+      >
+        Mulai Menjelajah
+      </a>
+      <a
+        href="/about"
+        class="px-6 py-2 rounded-full border border-transparent text-[var(--color-muted)] hover:text-[var(--color-text)] transition-default"
+      >
+        Tentang Kami
+      </a>
+    </div>
+  </div>
+</section>
