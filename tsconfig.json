@@ -4,9 +4,6 @@
   "exclude": ["dist"],
   "compilerOptions": {
     "types": ["astro/astro-jsx"],
-"paths": {
-      "@/*": ["src/*"]
-    },
     "strictNullChecks": true
   }
 }
