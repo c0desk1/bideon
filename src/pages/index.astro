@@ -23,6 +23,7 @@ const post = (await getCollection('blog')).slice(0,3);
 		<main>
 			<HeroSection />
 <SearchBar />
+<FeaturedPosts posts={posts} />
 			
 		</main>
 		<Footer />
