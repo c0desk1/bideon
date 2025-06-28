@@ -9,17 +9,15 @@ interface Props {
 const { posts = []} = Astro.props;
 ---
 <section id="featured-posts" class="mb-20">
-  <div class="max-w-7xl mx-auto">
+  <div class="max-w-7xl mx-auto px-4">
     <div class="text-center mb-10">
       <h2 class="text-3xl md:text-4xl font-bold">Unggulan</h2>
     </div>
-
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {posts.map(post => (
         <PostCard post={post} />
       ))}
     </div>
-
     <div class="text-center mt-12">
       <a href="/blog" class="btn">Lihat Semua</a>
     </div>
