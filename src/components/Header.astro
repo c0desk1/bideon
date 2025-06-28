@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE } from '../consts';
+import HeaderLink from '../components/HeaderLink.astro';
 ---
 
 <header class="glass-header sticky top-0 z-50">
@@ -12,6 +13,32 @@ import { SITE_TITLE } from '../consts';
         {SITE_TITLE}
       </span>
     </a>
+
+    <nav class="absolute left-1/2 -translate-x-1/2">
+      <ul class="flex items-center gap-2 sm:gap-4">
+        <li>
+          <HeaderLink 
+            href="/blog" 
+            label="Blog" 
+            icon="" 
+          />
+        </li>
+        <li>
+          <HeaderLink 
+            href="/projects" 
+            label="Proyek" 
+            icon="" 
+          />
+        </li>
+        <li>
+          <HeaderLink 
+            href="/about" 
+            label="Tentang" 
+            icon="" 
+          />
+        </li>
+      </ul>
+    </nav>
 
     <!-- KANAN: Tombol Share & Bookmark (tanpa fungsional, hanya visual) -->
     <div class="flex items-center gap-2">
