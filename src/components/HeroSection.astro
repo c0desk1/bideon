@@ -1,5 +1,5 @@
 ---
-import { SITE_TITLE } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
 const allPosts = (await getCollection('blog')).sort(
@@ -33,7 +33,7 @@ const latestPost = allPosts[0];
       </h1>
 
       <p class="mt-4 text-lg max-w-xl text-muted animate-fade-in-up" style="animation-delay: 400ms;">
-        Seorang pengembang web kreatif dari Pekanbaru, Indonesia. Saya mengubah ide menjadi aplikasi web yang fungsional dan berkesan.
+        {SITE_DESCRIPTION}
       </p>
 
     </div>
