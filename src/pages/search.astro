@@ -1,0 +1,42 @@
+---
+// src/pages/search.astro
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import PostCard from '../components/PostCard.astro'; // Asumsi Anda punya komponen kartu post
+
+// 1. Ambil query pencarian dari URL
+const query = Astro.url.searchParams.get('q');
+
+// 2. Ambil semua postingan blog
+const allPosts = await getCollection('blog');
+
+// 3. Filter postingan berdasarkan query
+// Ini akan mencari di judul dan isi (body)
+const filteredPosts = allPosts.filter(post => {
+  const titleMatch = post.data.title.toLowerCase().includes(query?.toLowerCase() || '');
+  const bodyMatch = post.body.toLowerCase().includes(query?.toLowerCase() || '');
+  return titleMatch || bodyMatch;
+});
+---
+<Layout title={`Hasil Pencarian: ${query}`}>
+  <Header />
+  <main class="max-w-4xl mx-auto px-6 py-12">
+    <h1 class="text-3xl font-bold mb-2">Hasil Pencarian</h1>
+    <p class="text-muted mb-8">
+      Menampilkan {filteredPosts.length} hasil untuk: <span class="font-semibold text-oklch(var(--text-oklch))">"{query}"</span>
+    </p>
+
+    {filteredPosts.length > 0 ? (
+      <div class="grid gap-6">
+        {filteredPosts.map(post => (
+          <PostCard post={post} />
+        ))}
+      </div>
+    ) : (
+      <p class="text-center py-16 border-dashed border-2 rounded-lg text-muted">
+        Maaf, tidak ada artikel yang cocok dengan pencarian Anda.
+      </p>
+    )}
+  </main>
+</Layout>
