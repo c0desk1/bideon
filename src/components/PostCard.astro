@@ -1,0 +1,51 @@
+---
+// src/components/PostCard.astro
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, heroImage, tags } = post.data;
+
+// Format tanggal agar lebih mudah dibaca (misal: "28 Juni 2025")
+const formattedDate = new Date(pubDate).toLocaleDateString('id-ID', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+<a href={`/blog/${post.slug}/`} class="group block bg-white dark:bg-gray-800/50 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 border border-black/5 dark:border-white/10 hover:-translate-y-1 hover:border-oklch(70% 0.2 250)/50">
+  {heroImage && (
+    <div class="aspect-video overflow-hidden">
+      <img 
+        src={heroImage} 
+        alt={`Gambar untuk postingan ${title}`}
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      />
+    </div>
+  )}
+
+  <div class="p-6">
+    <div class="flex items-center gap-3 text-sm text-muted mb-3">
+      <time datetime={pubDate.toISOString()}>
+        {formattedDate}
+      </time>
+      {tags && tags.length > 0 && (
+        <>
+          <span>•</span>
+          <span class="truncate">{tags[0]}</span>
+        </>
+      )}
+    </div>
+
+    <h3 class="text-xl font-bold text-oklch(var(--text-oklch)) group-hover:text-oklch(70% 0.2 250) transition-colors">
+      {title}
+    </h3>
+
+    <p class="mt-2 text-muted text-base leading-relaxed">
+      {description}
+    </p>
+  </div>
+</a>
