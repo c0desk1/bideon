@@ -1,6 +1,7 @@
 ---
 // src/components/PostCard.astro
 import type { CollectionEntry } from 'astro:content';
+import { Image } from "astro:assets";
 
 interface Props {
   post: CollectionEntry<'blog'>;
@@ -16,10 +17,10 @@ const formattedDate = new Date(pubDate).toLocaleDateString('id-ID', {
   day: 'numeric',
 });
 ---
-<a href={`/blog/${post.id}/`} class="group block glass-panel rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 border border-black/5 dark:border-white/10 hover:-translate-y-1 hover:border-oklch(70% 0.2 250)/50">
+<a href={`/blog/${post.data.slug}/`} class="group block glass-panel rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 border border-black/5 dark:border-white/10 hover:-translate-y-1 hover:border-oklch(70% 0.2 250)/50">
   {heroImage && (
     <div class="aspect-video overflow-hidden">
-      <img 
+      <Image 
         src={heroImage} 
         alt={`Gambar untuk postingan ${title}`}
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
