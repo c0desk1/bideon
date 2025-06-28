@@ -1,26 +1,24 @@
 ---
-// src/pages/search.astro
 import { getCollection } from 'astro:content';
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
-import PostCard from '../components/PostCard.astro'; // Asumsi Anda punya komponen kartu post
+// Ganti ini dengan nama layout utama Anda, kemungkinan besar 'Layout.astro'
+import Layout from '../layouts/Layout.astro'; 
+import PostCard from '../components/PostCard.astro';
 
-// 1. Ambil query pencarian dari URL
+// Mengambil query dari URL
 const query = Astro.url.searchParams.get('q');
 
-// 2. Ambil semua postingan blog
+// Mengambil semua postingan
 const allPosts = await getCollection('blog');
 
-// 3. Filter postingan berdasarkan query
-// Ini akan mencari di judul dan isi (body)
+// Membuat variabel bernama 'filteredPosts' untuk menampung hasil
 const filteredPosts = allPosts.filter(post => {
   const titleMatch = post.data.title.toLowerCase().includes(query?.toLowerCase() || '');
   const bodyMatch = post.body.toLowerCase().includes(query?.toLowerCase() || '');
   return titleMatch || bodyMatch;
 });
 ---
-<Layout title={`Hasil Pencarian: ${query}`}>
-  <Header />
+<BaseLayout pageTitle={`Hasil Pencarian: ${query}`}>
+  
   <main class="max-w-4xl mx-auto px-6 py-12">
     <h1 class="text-3xl font-bold mb-2">Hasil Pencarian</h1>
     <p class="text-muted mb-8">
@@ -39,4 +37,5 @@ const filteredPosts = allPosts.filter(post => {
       </p>
     )}
   </main>
-</Layout>
+
+</BaseLayout>
