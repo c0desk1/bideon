@@ -21,7 +21,7 @@ const post = (await getCollection('blog')).slice(0,3);
 		<Header isHomePage={true} />
 		<main>
 			<HeroSection />
-<FeaturedPosts />
+<FeaturedPosts posts={posts} />
 			
 		</main>
 		<Footer />
