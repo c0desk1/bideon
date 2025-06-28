@@ -16,7 +16,7 @@ const formattedDate = new Date(pubDate).toLocaleDateString('id-ID', {
   day: 'numeric',
 });
 ---
-<a href={`/blog/${post.slug}/`} class="group block bg-white dark:bg-gray-800/50 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 border border-black/5 dark:border-white/10 hover:-translate-y-1 hover:border-oklch(70% 0.2 250)/50">
+<a href={`/blog/${post.id}/`} class="group block glass-panel rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 border border-black/5 dark:border-white/10 hover:-translate-y-1 hover:border-oklch(70% 0.2 250)/50">
   {heroImage && (
     <div class="aspect-video overflow-hidden">
       <img 
