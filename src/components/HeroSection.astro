@@ -1,29 +1,64 @@
 ---
 import { SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const latestPost = allPosts[0];
 ---
 
-<section class="pt-36 pb-24 text-center fade-in">
-  <div class="max-w-3xl mx-auto px-6">
-    <h1 class="text-5xl sm:text-6xl font-semibold tracking-tight text-[var(--color-text)]">
-      {SITE_TITLE}
-    </h1>
-    <p class="mt-6 text-lg text-[var(--color-muted)] leading-relaxed max-w-xl mx-auto">
-      Sebuah ruang yang tenang dan elegan untuk menjelajahi konten, ide, dan inspirasi kreatif — dirancang dengan kejelasan dan fokus.
-    </p>
+<section class="relative min-h-[80vh] flex items-center">
+  <div class="max-w-4xl mx-auto px-6 w-full">
+    <div class="text-center md:text-left flex flex-col items-center md:items-start">
 
-    <div class="mt-12 flex justify-center gap-4">
-      <a
-        href="/blog"
-        class="px-6 py-2 rounded-full border border-[--color-border] text-[var(--color-text)] hover:bg-white/10 transition-default"
-      >
-        Mulai Menjelajah
-      </a>
-      <a
-        href="/about"
-        class="px-6 py-2 rounded-full border border-transparent text-[var(--color-muted)] hover:text-[var(--color-text)] transition-default"
-      >
-        Tentang Kami
-      </a>
+      {latestPost && (
+        <a href={`/blog/${latestPost.slug}/`} class="group inline-flex items-center gap-3 rounded-full border border-black/10 dark:border-white/10 px-4 py-2 mb-8 hover:border-oklch(70% 0.2 250)/50 transition-colors duration-300 animate-fade-in-up">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+          </span>
+
+          <span class="text-sm font-medium text-muted group-hover:text-oklch(var(--text-oklch)) transition-colors">
+            Baru Terbit: <span class="font-semibold text-oklch(var(--text-oklch))">{latestPost.data.title}</span>
+          </span>
+
+          <i class="ri-arrow-right-line text-muted group-hover:translate-x-1 transition-transform"></i>
+        </a>
+      )}
+
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter text-oklch(var(--text-oklch)) animate-fade-in-up" style="animation-delay: 200ms;">
+        {SITE_TITLE}
+      </h1>
+
+      <p class="mt-4 text-lg max-w-xl text-muted animate-fade-in-up" style="animation-delay: 400ms;">
+        Seorang pengembang web kreatif dari Pekanbaru, Indonesia. Saya mengubah ide menjadi aplikasi web yang fungsional dan berkesan.
+      </p>
+
     </div>
   </div>
+
+  <div class="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:block animate-bounce">
+    <a href="#featured-posts" aria-label="Scroll to next section">
+      <i class="ri-arrow-down-line text-2xl text-muted"></i>
+    </a>
+  </div>
 </section>
+
+<style>
+  /* Animasi sederhana dengan CSS (masih sama seperti sebelumnya) */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s both;
+  }
+</style>
