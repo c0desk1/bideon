@@ -2,8 +2,8 @@
 import { SITE_TITLE } from '../consts';
 ---
 
-<header class="nav-blur fixed top-0 left-0 right-0 z-10 py-3 px-6">
-  <div class="flex items-center justify-between max-w-7xl mx-auto w-full rounded-b-xl border-t-0">
+<header class="glass-header sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
 
     <!-- KIRI: Logo + Judul -->
     <a href="/" class="flex items-center gap-3 group">
@@ -15,10 +15,10 @@ import { SITE_TITLE } from '../consts';
 
     <!-- KANAN: Tombol Share & Bookmark (tanpa fungsional, hanya visual) -->
     <div class="flex items-center gap-2">
-      <button class="icon-btn p-2 rounded-md transition-default" aria-label="Bagikan">
+      <button class="icon-btn p-2 rounded-md transition-colors" aria-label="Bagikan">
         <i class="ri-share-line"></i>
       </button>
-      <button class="icon-btn p-2 rounded-md transition-default" aria-label="Bookmark">
+      <button class="icon-btn p-2 rounded-md transition-colors" aria-label="Bookmark">
         <i class="ri-bookmark-line"></i>
       </button>
     </div>
@@ -27,6 +27,12 @@ import { SITE_TITLE } from '../consts';
 </header>
 
 <style>
+  .glass-header { 
+    background: rgba(10,10,10,0.8); 
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px); 
+    border-bottom: 1px solid rgba(255,255,255,0.1); 
+  }
 .icon-btn {
   color: var(--color-text);
 }
