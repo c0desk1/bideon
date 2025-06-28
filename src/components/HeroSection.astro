@@ -1,75 +1,62 @@
 ---
-import { SITE_TITLE } from '../consts';
-import HeaderLink from '../components/HeaderLink.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const latestPost = allPosts[0];
 ---
 
-<header class="glass-header sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-
-    <!-- KIRI: Logo + Judul -->
-    <a href="/" class="flex items-center gap-3 group">
-      <i class="ri-quill-pen-line text-2xl text-oklch(70% 0.2 250) group-hover:text-oklch(75% 0.2 250) transition-colors duration-200"></i>
-      <span class="font-semibold text-lg text-oklch(var(--text-oklch)) group-hover:text-oklch(75% 0.2 250) transition-colors duration-200">
-        {SITE_TITLE}
-      </span>
-    </a>
-
-    <nav class="absolute left-1/2 -translate-x-1/2">
-      <ul class="flex items-center gap-2 sm:gap-4">
-        <li>
-          <HeaderLink 
-            href="/blog" 
-            label="BLOG" 
-            icon="" 
-          />
-        </li>
-        <li>
-          <HeaderLink 
-            href="/projects" 
-            label="PROJECTS" 
-            icon="" 
-          />
-        </li>
-        <li>
-          <HeaderLink 
-            href="/about" 
-            label="TENTANG" 
-            icon="" 
-          />
-        </li>
-      </ul>
-    </nav>
-
-    <!-- KANAN: Tombol Share & Bookmark (tanpa fungsional, hanya visual) -->
-    <div class="flex items-center gap-2">
-      <button class="icon-btn p-2 rounded-md transition-colors" aria-label="Bagikan">
-        <i class="ri-share-line"></i>
-      </button>
-      <button class="icon-btn p-2 rounded-md transition-colors" aria-label="Bookmark">
-        <i class="ri-bookmark-line"></i>
-      </button>
+<section class="mt-16 mb-16">
+  <div class="flex flex-col items-center text-center gap-4 px-4 animate-fade-in-up">
+    <h1
+      class="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight text-oklch(var(--text-oklch))"
+      style="animation-delay: 200ms;"
+    >
+      {SITE_TITLE}
+    </h1>
+    <p
+      class="text-base sm:text-lg max-w-xl text-muted"
+      style="animation-delay: 400ms;"
+    >
+      {SITE_DESCRIPTION}
+    </p>
+    {latestPost && (
+      <a
+        href={`/blog/${latestPost}/`}
+        class="group glass-panel inline-flex items-center gap-3 rounded-md border-border-muted px-4 py-2 hover:border-oklch(70% 0.2 250)/50 transition-colors duration-300 focus:shadow-md"
+      >
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+        </span>
+        <span class="text-sm font-medium text-muted group-hover:text-oklch(var(--text-oklch)) transition-colors">
+          Baru: <span class="font-semibold text-oklch(var(--text-oklch))">{latestPost.data.title}</span>
+        </span>
+        <i class="ri-arrow-right-line text-muted group-hover:translate-x-1 transition-transform"></i>
+      </a>
+    )}
+    <div class="mt-6 animate-bounce hidden md:block">
+      <a href="#featured-posts" aria-label="Scroll ke bagian berikutnya">
+        <i class="ri-arrow-down-line text-2xl text-muted"></i>
+      </a>
     </div>
-
   </div>
-</header>
+</section>
 
 <style>
-  .glass-header { 
-    background: rgba(10,10,10,0.8); 
-    backdrop-filter: blur(12px); 
-    -webkit-backdrop-filter: blur(12px); 
-    border-bottom: 1px solid rgba(255,255,255,0.1); 
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-.icon-btn {
-  color: var(--color-text);
-}
-
-.icon-btn:hover {
-  color: oklch(70% 0.2 250);
-  background-color: oklch(80% 0 0 / 0.08);
-}
-
-html.dark .icon-btn:hover {
-  background-color: oklch(30% 0 0 / 0.15);
-}
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s both;
+  }
 </style>
