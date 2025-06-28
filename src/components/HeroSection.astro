@@ -8,32 +8,30 @@ const allPosts = (await getCollection('blog')).sort(
 const latestPost = allPosts[0];
 ---
 
-<section class="relative flex items-center min-h-[50vh] md:min-h-[60vh] py-12 md:py-20">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 w-full">
-    <div class="text-center md:text-left flex flex-col items-center md:items-start gap-4">
+<section class="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-12 md:py-20">
+  <div class="w-full max-w-4xl mx-auto flex-1 flex flex-col items-center md:items-start justify-center text-center md:text-left gap-4 animate-fade-in-up">
+    
+    {latestPost && (
+      <a href={`/blog/${latestPost.slug}/`} class="group inline-flex items-center gap-3 rounded-full border border-border-muted px-4 py-2 hover:border-oklch(70% 0.2 250)/50 transition-colors duration-300">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+        </span>
+        <span class="text-sm font-medium text-muted group-hover:text-oklch(var(--text-oklch)) transition-colors">
+          Baru Terbit: <span class="font-semibold text-oklch(var(--text-oklch))">{latestPost.data.title}</span>
+        </span>
+        <i class="ri-arrow-right-line text-muted group-hover:translate-x-1 transition-transform"></i>
+      </a>
+    )}
 
-      {latestPost && (
-        <a href={`/blog/${latestPost.slug}/`} class="group inline-flex items-center gap-3 rounded-full border border-border-muted px-4 py-2 hover:border-oklch(70% 0.2 250)/50 transition-colors duration-300 animate-fade-in-up">
-          <span class="relative flex h-2.5 w-2.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-          </span>
-          <span class="text-sm font-medium text-muted group-hover:text-oklch(var(--text-oklch)) transition-colors">
-            Baru Terbit: <span class="font-semibold text-oklch(var(--text-oklch))">{latestPost.data.title}</span>
-          </span>
-          <i class="ri-arrow-right-line text-muted group-hover:translate-x-1 transition-transform"></i>
-        </a>
-      )}
+    <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight text-oklch(var(--text-oklch))" style="animation-delay: 200ms;">
+      {SITE_TITLE}
+    </h1>
 
-      <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold tracking-tight text-oklch(var(--text-oklch)) animate-fade-in-up" style="animation-delay: 200ms;">
-        {SITE_TITLE}
-      </h1>
+    <p class="text-base sm:text-lg max-w-xl text-muted" style="animation-delay: 400ms;">
+      {SITE_DESCRIPTION}
+    </p>
 
-      <p class="text-base sm:text-lg max-w-xl text-muted animate-fade-in-up" style="animation-delay: 400ms;">
-        {SITE_DESCRIPTION}
-      </p>
-
-    </div>
   </div>
 
   <div class="absolute bottom-4 md:bottom-10 left-1/2 -translate-x-1/2 hidden md:block animate-bounce">
@@ -42,6 +40,7 @@ const latestPost = allPosts[0];
     </a>
   </div>
 </section>
+
 
 <style>
   @keyframes fade-in-up {
