@@ -1,56 +1,27 @@
-/** @jsxImportSource solid-js */
-import { createSignal, onCleanup } from "solid-js";
-
-export default function SearchBar() {
-  const [open, setOpen] = createSignal(false);
-  const [query, setQuery] = createSignal("");
-  let inputRef: HTMLInputElement | undefined;
-
-  const close = () => {
-    setQuery("");
-    setOpen(false);
-  };
-
-  const handleKey = (e: KeyboardEvent) => {
-    if (e.key === "Escape") close();
-  };
-
-  document.addEventListener("keydown", handleKey);
-  onCleanup(() => document.removeEventListener("keydown", handleKey));
-
-  return (
-    <div class="relative w-auto">
-      {open() ? (
-        <div class="flex items-center gap-2 animate-fadeScale relative">
-          <i class="ri-search-line text-muted text-lg" />
-          <input
-            ref={inputRef}
-            autofocus
-            type="text"
-            placeholder="Cari konten..."
-            value={query()}
-            onInput={(e) => setQuery(e.currentTarget.value)}
-            class="w-40 sm:w-64 px-4 py-2 pr-10 rounded-md bg-[--color-surface] text-[--color-text] placeholder:text-muted border border-[--color-border] outline-none transition-default backdrop-blur-[var(--blur-strength)]"
-          />
-          {/* Tombol Close (X) */}
-          <button
-            type="button"
-            onClick={close}
-            class="absolute right-2 text-muted hover:text-[--color-text] transition-default cursor-pointer"
-            aria-label="Tutup pencarian"
-          >
-            <i class="ri-close-line text-lg" />
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => setOpen(true)}
-          aria-label="Search"
-          class="btn btn-muted px-3 py-1.5 rounded-full transition-default cursor-pointer"
-        >
-          <i class="ri-search-line text-lg" />
-        </button>
-      )}
-    </div>
-  );
-}
+---
+// src/components/SearchBar.astro
+---
+<section id="search-section" class="py-16 bg-white dark:bg-gray-900/50">
+  <div class="max-w-2xl mx-auto px-6">
+    <form action="/search" method="GET" class="relative">
+      <label for="main-search" class="sr-only">Cari artikel</label>
+      
+      <input 
+        type="search" 
+        name="q" 
+        id="main-search"
+        placeholder="Cari artikel tentang Astro, Tailwind, atau topik lainnya..."
+        class="w-full pl-6 pr-14 py-4 rounded-full border border-black/10 dark:border-white/10 focus:ring-2 focus:ring-oklch(70% 0.2 250) focus:border-oklch(70% 0.2 250) transition-all bg-white/50 dark:bg-gray-800/50"
+        required
+      />
+      
+      <button 
+        type="submit" 
+        class="absolute top-1/2 right-3 -translate-y-1/2 p-2 rounded-full text-white bg-oklch(65% 0.2 250) hover:scale-110 transition-transform"
+        aria-label="Cari"
+      >
+        <i class="ri-search-line text-xl"></i>
+      </button>
+    </form>
+  </div>
+</section>
