@@ -26,6 +26,8 @@ html.dark {
   --color-border: oklch(25% 0 0 / 0.15);
   --color-text: oklch(98% 0 0);
   --color-muted: oklch(75% 0 0 / 0.6);
+background-color: #0a0a0a; 
+  color: #a3a3a3;
 
   --shadow: 0 8px 32px oklch(0% 0 0 / 0.4);
 }
