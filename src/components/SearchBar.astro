@@ -1,13 +1,17 @@
 <!-- SearchBar.astro -->
-<section class="py-8">
+<section class="py-4">
   <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-center">
-      <form class="relative flex items-center w-auto min-w-sm max-w-md" role="search" onsubmit="return false">
+      <form
+        class="relative flex items-center w-full max-w-md"
+        role="search"
+        onsubmit="return false"
+      >
         <input
           type="search"
           name="q"
           placeholder="Cari artikel..."
-          class="form-input pl-10 pr-4 py-2 w-full rounded-lg transition-all focus:shadow-lg"
+          class="form-input pl-10 pr-4 py-2 w-full rounded-md transition-all focus:shadow-md"
           aria-label="Cari artikel"
         />
         <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"></i>
