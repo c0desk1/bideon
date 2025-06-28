@@ -1,29 +1,70 @@
 ---
-// import HeaderLink from './HeaderLink.astro';
-import { SITE_TITLE } from '../consts';
-import ThemeToggle from './ThemeToggle';
+// src/components/Header.astro
 
+// Import komponen yang kita perlukan
+import { SITE_TITLE } from '../consts';
+import HeaderLink from './HeaderLink.astro';
+import ThemeToggle from './ThemeToggle.tsx';
+
+// DEFINISIKAN PROPS: Header ini sekarang bisa menerima properti 'isHomepage'
+export interface Props {
+  isHomepage?: boolean;
+}
+const { isHomepage = false } = Astro.props;
 ---
+
 <header class="nav-blur fixed top-0 left-0 right-0 z-10">
-	<nav class="nav-blur fixed top-0 left-0 right-0 z-10 py-4 px-6 flex items-center max-w-7xl mx-auto w-full rounded-b-xl border-t-0">
-		<!-- Kiri: Judul -->
-		<div class="flex-1 text-left">
-			<a href="/" class="font-semibold text-lg hover:text-oklch(70% 0.2 250) transition-colors">
-				{SITE_TITLE}
-			</a>
-		</div>
-  
-		<!-- Tengah: Ikon/logo -->
-		<div class="flex-grow flex justify-center cursor-pointer">
-			<i class="ri-quill-pen-line text-2xl text-oklch(70% 0.2 250)"></i>
-		</div>
-  
-		<!-- Kanan: Aksi -->
-		<div class="flex-1 flex justify-end items-center gap-4">
-			<!-- Dark mode toggle -->
-			<ThemeToggle client:only="solid" />
-		</div>
-	</nav>
+  <nav class="py-3 px-6 flex items-center justify-between max-w-7xl mx-auto rounded-b-xl border-t-0">
+    <a href="/" class="flex items-center gap-3 group">
+      <i class="ri-quill-pen-line text-2xl text-oklch(70% 0.2 250)"></i>
+      <span class="font-semibold text-lg group-hover:text-oklch(70% 0.2 250) transition-colors">
+        {SITE_TITLE}
+      </span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-2">
+      <HeaderLink href="/blog">Blog</HeaderLink>
+      <HeaderLink href="/projects">Proyek</HeaderLink>
+      <HeaderLink href="/about">Tentang</HeaderLink>
+
+      {isHomepage && (
+        <a href="/contact" class="ml-4 px-5 py-2 text-sm font-semibold rounded-full bg-oklch(65% 0.2 250) text-white hover:scale-105 hover:shadow-lg transition-all duration-200">
+          Hubungi Saya
+        </a>
+      )}
+
+      {!isHomepage && (
+        <>
+          <div class="w-px h-5 bg-black/10 dark:bg-white/10 mx-2"></div>
+          <ThemeToggle client:only="solid" />
+        </>
+      )}
+    </div>
+
+    <div class="md:hidden">
+      <details class="relative">
+        <summary class="p-2 list-none cursor-pointer rounded-md hover:bg-black/5 dark:hover:bg-white/10">
+          <i class="ri-menu-line text-xl"></i>
+          <span class="sr-only">Buka menu</span>
+        </summary>
+        <div class="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 border border-black/5 dark:border-white/10">
+          <nav class="flex flex-col gap-1">
+            <HeaderLink href="/">Home</HeaderLink>
+            <HeaderLink href="/blog">Blog</HeaderLink>
+            <HeaderLink href="/projects">Proyek</HeaderLink>
+            <HeaderLink href="/about">Tentang</HeaderLink>
+            <div class="border-t border-black/5 dark:border-white/10 my-1"></div>
+            {isHomepage ? (
+              <a href="/contact" class="w-full text-center mt-1 px-4 py-2 text-sm font-semibold rounded-md bg-oklch(65% 0.2 250) text-white">Hubungi Saya</a>
+            ) : (
+              <div class="flex items-center justify-between px-3 py-1">
+                <span class="text-sm text-muted">Mode Gelap</span>
+                <ThemeToggle client:only="solid" />
+              </div>
+            )}
+          </nav>
+        </div>
+      </details>
+    </div>
+  </nav>
 </header>
-<!-- Spacer untuk fixed nav -->
-<div class="header-spacer"></div>
