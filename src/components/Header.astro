@@ -13,24 +13,12 @@ import { SITE_TITLE } from '../consts';
       </span>
     </a>
 
-    <!-- KANAN: Tombol Share & Bookmark -->
-    <div class="flex items-center gap-3">
-      <!-- Share -->
-      <button
-        type="button"
-        aria-label="Bagikan"
-        onclick="navigator.share ? navigator.share({ title: document.title, url: location.href }) : alert('Fitur share tidak tersedia')"
-        class="btn"
-      >
+    <!-- KANAN: Tombol Share & Bookmark (tanpa fungsional, hanya visual) -->
+    <div class="flex items-center gap-2">
+      <button class="icon-btn p-2 rounded-md transition-default" aria-label="Bagikan">
         <i class="ri-share-line"></i>
       </button>
-
-      <!-- Bookmark -->
-      <button
-        type="button"
-        aria-label="Bookmark"
-        onclick="alert('Bookmark ditambahkan!')"
-        class="btn">
+      <button class="icon-btn p-2 rounded-md transition-default" aria-label="Bookmark">
         <i class="ri-bookmark-line"></i>
       </button>
     </div>
@@ -39,5 +27,16 @@ import { SITE_TITLE } from '../consts';
 </header>
 
 <style>
-  
+.icon-btn {
+  color: var(--color-text);
+}
+
+.icon-btn:hover {
+  color: oklch(70% 0.2 250);
+  background-color: oklch(80% 0 0 / 0.08);
+}
+
+html.dark .icon-btn:hover {
+  background-color: oklch(30% 0 0 / 0.15);
+}
 </style>
