@@ -1,5 +1,5 @@
 ---
-// src/components/Footer.astro (Versi Tailwind CSS)
+import { SITE_TITLE } from '../consts';
 
 const today = new Date();
 ---
@@ -8,6 +8,6 @@ const today = new Date();
         href="/" 
         class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
     >
-        &copy; {today.getFullYear()} Your Name Here. All rights reserved.
+        &copy; {today.getFullYear()} {SITE_TITLE}. All rights reserved.
     </a>
 </footer>
