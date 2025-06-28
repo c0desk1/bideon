@@ -13,16 +13,15 @@ const posts = (await getCollection('blog')).slice(0,3);
 ---
 
 <!doctype html>
-<html lang="id">
+<html lang="id" class="dark">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
-		<Header isHomePage={true} />
+		<Header />
 		<main>
 			<HeroSection />
-<FeaturedPosts posts={posts} />
-			
+			<FeaturedPosts posts={posts} />	
 		</main>
 		<Footer />
 	</body>
