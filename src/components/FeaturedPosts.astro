@@ -1,34 +1,32 @@
 ---
+// src/components/FeaturedPosts.astro
 import type { CollectionEntry } from 'astro:content';
-const { posts }: { posts: CollectionEntry<'blog'>[] } = Astro.props;
+import PostCard from './PostCard.astro';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+const { posts } = Astro.props;
 ---
+<section id="featured-posts" class="py-20 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center md:text-left mb-10">
+      <h2 class="text-3xl md:text-4xl font-bold">Terbaru dari Blog</h2>
+      <p class="mt-2 text-lg text-muted">
+        Beberapa tulisan dan ide yang baru-baru ini saya eksplorasi.
+      </p>
+    </div>
 
-<section class="max-w-5xl mx-auto px-6 py-20 fade-in">
-  <h2 class="text-3xl sm:text-4xl font-semibold text-center text-[var(--color-text)] mb-12">
-    Artikel Unggulan
-  </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {posts.map(post => (
+        <PostCard post={post} />
+      ))}
+    </div>
 
-  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-    {posts.map(({ slug, data }) => (
-      <a href={`/blog/${slug}`} class="group block transition-default" key={slug}>
-        <article
-          class="rounded-xl bg-[--color-surface] p-6 border border-[--color-border] hover:bg-white/5 transition-default backdrop-blur-[var(--blur-strength)]"
-        >
-          <h3 class="text-xl font-medium text-[var(--color-text)] group-hover:underline underline-offset-2 mb-2">
-            {data.title}
-          </h3>
-          <p class="text-sm text-[var(--color-muted)] line-clamp-3 leading-relaxed">
-            {data.description}
-          </p>
-          <time class="mt-4 text-xs text-[var(--color-muted)]">
-            {new Date(data.pubDate).toLocaleDateString('id-ID', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </time>
-        </article>
+    <div class="text-center mt-12">
+      <a href="/blog" class="font-semibold text-oklch(70% 0.2 250) hover:underline">
+        Lihat Semua Artikel &rarr;
       </a>
-    ))}
+    </div>
   </div>
 </section>
