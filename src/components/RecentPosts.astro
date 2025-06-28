@@ -16,7 +16,7 @@ const recentPosts = allPosts.slice(0, 6);
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {recentPosts.map((post) => (
         <a
-          href={`/blog/${post.data.slug}/`}
+          href={`/content/blog/${post.data.slug}/`}
           class="glass-panel group rounded-xl overflow-hidden shadow-sm border border-border-muted hover:shadow-md transition-all"
         >
           {post.data.heroImage && (
