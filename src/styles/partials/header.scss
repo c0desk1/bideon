@@ -5,10 +5,11 @@
   top: 0;
   left: 0;
   right: 0;
-  background: var(--color-surface);
-  backdrop-filter: blur(12px);
   z-index: 100;
-  border-bottom: 1px solid var(--color-border);
+  background-color: $color-surface;
+  backdrop-filter: $blur-surface;
+  -webkit-backdrop-filter: $blur-surface;
+  border-bottom: 1px solid $color-border;
 }
 
 .header__inner {
@@ -20,6 +21,7 @@
   justify-content: space-between;
 }
 
+/* Branding: logo + nama */
 .header__branding {
   display: flex;
   align-items: center;
@@ -34,19 +36,27 @@
 .header__title {
   font-weight: 600;
   font-size: 1.1rem;
+  color: $color-foreground;
 }
 
+/* Navigasi tengah (desktop) */
 .header__nav {
   display: flex;
   gap: 1.5rem;
+
+  a {
+    font-size: 0.95rem;
+    color: $color-muted;
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $color-foreground;
+    }
+  }
 }
 
-.header__nav a {
-  text-decoration: none;
-  color: var(--color-text-muted);
-  font-size: 0.95rem;
-}
-
+/* Aksi kanan: dark mode toggle, hamburger */
 .header__actions {
   display: flex;
   align-items: center;
@@ -57,20 +67,38 @@
 .header__mobile-toggle {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  color: $color-muted;
   cursor: pointer;
+
+  &:hover {
+    color: $color-foreground;
+  }
 }
 
+/* Navigasi mobile (drawer/dropdown) */
 .header__mobile {
   display: flex;
   flex-direction: column;
   padding: 1rem 1.5rem;
   gap: 1rem;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
+  background-color: $color-surface;
+  backdrop-filter: $blur-surface;
+  border-top: 1px solid $color-border;
+
+  a {
+    color: $color-muted;
+    font-size: 0.95rem;
+
+    &:hover {
+      color: $color-foreground;
+    }
+  }
 }
 
-/* Responsif */
+/* =============================
+   Responsive
+   ============================= */
 @media (min-width: 768px) {
   .header__mobile {
     display: none !important;
