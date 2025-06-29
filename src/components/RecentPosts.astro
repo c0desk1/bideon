@@ -10,34 +10,23 @@ const recentPosts = allPosts.slice(0, 6);
 ---
 
 <section class="py-10">
-  <div class="max-w-7xl mx-auto px-4">
-    <h2 class="heading-lg mb-6 text-center">Postingan Terbaru</h2>
-
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {recentPosts.map((post) => (
-        <a
-          href={`/blog/${post.data.slug}/`}
-          class="glass-panel group rounded-xl overflow-hidden shadow-sm border border-border-muted hover:shadow-md transition-all"
-        >
-          {post.data.heroImage && (
-            <img
-              src={post.data.heroImage.src}
-              alt={post.data.title}
-              width="600"
-              height="300"
-              class="w-full h-48 object-cover"
-              loading="lazy"
-            />
-          )}
-          <div class="p-4 space-y-2">
-            <FormattedDate date={post.data.pubDate} />
-            <h3 class="text-lg font-semibold group-hover:text-oklch(70% 0.2 250) transition-colors">
-              {post.data.title}
-            </h3>
-            <p class="text-sm text-muted line-clamp-2">{post.data.description}</p>
-          </div>
-        </a>
-      ))}
-    </div>
-  </div>
+	<div class="max-w-7xl mx-auto px-4">
+		<h2 class="heading-lg mb-6 text-center">Postingan Terbaru</h2>
+		<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+			{recentPosts.map((post) => (
+				<a href={`/blog/${post.data.slug}/`} class="glass-panel group rounded-xl overflow-hidden shadow-sm border border-border-muted hover:shadow-md transition-all">
+					{post.data.heroImage && (
+						<img src={post.data.heroImage.src} alt={post.data.title} width="600" height="300" class="w-full h-48 object-cover" loading="lazy" />
+					)}
+					<div class="p-4 space-y-2">
+						<FormattedDate date={post.data.pubDate} />
+						<h3 class="text-lg font-semibold group-hover:text-oklch(70% 0.2 250) transition-colors">
+							{post.data.title}
+						</h3>
+						<p class="text-sm text-muted line-clamp-2">{post.data.description}</p>
+					</div>
+				</a>
+			))}
+		</div>
+	</div>
 </section>
