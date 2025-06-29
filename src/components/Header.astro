@@ -1,0 +1,49 @@
+---
+// Props
+const { siteTitle = "Ambient Studio" } = Astro.props;
+---
+<header class="header">
+  <div class="header__inner">
+    
+    <!-- Kiri: Logo + Nama -->
+    <div class="header__left">
+      <img src="/favicon.svg" alt="Logo" class="header__logo"/>
+    </div>
+
+    <!-- Tengah: Navigasi utama (hanya desktop) -->
+    <div class="header__center">
+        <span class="header__title">{siteTitle}</span>
+    </div>
+
+    <!-- Kanan: Tombol tema & hamburger -->
+    <div class="header__right">
+        <nav class="header__right">
+          <a href="/">Home</a>
+          <a href="/project">Projects</a>
+          <a href="/about">About</a>
+        </nav>
+        <button class="header__mobile-toggle" aria-label="Open menu">
+            <i class="ri-menu-line"></i>
+        </button>
+    </div>
+  </div>
+
+  <!-- Navigasi mobile -->
+  <nav id="mobileNav" class="header__mobile is-hidden">
+    <a href="/">Home</a>
+    <a href="/project">Projects</a>
+    <a href="/about">About</a>
+  </nav>
+  
+
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.querySelector(".header__mobile-toggle");
+      const nav = document.getElementById("mobileNav");
+  
+      toggle?.addEventListener("click", () => {
+        nav?.classList.toggle("is-hidden");
+      });
+    });
+  </script>
+</header>

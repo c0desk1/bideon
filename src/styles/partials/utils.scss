@@ -1,0 +1,11 @@
+@use './variables' as *;
+
+.text-muted {
+    color: $color-muted-foreground;
+  }
+  
+  .bg-surface {
+    background: $color-surface;
+    backdrop-filter: $blur-surface;
+  }
+  

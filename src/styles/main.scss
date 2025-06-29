@@ -1,0 +1,16 @@
+@use './partials/variables' as *;
+@use './partials/reset';
+@use './partials/typography';
+@use './partials/header';
+@use './partials/button';
+@use './partials/utils';
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background-color: $color-accent-primary;
+  color: $color-accent-foreground;
+}
