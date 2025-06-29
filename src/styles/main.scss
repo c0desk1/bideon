@@ -1,0 +1,21 @@
+@use './partials/variables' as *;
+@use './partials/reset';
+@use './partials/typography';
+@use './partials/header';
+@use './partials/button';
+
+html {
+    font-size: 16px;
+    background-color: $color-background;
+  }
+  
+  ::selection {
+    background-color: $color-accent;
+    color: $color-accent-foreground;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }

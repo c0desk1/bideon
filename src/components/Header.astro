@@ -1,0 +1,35 @@
+---
+// Props: siteTitle (string)
+const { siteTitle = "My Site" } = Astro.props;
+---
+
+<header class="header">
+  <div class="header__inner">
+    <div class="header__branding">
+      <img src="/favicon.svg" alt="Logo" class="header__logo" />
+      <span class="header__title">{siteTitle}</span>
+    </div>
+
+    <nav class="header__nav">
+      <a href="/">HOME</a>
+      <a href="/project">PROJECTS</a>
+      <a href="/about">ABOUT</a>
+    </nav>
+
+    <div class="header__actions">
+      <button class="header__theme-toggle" aria-label="Toggle theme">
+        <i class="ri-moon-line"></i>
+      </button>
+    
+      <button class="header__mobile-toggle" aria-label="Open mobile menu">
+        <i class="ri-menu-line"></i>
+      </button>
+    </div>
+  </div>
+
+  <nav class="header__mobile">
+    <a href="/">HOME</a>
+    <a href="/project">PROJECTS</a>
+    <a href="/about">ABOUT</a>
+  </nav>
+</header>

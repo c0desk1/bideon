@@ -1,0 +1,28 @@
+@use './variables' as *;
+
+body {
+  font-family: $font-base;
+  background-color: $color-background;
+  color: $color-foreground;
+  line-height: 1.6;
+  transition: background-color 0.4s ease, color 0.4s ease;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+a {
+  color: $color-accent;
+  text-decoration: none;
+  transition: color 0.3s;
+
+  &:hover {
+    filter: brightness(110%);
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  letter-spacing: -0.015em;
+}

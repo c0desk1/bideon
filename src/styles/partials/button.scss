@@ -1,0 +1,17 @@
+@use './variables' as *;
+
+.button {
+  display: inline-block;
+  background-color: $color-accent;
+  color: $color-accent-foreground;
+  padding: 0.5rem 1rem;
+  border-radius: $radius-md;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: lighten($color-accent, 8%);
+  }
+}

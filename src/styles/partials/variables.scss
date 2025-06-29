@@ -1,0 +1,14 @@
+// Base Colors
+$color-background: hsl(222, 47%, 7%);              // Lebih gelap, hampir hitam
+$color-foreground: hsl(0, 0%, 96%);                // Teks putih pucat
+$color-card: hsla(220, 20%, 15%, 0.6);             // Translucent card (blur effect)
+$color-muted: hsla(220, 20%, 25%, 0.4);            // Border/transisi redup
+$color-muted-foreground: hsl(218, 11%, 65%);       // Abu-abu terang
+
+$color-accent: hsl(210, 100%, 65%);                // Biru elegan, ala Apple system blue
+$color-accent-foreground: hsl(0, 0%, 100%);        // Ikon/tulisan putih di atas aksen
+
+// Visual Styling
+$blur-surface: blur(20px);
+$radius-md: 0.5rem;
+$font-base: 'Inter', sans-serif;
