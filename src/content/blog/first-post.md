@@ -5,7 +5,7 @@ description: 'Panduan lengkap untuk memulai proyek baru dengan Astro dan merasak
 slug: 'memulai-dengan-astro-4-0'
 heroImage: ''
 category: 'Web Development'
-tags: ['astro', 'javascript', 'pemula']
+tags: 'astro''javascript''pemula'
 ---
 
 Isi postingan Anda di sini...
