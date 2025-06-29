@@ -12,6 +12,12 @@ const blog = defineCollection({
 		slug: z.string(),
 		heroImage: image().optional(),
 		tags: z.array(z.string()).max(5).optional(),
+		category: z.string().optional(),
+		author: z.object({
+			name: z.string(),
+			avatar: z.string().optional()
+			}).optional(),
+		
 		
 	}),
 });
