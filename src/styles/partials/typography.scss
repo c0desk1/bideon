@@ -1,28 +1,27 @@
-@use './variables' as *;
-
-body {
+html, body {
+  height: 100%;
   font-family: $font-base;
+  font-size: 16px;
   background-color: $color-background;
   color: $color-foreground;
   line-height: 1.6;
-  transition: background-color 0.4s ease, color 0.4s ease;
-  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
+}
+
+::selection {
+  background-color: $color-accent;
+  color: $color-foreground;
 }
 
 a {
-  color: $color-accent;
+  color: inherit;
   text-decoration: none;
-  transition: color 0.3s;
-
-  &:hover {
-    filter: brightness(110%);
-  }
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: bold;
-  letter-spacing: -0.015em;
+button {
+  font-family: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
 }
