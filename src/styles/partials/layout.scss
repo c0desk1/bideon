@@ -1,12 +1,4 @@
-@use './variables' as *;
-
-.layout__main {
-  padding: 1.5rem 1rem;
-}
-
-.layout__footer {
-  padding: 1.5rem 1rem;
-  text-align: center;
-  font-size: 0.875rem;
-  color: $color-muted-foreground;
+img {
+  max-width: 100%;
+  display: block;
 }
