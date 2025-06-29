@@ -5,31 +5,47 @@ const { siteTitle = "My Site" } = Astro.props;
 
 <header class="header">
   <div class="header__inner">
+    <!-- Kiri: Logo + Nama -->
     <div class="header__branding">
       <img src="/favicon.svg" alt="Logo" class="header__logo" />
       <span class="header__title">{siteTitle}</span>
     </div>
 
+    <!-- Tengah: Navigasi utama -->
     <nav class="header__nav">
-      <a href="/">HOME</a>
-      <a href="/project">PROJECTS</a>
-      <a href="/about">ABOUT</a>
+      <a href="/">Home</a>
+      <a href="/project">Projects</a>
+      <a href="/about">About</a>
     </nav>
 
+    <!-- Kanan: Tombol tema & hamburger -->
     <div class="header__actions">
+      <!-- Tombol toggle tema (desktop & mobile) -->
       <button class="header__theme-toggle" aria-label="Toggle theme">
         <i class="ri-moon-line"></i>
       </button>
-    
-      <button class="header__mobile-toggle" aria-label="Open mobile menu">
+
+      <!-- Tombol menu mobile (hanya tampil di mobile) -->
+      <button class="header__mobile-toggle" aria-label="Open mobile menu" onclick="toggleMobileMenu()">
         <i class="ri-menu-line"></i>
       </button>
     </div>
   </div>
 
-  <nav class="header__mobile">
-    <a href="/">HOME</a>
-    <a href="/project">PROJECTS</a>
-    <a href="/about">ABOUT</a>
+  <!-- Navigasi mobile yang dropdown -->
+  <nav id="mobileNav" class="header__mobile hidden">
+    <a href="/">Home</a>
+    <a href="/project">Projects</a>
+    <a href="/about">About</a>
+    <button class="header__theme-toggle" aria-label="Toggle theme mobile">
+      <i class="ri-moon-line"></i>
+    </button>
   </nav>
+
+  <script>
+    function toggleMobileMenu() {
+      const nav = document.getElementById('mobileNav');
+      nav.classList.toggle('hidden');
+    }
+  </script>
 </header>
