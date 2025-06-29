@@ -107,10 +107,12 @@
   .header__mobile-toggle {
     display: none;
   }
-
-.header__nav {
-display: none;
 }
+
+@media (max-width: 767px) {
+  .header__nav {
+    display: none;
+  }
 }
 
 .is-hidden {
