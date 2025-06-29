@@ -11,32 +11,36 @@ const { siteTitle = "My Site" } = Astro.props;
       <span class="header__title">{siteTitle}</span>
     </div>
 
-    <!-- Tengah: Navigasi utama -->
+    <!-- Tengah: Navigasi (desktop only) -->
     <nav class="header__nav">
       <a href="/">Home</a>
       <a href="/project">Projects</a>
       <a href="/about">About</a>
     </nav>
 
-    <!-- Kanan: Tombol tema & hamburger -->
+    <!-- Kanan: Tombol (mobile toggle & theme) -->
     <div class="header__actions">
-      <!-- Tombol toggle tema (desktop & mobile) -->
       <button class="header__theme-toggle" aria-label="Toggle theme">
         <i class="ri-moon-line"></i>
       </button>
 
-      <!-- Tombol menu mobile (hanya tampil di mobile) -->
-      <button class="header__mobile-toggle" aria-label="Open mobile menu" onclick="toggleMobileMenu()">
+      <button
+        class="header__mobile-toggle"
+        aria-label="Open mobile menu"
+        onclick="toggleMobileMenu()"
+      >
         <i class="ri-menu-line"></i>
       </button>
     </div>
   </div>
 
-  <!-- Navigasi mobile yang dropdown -->
-  <nav id="mobileNav" class="header__mobile hidden">
+  <!-- Mobile Dropdown Navigation -->
+  <nav id="mobileNav" class="header__mobile is-hidden">
     <a href="/">Home</a>
     <a href="/project">Projects</a>
     <a href="/about">About</a>
+
+    <!-- Theme toggle khusus mobile -->
     <button class="header__theme-toggle" aria-label="Toggle theme mobile">
       <i class="ri-moon-line"></i>
     </button>
@@ -45,7 +49,7 @@ const { siteTitle = "My Site" } = Astro.props;
   <script>
     function toggleMobileMenu() {
       const nav = document.getElementById('mobileNav');
-      nav.classList.toggle('hidden');
+      nav.classList.toggle('is-hidden');
     }
   </script>
 </header>
