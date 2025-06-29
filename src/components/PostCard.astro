@@ -1,12 +1,13 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { SITE_TITLE } from '../../consts';
 
 interface Props {
   post: CollectionEntry<'blog'>;
 }
 
 const { post } = Astro.props;
-const { title, description, pubDate, heroImage, tags, category } = post.data;
+const { title, description, pubDate, heroImage, tags, category, author } = post.data;
 
 const formattedDate = new Date(pubDate).toLocaleDateString('id-ID', {
   year: 'numeric',
@@ -15,26 +16,42 @@ const formattedDate = new Date(pubDate).toLocaleDateString('id-ID', {
 });
 ---
 
-<a href={`/blog/${post.data.slug}/`} class="group block glass-panel rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 border border-black/5 dark:border-white/10 hover:-translate-y-1 hover:border-oklch(70% 0.2 250)/50">
+<a href={`/blog/${post.data.slug}/`} class="group block rounded-xl overflow-hidden border border-border-muted bg-surface shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
 
+  <!-- Category -->
   {category && (
     <div class="px-6 pt-4 text-sm uppercase font-semibold tracking-wide text-oklch(60% 0.2 250)">
       {category}
     </div>
   )}
 
+  <!-- Hero Image -->
   {heroImage && (
     <div class="aspect-video overflow-hidden">
       <img 
-        src={heroImage} 
+        src={heroImage}
         alt={`Gambar untuk postingan ${title}`}
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        loading="lazy"
       />
     </div>
   )}
 
-  <div class="p-6">
-    <div class="flex flex-wrap items-center gap-2 text-sm text-muted mb-3">
+  <!-- Post Body -->
+  <div class="p-6 space-y-3">
+    
+    <!-- Title -->
+    <h3 class="text-xl font-bold text-oklch(var(--text-oklch)) group-hover:text-oklch(70% 0.2 250) transition-colors">
+      {title}
+    </h3>
+
+    <!-- Description -->
+    <p class="text-base text-muted leading-relaxed">
+      {description}
+    </p>
+
+    <!-- Tanggal + Tags -->
+    <div class="flex flex-wrap items-center gap-2 text-sm text-muted">
       <time datetime={pubDate.toISOString()}>{formattedDate}</time>
 
       {tags && tags.length > 0 && (
@@ -49,12 +66,18 @@ const formattedDate = new Date(pubDate).toLocaleDateString('id-ID', {
       )}
     </div>
 
-    <h3 class="text-xl font-bold text-oklch(var(--text-oklch)) group-hover:text-oklch(70% 0.2 250) transition-colors">
-      {title}
-    </h3>
+    <!-- Author -->
+    <div class="pt-2 flex items-center gap-3 text-sm text-muted">
+      {author?.avatar && (
+        <img
+          src={author.avatar}
+          alt={author.name ?? SITE_TITLE}
+          class="w-8 h-8 rounded-full object-cover"
+          loading="lazy"
+        />
+      )}
+      <span>{author?.name ?? SITE_TITLE}</span>
+    </div>
 
-    <p class="mt-2 text-muted text-base leading-relaxed">
-      {description}
-    </p>
   </div>
 </a>
