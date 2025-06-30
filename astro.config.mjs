@@ -7,14 +7,14 @@ import sitemap from '@astrojs/sitemap';
 
 import tailwindcss from '@tailwindcss/vite';
 
-import vercel from '@astrojs/vercel';
+import netlify from '@astrojs/netlify';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://bimaakbar.my.id',
   integrations: [react(), sitemap()],
   output: 'server',
-  adapter: vercel(),
+  adapter: netlify(),
 
   image: {
     service: {

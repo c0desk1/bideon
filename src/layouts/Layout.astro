@@ -1,0 +1,36 @@
+---
+// src/layouts/Layout.astro
+import '../styles/global.css'
+import BaseHead from '../components/BaseHead.astro';
+import BackToTopButton from '../components/BackToTopButton.astro';
+
+
+---
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <BaseHead />
+  </head>
+  <body>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TJXJBGLX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <slot />
+    <BackToTopButton />
+    <div id="scroll-progress-bar" class="fixed top-0 left-0 h-1 bg-blue-500 z-[9999]"></div>
+    <script>
+      const progressBar = document.getElementById('scroll-progress-bar');
+
+      if (progressBar) {
+        const updateProgressBar = () => {
+          const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          const scrollTop = document.documentElement.scrollTop;
+          const scrollPercentage = (scrollTop / scrollHeight) * 100;
+
+          progressBar.style.width = scrollPercentage + '%';
+        };
+
+        window.addEventListener('scroll', updateProgressBar);
+        updateProgressBar();
+      }
+    </script>
+  </body>
+</html>
