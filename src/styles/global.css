@@ -53,20 +53,13 @@ html, body {
   }
 
 .animate-blob {
-	animation: blob 7s infinite;
-}
-
-@keyframes fade-in-up {
-	from {
-	  opacity: 0;
-	  transform: translateY(20px);
-	  
-	}
-	to {
-	  opacity: 1;
-	  transform: translateY(0);
-	}
-}
+	animation: animate-blob 7s infinite;
+	border-radius: 50%;
+	width: 100vw;
+	height: 100vh;
+	filter: blur(100px);
+	opacity: 0.15;
+  }
 
 @keyframes blob {
 	0% {
@@ -80,5 +73,17 @@ html, body {
 	}
 	100% {
 	  transform: translate(0px, 0px) scale(1);
+	}
+}
+
+@keyframes fade-in-up {
+	from {
+	  opacity: 0;
+	  transform: translateY(20px);
+	  
+	}
+	to {
+	  opacity: 1;
+	  transform: translateY(0);
 	}
 }
