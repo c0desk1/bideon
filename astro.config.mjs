@@ -9,12 +9,11 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   integrations: [
     react({
-      ssr: false,
+      ssr: true,
     }),
     sitemap(),
   ],
   output: 'server',
-  adapter: cloudflare(),
 
   image: {
     service: {
