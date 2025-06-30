@@ -1,0 +1,40 @@
+---
+// src/components/BackToTopButton.astro
+---
+
+<button
+  id="back-to-top"
+  class="fixed bottom-6 right-6 p-3 bg-blue-600 text-white rounded-full shadow-lg transition-opacity duration-300 opacity-0 invisible hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+  aria-label="Kembali ke atas"
+>
+  <i class="ri-arrow-up-line text-xl"></i>
+</button>
+
+<script>
+  const backToTopButton = document.getElementById('back-to-top');
+
+  if (backToTopButton) {
+    const toggleVisibility = () => {
+      if (window.scrollY > 200) {
+        backToTopButton.classList.remove('opacity-0', 'invisible');
+        backToTopButton.classList.add('opacity-100', 'visible');
+      } else {
+        backToTopButton.classList.remove('opacity-100', 'visible');
+        backToTopButton.classList.add('opacity-0', 'invisible');
+      }
+    };
+
+    const scrollToTop = () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    };
+
+    window.addEventListener('scroll', toggleVisibility);
+
+    backToTopButton.addEventListener('click', scrollToTop);
+
+    toggleVisibility();
+  }
+</script>

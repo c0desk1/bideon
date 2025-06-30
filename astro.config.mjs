@@ -1,29 +1,31 @@
-// @ts-check
+// @ts-nocheck
 import { defineConfig } from 'astro/config';
 
 import react from '@astrojs/react';
-import vercel from '@astrojs/vercel/serverless';
+
 import sitemap from '@astrojs/sitemap';
+
 import tailwindcss from '@tailwindcss/vite';
 
+import vercel from '@astrojs/vercel';
+
+// https://astro.build/config
 export default defineConfig({
-adapter: vercel(),
-  integrations: [
-    react({
-      ssr: true,
-    }),
-    sitemap(),
-  ],
+  site: 'https://bimaakbar.my.id',
+  integrations: [react(), sitemap()],
   output: 'server',
+  adapter: vercel(),
 
   image: {
     service: {
       // @ts-ignore
-      entry: 'astro/assets/services/compile',
-    },
+      entry: 'astro/assets/services/compile'
+    }
   },
 
   vite: {
     plugins: [tailwindcss()],
   },
+
+  
 });
