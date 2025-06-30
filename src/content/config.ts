@@ -1,6 +1,8 @@
 // src/content/config.ts
 import { defineCollection, z } from 'astro:content';
 
+export const POSTS_PER_PAGE = 3;
+
 const blogCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -26,5 +28,3 @@ const blogCollection = defineCollection({
 export const collections = {
   blog: blogCollection,
 };
-
-export const POSTS_PER_PAGE = 3;
