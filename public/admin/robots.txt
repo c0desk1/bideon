@@ -1,1 +1,4 @@
-Sitemap: https://bimaakbar.my.id/sitemap-index.xml
+User-agent: *
+Allow: /
+
+Sitemap: https://bimaakbar.my.index/sitemap-index.xml
