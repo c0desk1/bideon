@@ -2,27 +2,28 @@
 import { defineConfig } from 'astro/config';
 
 import react from '@astrojs/react';
-
 import cloudflare from '@astrojs/cloudflare';
-
 import sitemap from '@astrojs/sitemap';
-
 import tailwindcss from '@tailwindcss/vite';
 
-// https://astro.build/config
 export default defineConfig({
-  integrations: [react(), sitemap()],
+  integrations: [
+    react({
+      ssr: false,
+    }),
+    sitemap(),
+  ],
   output: 'server',
   adapter: cloudflare(),
 
   image: {
     service: {
       // @ts-ignore
-      entry: 'astro/assets/services/compile'
-    }
+      entry: 'astro/assets/services/compile',
+    },
   },
 
   vite: {
-    plugins: [tailwindcss()]
-  }
+    plugins: [tailwindcss()],
+  },
 });
