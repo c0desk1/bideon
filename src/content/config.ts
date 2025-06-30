@@ -26,3 +26,5 @@ const blogCollection = defineCollection({
 export const collections = {
   blog: blogCollection,
 };
+
+export const POSTS_PER_PAGE = 3;
