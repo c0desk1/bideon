@@ -1,6 +1,6 @@
 ---
 // src/pages/blog/index.astro
-import Layout from '../../layouts/BlogLayout.astro';
+/import Layout from '../../layouts/BlogLayout.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 
