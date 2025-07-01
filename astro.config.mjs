@@ -5,14 +5,6 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import netlify from '@astrojs/netlify';
 
-// Ditambahkan untuk alias path
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// Ditambahkan untuk alias path
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // https://astro.build/config
 export default defineConfig({
   site: 'https://bimaakbar.my.id',
