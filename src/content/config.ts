@@ -1,7 +1,8 @@
 // src/content/config.ts
+export const POSTS_PER_PAGE = 3;
 import { defineCollection, z } from 'astro:content';
 
-export const POSTS_PER_PAGE = 3;
+
 
 const blogCollection = defineCollection({
   type: 'content',
