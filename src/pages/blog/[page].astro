@@ -51,32 +51,34 @@ const seoDescription = 'Jelajahi semua artikel dan insight terbaru dari Bima Akb
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {posts.map((post) => (
-        <a href={`/blog/${post.slug}`} class="group block rounded-xl overflow-hidden bg-zinc-800 hover:bg-zinc-700 transition-colors shadow-md">
+        <a href={`/blog/${post.slug}`} class="block bg-zinc-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-200 hover:scale-[1.02] hover:shadow-2xl group">
+
           {post.data.heroImage && (
-            <img src={post.data.heroImage} alt={post.data.title ?? 'Thumbnail'} class="w-full h-48 object-cover" />
+            <img src={post.data.heroImage} alt={post.data.title ?? 'Thumbnail'} loading="lazy"
+class="w-full h-48 object-cover group-hover:opacity-90 transition-opacity duration-200" />
           )}
           <div class="p-5">
-            <h2 class="text-lg font-semibold text-white group-hover:text-blue-400">
+            <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-200">
+
               {post.data.title}
             </h2>
-            <p class="text-sm text-zinc-400">{post.data.description}</p>
-            <p class="mt-2 text-xs text-zinc-500">{formatDate(post.data.pubDate)}</p>
-            <div class="text-xs text-zinc-400 mt-1 flex flex-wrap gap-1 items-center">
-              {post.data.author && <span>{post.data.author}</span>}
-              {post.data.author && post.data.category && <span>•</span>}
+            <p class="text-zinc-400 text-sm mb-3">{post.data.description}</p>
+            <div class="text-zinc-500 text-xs flex flex-wrap items-center gap-x-2 gap-y-1 mb-3">
+              {post.data.author && <span class="flex items-center">{post.data.author}</span>}
+              {post.data.author && post.data.category && <span class="mx-0.5">•</span>}
               {post.data.category && (
                 <span class="bg-blue-600 text-white px-2 py-0.5 rounded-full text-xs">{post.data.category}</span>
               )}
             </div>
+            <p class="mt-2 text-xs text-zinc-500">{formatDate(post.data.pubDate)}</p>
           </div>
         </a>
       ))}
     </div>
-
     {lastPage > 1 && (
       <nav class="mt-12 flex justify-center gap-2">
         {url.prev && (
-          <a href={url.prev} class="px-4 py-2 bg-zinc-700 text-white rounded hover:bg-zinc-600">← Sebelumnya</a>
+          <a href={url.prev} class="px-4 py-2 bg-zinc-700 text-white rounded hover:bg-zinc-600">Sebelumnya</a>
         )}
         {Array.from({ length: lastPage }, (_, i) => (
           <a
@@ -90,7 +92,7 @@ const seoDescription = 'Jelajahi semua artikel dan insight terbaru dari Bima Akb
           </a>
         ))}
         {url.next && (
-          <a href={url.next} class="px-4 py-2 bg-zinc-700 text-white rounded hover:bg-zinc-600">Selanjutnya →</a>
+          <a href={url.next} class="px-4 py-2 bg-zinc-700 text-white rounded hover:bg-zinc-600">Selanjutnya</a>
         )}
       </nav>
     )}
