@@ -10,12 +10,12 @@ const navLinks = [
   { href: "/projek", text: "Projects" },
 ];
 ---
-<header class="sticky top-0 z-50 w-full bg-zinc-900 backdrop-blur-lg border-b border-white/10">
-  <div class="container mx-auto px-4">
+<header class="sticky top-0 z-50 w-full h-56px pl-4 pr-4 bg-zinc-900/90 backdrop-blur-lg border-b border-white/10">
+  <div class="container mx-auto items-center">
     <nav class="flex items-center justify-between h-16" aria-label="Main navigation">
-      <a href="/" class="flex items-center gap-3 text-xl font-bold text-gray-50 hover:text-white transition-colors">
-        <img src={logo} alt="Logo Situs" class="h-8 w-auto" />
-        <span>{SITE.TITLE}</span>
+      <a href="/" class="flex items-center gap-3 text-xl font-bold text-gray-50 hover:text-white">
+        <img src={logo} alt="Logo Situs" class="h-8 w-auto transition-transform duration-200 ease-in-out hover:-translate-y-1" />
+        <span class="transition-transform duration-200 ease-in-out hover:-translate-y-1">{SITE.TITLE}</span>
       </a>
       <ul class="hidden sm:flex items-center space-x-8">
         {navLinks.map((link) => {
