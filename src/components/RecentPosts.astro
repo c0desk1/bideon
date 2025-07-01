@@ -2,10 +2,16 @@
 // src/components/RecentPosts.astro
 import { Image } from 'astro:assets';
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { POSTS_PER_PAGE } from '@/content/config';
+
 
 const allPosts: CollectionEntry<'blog'>[] = await getCollection('blog', ({ data }) => {
   return data.pubDate;
 });
+
+const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+const hasMultiplePages = totalPages > 0;
+const blogFirstPageUrl = hasMultiplePages ? '/blog/page/1' : '#';
 
 const posts: CollectionEntry<'blog'>[] = allPosts
   .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
@@ -90,9 +96,9 @@ function formatDate(dateString: string) {
     )}
   </div>
 
-  {posts.length > 0 && (
+  {hasMultiplePages && posts.length > 0 &&  (
     <div class="mt-12 text-center">
-      <a href="/blog/page/1" class="inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors text-lg">
+      <a href={blogFirstPageUrl} class="inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors text-lg">
         Lihat Semua
       </a>
     </div>
