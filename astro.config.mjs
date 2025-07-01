@@ -29,10 +29,9 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
-    // Ditambahkan untuk alias path
     resolve: {
       alias: {
-        '~': path.resolve(__dirname, './src'),
+        '@': new URL('./src', import.meta.url).pathname
       },
     },
   },
