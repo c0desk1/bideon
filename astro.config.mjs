@@ -10,7 +10,9 @@ export default defineConfig({
   site: 'https://bimaakbar.my.id',
   integrations: [react(), sitemap()],
   output: 'server',
-  adapter: netlify(),
+  adapter: netlify({
+    imageCDN: false,
+  }),
 
   image: {
     service: {
