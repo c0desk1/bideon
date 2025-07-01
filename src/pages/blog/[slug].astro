@@ -78,15 +78,15 @@ function formatDate(date: Date) {
 >
   <article class="container mx-auto px-4 py-16 md:py-24 max-w-3xl">
     <nav class="text-zinc-400 text-sm mb-8 flex flex-wrap gap-1 items-center">
-      <a href="/" class="hover:underline text-white/70 hover:text-white transition">Home</a>
+      <a href="/" class="hover:no-underline text-white/70 hover:text-white transition">Home</a>
       <span>/</span>
-      <a href="/blog" class="hover:underline text-white/70 hover:text-white transition">Blog</a>
+      <a href="/blog" class="hover:no-underline text-white/70 hover:text-white transition">Blog</a>
       {entry.data.category && (
         <>
           <span>/</span>
           <a
             href={`/blog/category/${entry.data.category.toLowerCase().replace(/\s+/g, '-')}`}
-            class="hover:underline text-white/70 hover:text-white transition"
+            class="hover:no-underline text-white/70 hover:text-white transition"
           >
             <i class="ri-folder-line mr-1"></i>
             {entry.data.category}
@@ -115,7 +115,7 @@ function formatDate(date: Date) {
       {entry.data.category && (
         <>
           <span class="mx-0.5">•</span>
-          <a href={`/blog/category/${entry.data.category.toLowerCase().replace(/\s+/g, '-')}`} class="hover:underline text-blue-400 font-medium">
+          <a href={`/blog/category/${entry.data.category.toLowerCase().replace(/\s+/g, '-')}`} class="hover:no-underline text-blue-400 font-medium">
             {entry.data.category}
           </a>
         </>
@@ -162,19 +162,26 @@ function formatDate(date: Date) {
     <CommentForm client:load />
     {(prevEntry || nextEntry) && (
       <nav class="mt-14 pt-8 border-t border-zinc-700 grid sm:grid-cols-2 gap-6 text-sm text-white/80">
-        {prevEntry && (
-          <a href={`/blog/${prevEntry.slug}`} class="hover:text-white group">
-            <span class="block mb-1 text-zinc-500 group-hover:text-blue-400 transition">← Sebelumnya</span>
-            <span class="font-semibold text-white group-hover:underline">{prevEntry.data.title}</span>
-          </a>
-        )}
-        {nextEntry && (
-          <a href={`/blog/${nextEntry.slug}`} class="text-right hover:text-white group">
-            <span class="block mb-1 text-zinc-500 group-hover:text-blue-400 transition">Selanjutnya →</span>
-            <span class="font-semibold text-white group-hover:underline">{nextEntry.data.title}</span>
-          </a>
-        )}
-      </nav>
+  {prevEntry && (
+    <a
+      href={`/blog/${prevEntry.slug}`}
+      class="group backdrop-blur-lg bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-4 rounded-lg transition-colors duration-200 text-left"
+    >
+      <span class="block mb-1 text-sm text-zinc-400 group-hover:text-blue-400 transition">Sebelumnya</span>
+      <span class="font-semibold text-white text-base group-hover:text-white">{prevEntry.data.title}</span>
+    </a>
+  )}
+  {nextEntry && (
+    <a
+      href={`/blog/${nextEntry.slug}`}
+      class="group backdrop-blur-lg bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-4 rounded-lg transition-colors duration-200 text-right"
+    >
+      <span class="block mb-1 text-sm text-zinc-400 group-hover:text-blue-400 transition">Selanjutnya</span>
+      <span class="font-semibold text-white text-base group-hover:text-white">{nextEntry.data.title}</span>
+    </a>
+  )}
+</nav>
+
     )}
     <RelatedPosts currentEntry={entry} />
   </article>
