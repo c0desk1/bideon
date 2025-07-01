@@ -10,19 +10,26 @@ const navLinks = [
   { href: "/projek", text: "Projects" },
 ];
 ---
-<header class="sticky top-0 z-50 w-full h-56px pl-4 pr-4 bg-zinc-900/90 backdrop-blur-lg border-b border-white/10">
-  <div class="container mx-auto items-center">
-    <nav class="flex items-center justify-between h-16" aria-label="Main navigation">
+<header class="sticky top-0 z-50 w-full bg-zinc-900/90 backdrop-blur-lg border-b border-white/10">
+  <div class="container mx-auto px-4">
+    <nav class="relative flex items-center justify-between h-[50px] md:h-[70px]" aria-label="Main navigation">
+      
+      <!-- Kiri: Logo -->
       <a href="/" class="flex items-center gap-3 text-xl font-bold text-gray-50 hover:text-white">
         <img src={logo} alt="Logo Situs" class="h-8 w-auto transition-transform duration-200 ease-in-out hover:-translate-y-1" />
         <span class="transition-transform duration-200 ease-in-out hover:-translate-y-1">{SITE.TITLE}</span>
       </a>
-      <ul class="hidden sm:flex items-center space-x-8">
+
+      <!-- Tengah: Menu Navigasi -->
+      <ul class="hidden sm:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center space-x-8">
         {navLinks.map((link) => {
           const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href + '/'));
           return (
             <li>
-              <a href={link.href} class:list={[ "flex items-center gap-1.5 transition-colors", isActive ? "text-white font-semibold" : "text-gray-300 hover:text-white" ]}>
+              <a href={link.href} class:list={[
+                "flex items-center gap-1.5 transition-colors",
+                isActive ? "text-white font-semibold" : "text-gray-300 hover:text-white"
+              ]}>
                 {link.text}
                 {link.text === "Projek" && <i class="ri-external-link-line text-sm"></i>}
               </a>
@@ -30,6 +37,8 @@ const navLinks = [
           );
         })}
       </ul>
+
+      <!-- Kanan: Hamburger Button -->
       <div class="sm:hidden">
         <button
           id="hamburger-button"
@@ -46,6 +55,8 @@ const navLinks = [
       </div>
     </nav>
   </div>
+
+  <!-- Menu Mobile -->
   <div
     id="mobile-menu"
     class="sm:hidden absolute w-full bg-zinc-900/95 backdrop-blur-lg shadow-lg transition-all duration-300 ease-in-out opacity-0 invisible -translate-y-4"
@@ -53,12 +64,15 @@ const navLinks = [
     aria-modal="true"
     aria-labelledby="menu-heading"
   >
-    <ul class="px-2 pt-2 pb-3 space-y-1">
+    <ul class="px-4 pt-4 pb-6 space-y-2">
       {navLinks.map((link) => {
         const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href + '/'));
         return (
           <li>
-            <a href={link.href} class:list={[ "block rounded-md px-3 py-2 text-base font-medium", isActive ? "bg-white/10 text-white" : "text-gray-300 hover:bg-white/5" ]}>
+            <a href={link.href} class:list={[
+              "block rounded-md px-3 py-2 text-base font-medium",
+              isActive ? "bg-white/10 text-white" : "text-gray-300 hover:bg-white/5"
+            ]}>
               {link.text}
             </a>
           </li>
