@@ -61,7 +61,7 @@ const NewsletterForm: React.FC = () => {
         />
         <button
           type="submit"
-          className="w-full cursor-pointer bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full cursor-pointer bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-full hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Mengirim...' : 'Berlangganan buletin kami'}

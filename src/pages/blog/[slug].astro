@@ -138,8 +138,8 @@ function formatDate(date: Date) {
         )}
       </figure>
     )}
+    <TableOfContents toc={toc} />
     <div class="prose prose-invert max-w-none text-zinc-300">
-      <TableOfContents toc={toc} />
       <Content />
     </div>
     {entry.data.tags && entry.data.tags.length > 0 && (
