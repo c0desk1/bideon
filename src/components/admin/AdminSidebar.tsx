@@ -1,21 +1,29 @@
-// src/components/AdminSidebar.tsx
+// src/components/admin/AdminSidebar.tsx
 import { useState, useEffect } from 'react';
+// 1. TAMBAHKAN impor untuk komponen Modal dan Form
+import Modal from './Modal';
+import CreatePostForm from './CreatePostForm';
 
+// ... (const navLinks tetap sama persis seperti sebelumnya)
 const navLinks = [
-    { href: "/admin", label: "Dashboard", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13H11V3H3V13ZM3 21H11V15H3V21ZM13 21H21V11H13V21ZM13 3V9H21V3H13Z"></path></svg> },
-    { href: "/admin/reports", label: "Reports", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2 11H8V21H2V11ZM9 3H15V21H9V3ZM16 6H22V21H16V6Z"></path></svg> },
-    { href: "/admin/content", label: "Content", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3ZM4 5V19H20V5H4ZM6 7H18V9H6V7ZM6 11H18V13H6V11Z"></path></svg> },
-    { href: "/admin/comments", label: "Comments", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19H13V22.5L8.5 19H8C4.13401 19 1 15.866 1 12C1 8.13401 4.13401 5 8 5H10V3Z"></path></svg> },
-    { href: "/admin/profile", label: "Profile", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H4ZM12 13C8.68629 13 6 10.3137 6 7C6 3.68629 8.68629 1 12 1C15.3137 1 18 3.68629 18 7C18 10.3137 15.3137 13 12 13Z"></path></svg> },
-    { href: "/admin/settings", label: "Settings", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L21.5 6.5V17.5L12 23L2.5 17.5V6.5L12 1ZM12 3.236L4.5 7.636V16.364L12 20.764L19.5 16.364V7.636L12 3.236ZM12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16Z"></path></svg> },
+  { href: "/admin", label: "Dashboard", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13H11V3H3V13ZM3 21H11V15H3V21ZM13 21H21V11H13V21ZM13 3V9H21V3H13Z"></path></svg> },
+  { href: "/admin/reports", label: "Reports", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2 11H8V21H2V11ZM9 3H15V21H9V3ZM16 6H22V21H16V6Z"></path></svg> },
+  { href: "/admin/content", label: "Content", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3ZM4 5V19H20V5H4ZM6 7H18V9H6V7ZM6 11H18V13H6V11Z"></path></svg> },
+  { href: "/admin/comments", label: "Comments", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19H13V22.5L8.5 19H8C4.13401 19 1 15.866 1 12C1 8.13401 4.13401 5 8 5H10V3Z"></path></svg> },
+  { href: "/admin/profile", label: "Profile", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H4ZM12 13C8.68629 13 6 10.3137 6 7C6 3.68629 8.68629 1 12 1C15.3137 1 18 3.68629 18 7C18 10.3137 15.3137 13 12 13Z"></path></svg> },
+  { href: "/admin/settings", label: "Settings", icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L21.5 6.5V17.5L12 23L2.5 17.5V6.5L12 1ZM12 3.236L4.5 7.636V16.364L12 20.764L19.5 16.364V7.636L12 3.236ZM12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16Z"></path></svg> },
 ];
 
 export default function AdminSidebar() {
   const [isDesktopExpanded, setIsDesktopExpanded] = useState(true);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
+  
+  // 2. TAMBAHKAN state untuk modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    // ... (useEffect untuk mobile toggle tetap sama)
     if (typeof window !== 'undefined') {
       setCurrentPath(window.location.pathname);
       
@@ -35,11 +43,6 @@ export default function AdminSidebar() {
 
   return (
     <>
-      <div 
-        className={`fixed inset-0 bg-black/50 z-30 transition-opacity lg:hidden ${isMobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-        onClick={() => setIsMobileOpen(false)}
-      ></div>
-
       <aside className={`flex flex-col bg-zinc-800 border-r border-zinc-700 transition-all duration-300 ease-in-out z-40 
         ${isDesktopExpanded ? 'w-64' : 'w-24'} 
         fixed inset-y-0 left-0 lg:relative
@@ -60,7 +63,20 @@ export default function AdminSidebar() {
           </button>
         </div>
 
+        {/* Navigasi Utama */}
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+           {/* Tombol "Buat Baru" yang memicu modal */}
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="w-full h-11 px-4 mb-4 flex items-center justify-center bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <div className="w-6 h-6 flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 11V5H13V11H19V13H13V19H11V13H5V11H11Z"></path></svg>
+            </div>
+            <span className={`ml-2 whitespace-nowrap overflow-hidden transition-all duration-300 ${isDesktopExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+              Buat Baru
+            </span>
+          </button>
           {navLinks.map(link => (
             <a key={link.href} href={link.href} className={`${baseClass} ${currentPath === link.href ? activeClass : ''}`} title={isDesktopExpanded ? '' : link.label}>
               <div className="w-8 h-8 flex items-center justify-center flex-shrink-0"><div className="w-6 h-6 fill-current">{link.icon}</div></div>
@@ -69,6 +85,15 @@ export default function AdminSidebar() {
           ))}
         </nav>
       </aside>
+
+      {/* 3. TAMBAHKAN BLOK UNTUK MERENDER MODAL */}
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        title="Buat Postingan Baru"
+      >
+        <CreatePostForm onSuccess={() => setIsModalOpen(false)} />
+      </Modal>
     </>
   );
 }

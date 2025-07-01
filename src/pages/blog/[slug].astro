@@ -1,11 +1,15 @@
 ---
 // src/pages/blog/[slug].astro
+export const prerender = true;
 import Layout from '@/layouts/BlogLayout.astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { calculateReadingTime } from '@/services/readingTime';
 import { marked } from 'marked';
 import { generateHtmlWithIds, generateToc } from '@/services/parseToc';
-import TableOfContents from '@/components/TableOfContents.tsx';
+import TableOfContents from '@/components/TableOfContents.astro';
+import CommentList from '@/components/CommentList.tsx';
+import CommentForm from '@/components/CommentForm.tsx';
+import RelatedPosts from '@/components/RelatedPosts.astro';
 import LikeButton from '@/components/LikeButton.tsx';
 import ShareButton from '@/components/ShareButton.tsx';
 
@@ -34,10 +38,13 @@ if (!entry) {
   return Astro.redirect('/404');
 }
 
+
 const allBlogEntries = await getCollection('blog');
 const sortedEntries = allBlogEntries.sort(
   (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
 );
+
+
 const currentIndex = sortedEntries.findIndex((e) => e.slug === entry!.slug);
 const prevEntry = sortedEntries[currentIndex + 1];
 const nextEntry = sortedEntries[currentIndex - 1];
@@ -70,8 +77,25 @@ function formatDate(date: Date) {
   ogType={seoType}
 >
   <article class="container mx-auto px-4 py-16 md:py-24 max-w-3xl">
-    <nav class="text-zinc-400 text-sm mb-8">
-      <a href="/blog" class="hover:underline">Blog</a> / <span>{entry.data.title}</span>
+    <nav class="text-zinc-400 text-sm mb-8 flex flex-wrap gap-1 items-center">
+      <a href="/" class="hover:underline text-white/70 hover:text-white transition">Home</a>
+      <span>/</span>
+      <a href="/blog" class="hover:underline text-white/70 hover:text-white transition">Blog</a>
+      {entry.data.category && (
+        <>
+          <span>/</span>
+          <a
+            href={`/blog/category/${entry.data.category.toLowerCase().replace(/\s+/g, '-')}`}
+            class="hover:underline text-white/70 hover:text-white transition"
+          >
+            <i class="ri-folder-line mr-1"></i>
+            {entry.data.category}
+            
+          </a>
+        </>
+      )}
+      <span>/</span>
+      <span class="text-white">{entry.data.title}</span>
     </nav>
 
     <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-6 leading-tight">
@@ -130,6 +154,12 @@ function formatDate(date: Date) {
         </div>
       </div>
     )}
+    <div class="items-center mt-10 pt-6 flex flex-wrap gap-2">
+      <LikeButton client:load />
+      <ShareButton client:load />
+    </div>
+    <CommentList client:load />
+    <CommentForm client:load />
     {(prevEntry || nextEntry) && (
       <nav class="mt-14 pt-8 border-t border-zinc-700 grid sm:grid-cols-2 gap-6 text-sm text-white/80">
         {prevEntry && (
@@ -146,9 +176,6 @@ function formatDate(date: Date) {
         )}
       </nav>
     )}
-    
-    
-    <LikeButton client:load />
-    <ShareButton client:load />
+    <RelatedPosts currentEntry={entry} />
   </article>
 </Layout>
