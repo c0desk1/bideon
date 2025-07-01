@@ -23,11 +23,6 @@ if (latestPostPubDateStr) {
 ---
 
 <section class="relative bg-zinc-900 py-20 sm:py-24 flex items-center justify-center overflow-hidden">
-  <!-- Background blobs -->
-  <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/50 rounded-full blur-3xl opacity-20 animate-blob"></div>
-  <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-500/50 rounded-full blur-3xl opacity-20 animate-blob" style="animation-delay: 2s;"></div>
-  <div class="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-500/50 rounded-full blur-3xl opacity-20 animate-blob" style="animation-delay: 4s;"></div>
-
   <!-- Content -->
   <div class="relative z-10 container mx-auto px-4 grid gap-12">
     <div class="flex flex-col items-center text-center md:text-center">
@@ -39,7 +34,7 @@ if (latestPostPubDateStr) {
           <NewPostAlert latestPostPubDateStr={latestPostPubDateStr} client:load />
           <span class="ml-2">
             Postingan Baru:
-            <span class="font-semibold group-hover:underline"> {latestPostTitle}</span>
+            <span class="font-semibold group-hover:no-underline"> {latestPostTitle}</span>
           </span>
           <i class="ri-arrow-right-line ml-2 group-hover:translate-x-1 transition-transform"></i>
         </a>
