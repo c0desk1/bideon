@@ -1,0 +1,30 @@
+---
+import PostCard from './PostCard.tsx';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+const { currentEntry } = Astro.props as {
+  currentEntry: CollectionEntry<'blog'>;
+};
+
+const allPosts = await getCollection('blog');
+const related = allPosts
+  .filter(post =>
+    post.slug !== currentEntry.slug &&
+    (
+      post.data.category === currentEntry.data.category ||
+      post.data.tags?.some(tag => currentEntry.data.tags?.includes(tag))
+    )
+  )
+  .slice(0, 3);
+---
+
+{related.length > 0 && (
+  <section class="mt-20 border-t border-zinc-700 pt-10">
+    <h2 class="text-2xl font-bold text-white mb-6">Artikel Terkait</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {related.map(post => (
+        <PostCard post={post} />
+      ))}
+    </div>
+  </section>
+)}

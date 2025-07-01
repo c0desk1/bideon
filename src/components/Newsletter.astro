@@ -1,0 +1,10 @@
+---
+// src/components/Newsletter.astro
+import NewsletterForm from './NewsletterForm.tsx';
+---
+
+<section class="container mx-auto mt-16">
+  <div class="relative overflow-hidden [animation:fade-in-up_0.8s_ease-out_forwards]">
+    <NewsletterForm client:load />
+  </div>
+</section>

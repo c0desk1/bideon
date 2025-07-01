@@ -1,0 +1,47 @@
+---
+// src/components/RecentPosts.astro
+import { getCollection, type CollectionEntry } from 'astro:content';
+import PostCard from './PostCard.tsx'; 
+
+const allPosts: CollectionEntry<'blog'>[] = await getCollection('blog', ({ data }) => {
+  return data.draft !== true;
+});
+
+const posts: CollectionEntry<'blog'>[] = allPosts
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+  .slice(0, 3);
+
+const hasMultiplePages = allPosts.length > 3;
+---
+
+<section id="recent-posts" class="container mx-auto px-4 py-16">
+  <div class="text-left mb-6">
+    <p class="inline-block text-xs font-semibold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text uppercase tracking-wider">
+      Terbaru
+    </p>
+    <h2 class="text-3xl font-bold text-white leading-snug">
+      Postingan Terbaru untuk Kamu Jelajahi
+    </h2>
+    <span class="text-sm text-zinc-400 block mt-1 leading-relaxed max-w-md">
+      Artikel segar, langsung dari kami — tetap terinspirasi dan terkini.
+    </span>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {posts.length > 0 ? (
+      posts.map((post) => (
+        <PostCard post={post} />
+      ))
+    ) : (
+      <p class="text-center text-zinc-400 col-span-full">Belum ada postingan terbaru.</p>
+    )}
+  </div>
+
+  {hasMultiplePages && (
+    <div class="mt-12 text-center">
+      <a href="/blog/page/1" class="inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors text-lg">
+        Lihat Semua Postingan
+      </a>
+    </div>
+  )}
+</section>

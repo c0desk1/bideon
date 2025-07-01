@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+
+const { year, month } = Astro.params;
+const allPosts = await getCollection('blog');
+
+const filteredPosts = allPosts.filter((post) => {
+  const date = new Date(post.data.pubDate);
+  return date.getFullYear() === Number(year) && (date.getMonth() + 1) === Number(month);
+});
+---
+
+<h1 class="text-3xl font-bold text-white mb-6">
+  Postingan {new Date(`${year}-${month}-01`).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+</h1>
+
+{filteredPosts.length > 0 ? (
+  <ul class="space-y-4">
+    {filteredPosts.map((post) => (
+      <li>
+        <a href={`/blog/${post.slug}`} class="text-blue-400 hover:underline">{post.data.title}</a>
+      </li>
+    ))}
+  </ul>
+) : (
+  <p class="text-zinc-400">Tidak ada postingan pada bulan ini.</p>
+)}

@@ -1,0 +1,188 @@
+---
+// src/pages/blog/[slug].astro
+export const prerender = true;
+import Layout from '@/layouts/BlogLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { calculateReadingTime } from '@/services/readingTime';
+import { marked } from 'marked';
+import { generateHtmlWithIds, generateToc } from '@/services/parseToc';
+import TableOfContents from '@/components/TableOfContents.astro';
+import CommentList from '@/components/CommentList.tsx';
+import CommentForm from '@/components/CommentForm.tsx';
+import RelatedPosts from '@/components/RelatedPosts.astro';
+import LikeButton from '@/components/LikeButton.tsx';
+import ShareButton from '@/components/ShareButton.tsx';
+
+export async function getStaticPaths() {
+  const blogEntries: CollectionEntry<'blog'>[] = await getCollection('blog');
+  return blogEntries.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'blog'>;
+}
+
+const { entry: propEntry } = Astro.props as Props;
+
+let entry: CollectionEntry<'blog'> | undefined = propEntry;
+
+if (!entry) {
+  const allBlogEntries = await getCollection('blog');
+  entry = allBlogEntries.find(e => e.slug === Astro.params.slug);
+}
+
+if (!entry) {
+  return Astro.redirect('/404');
+}
+
+
+const allBlogEntries = await getCollection('blog');
+const sortedEntries = allBlogEntries.sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+
+
+const currentIndex = sortedEntries.findIndex((e) => e.slug === entry!.slug);
+const prevEntry = sortedEntries[currentIndex + 1];
+const nextEntry = sortedEntries[currentIndex - 1];
+
+const readingTime = calculateReadingTime(entry.body);
+
+
+const { Content } = await entry.render();
+const html = await generateHtmlWithIds(entry.body);
+const toc = generateToc(html);
+const seoTitle = entry.data.ogTitle || entry.data.title;
+const seoDescription = entry.data.ogDescription || entry.data.description;
+const seoImage = typeof entry.data.ogImage === 'string' ? entry.data.ogImage : (typeof entry.data.heroImage === 'string' ? entry.data.heroImage : '/images/og-default.jpg');
+const seoType = entry.data.ogType || 'article';
+
+
+
+
+// Helper untuk format tanggal
+function formatDate(date: Date) {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  return date.toLocaleDateString('id-ID', options);
+}
+---
+
+<Layout
+  title={seoTitle}
+  description={seoDescription}
+  ogImage={seoImage}
+  ogType={seoType}
+>
+  <article class="container mx-auto px-4 py-16 md:py-24 max-w-3xl">
+    <nav class="text-zinc-400 text-sm mb-8 flex flex-wrap gap-1 items-center">
+      <a href="/" class="hover:no-underline text-white/70 hover:text-white transition">Home</a>
+      <span>/</span>
+      <a href="/blog" class="hover:no-underline text-white/70 hover:text-white transition">Blog</a>
+      {entry.data.category && (
+        <>
+          <span>/</span>
+          <a
+            href={`/blog/category/${entry.data.category.toLowerCase().replace(/\s+/g, '-')}`}
+            class="hover:no-underline text-white/70 hover:text-white transition"
+          >
+            <i class="ri-folder-line mr-1"></i>
+            {entry.data.category}
+            
+          </a>
+        </>
+      )}
+      <span>/</span>
+      <span class="text-white">{entry.data.title}</span>
+    </nav>
+
+    <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-6 leading-tight">
+      {entry.data.title}
+    </h1>
+
+    <div class="flex flex-wrap items-center text-zinc-500 text-sm mb-8 gap-x-3 gap-y-2">
+      {entry.data.author && (
+        <div class="flex items-center">
+          <span>Oleh <span class="font-semibold text-white">{entry.data.author}</span></span>
+        </div>
+      )}
+      <span class="mx-0.5">•</span>
+      <span>{formatDate(entry.data.pubDate)}</span>
+      <span class="mx-0.5">•</span>
+      <span>{readingTime}</span>
+      {entry.data.category && (
+        <>
+          <span class="mx-0.5">•</span>
+          <a href={`/blog/category/${entry.data.category.toLowerCase().replace(/\s+/g, '-')}`} class="hover:no-underline text-blue-400 font-medium">
+            {entry.data.category}
+          </a>
+        </>
+      )}
+    </div>
+    {typeof entry.data.heroImage === 'string' && entry.data.heroImage && (
+      <figure class="mb-10 rounded-lg overflow-hidden shadow-xl">
+        <img
+          src={entry.data.heroImage}
+          alt={entry.data.description || entry.data.title}
+          width="1200"
+          height="600"
+          class="w-full h-auto object-cover max-h-96"
+          loading="lazy"
+        />
+        {entry.data.description && (
+          <figcaption class="text-center text-zinc-500 text-sm mt-2">
+            {entry.data.description}
+          </figcaption>
+        )}
+      </figure>
+    )}
+    <div class="prose prose-invert max-w-none text-zinc-300">
+      <TableOfContents toc={toc} />
+      <Content />
+    </div>
+    {entry.data.tags && entry.data.tags.length > 0 && (
+      <div class="mt-10 pt-6 border-t border-zinc-700">
+        <span class="font-semibold text-white mr-2">Tags:</span>
+        <div class="flex flex-wrap gap-2 mt-2">
+          {entry.data.tags.map((tag: string) => (
+            <a href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`} class="inline-block bg-zinc-700 text-zinc-300 text-xs px-3 py-1 rounded-full hover:bg-zinc-600 transition-colors">
+              {tag}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+    <div class="items-center mt-10 pt-6 flex flex-wrap gap-2">
+      <LikeButton client:load />
+      <ShareButton client:load />
+    </div>
+    <CommentList client:load />
+    <CommentForm client:load />
+    {(prevEntry || nextEntry) && (
+      <nav class="mt-14 pt-8 border-t border-zinc-700 grid sm:grid-cols-2 gap-6 text-sm text-white/80">
+        {prevEntry && (
+          <a
+            href={`/blog/${prevEntry.slug}`}
+            class="group backdrop-blur-lg bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-4 rounded-lg transition-colors duration-200 text-left"
+          >
+            <span class="block mb-1 text-sm text-zinc-400 group-hover:text-blue-400 transition">Sebelumnya</span>
+            <span class="font-semibold text-white text-base group-hover:text-white">{prevEntry.data.title}</span>
+          </a>
+        )}
+        {nextEntry && (
+          <a
+            href={`/blog/${nextEntry.slug}`}
+            class="group backdrop-blur-lg bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-4 rounded-lg transition-colors duration-200 text-right"
+          >
+            <span class="block mb-1 text-sm text-zinc-400 group-hover:text-blue-400 transition">Selanjutnya</span>
+            <span class="font-semibold text-white text-base group-hover:text-white">{nextEntry.data.title}</span>
+          </a>
+        )}
+      </nav>
+
+    )}
+    <RelatedPosts currentEntry={entry} />
+  </article>
+</Layout>
