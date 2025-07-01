@@ -1,5 +1,4 @@
 ---
-// src/components/TableOfContents.astro
 interface TocItem {
   text: string;
   id: string;
@@ -7,19 +6,28 @@ interface TocItem {
 }
 
 const { toc } = Astro.props as { toc: TocItem[] };
----
 
+function getIndentClass(level: number) {
+  switch (level) {
+    case 1: return 'ml-0';
+    case 2: return 'ml-4';
+    case 3: return 'ml-6';
+    case 4: return 'ml-8';
+    default: return 'ml-0';
+  }
+}
+---
 {toc.length > 0 && (
   <aside class="text-left border border-white/5 rounded-xl p-4 bg-zinc-900/50 backdrop-blur">
-  <h2 class="text-lg font-bold text-white">Daftar Isi</h2>
-  <ul class="space-y-2 text-sm text-zinc-400 text-left">
-    {toc.map(item => (
-      <li class={`ml-${Math.min((item.level - 1) * 4, 12)}`}>
-        <a href={`#${item.id}`} class="hover:text-white transition-colors">
-          <span class="mx-0.5">•</span>{item.text}
-        </a>
-      </li>
-    ))}
-  </ul>
-</aside>
+    <h2 class="text-lg font-bold text-white">Daftar Isi</h2>
+    <ul class="space-y-2 text-sm text-zinc-400 text-left">
+      {toc.map(item => (
+        <li class={getIndentClass(item.level)}>
+          <a href={`#${item.id}`} class="hover:text-white transition-colors">
+            <span class="mr-1">•</span>{item.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
 )}
