@@ -12,7 +12,6 @@
     "@astrojs/netlify": "^6.4.0",
     "@astrojs/react": "^4.3.0",
     "@astrojs/sitemap": "^3.4.1",
-    "@astrojs/vercel": "^8.0.4",
     "@tailwindcss/vite": "^4.1.11",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
@@ -25,3 +24,4 @@
     "zen-observable": "^0.10.0"
   }
 }
+l
