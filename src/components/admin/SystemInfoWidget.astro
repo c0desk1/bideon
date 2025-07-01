@@ -1,0 +1,52 @@
+---
+// src/components/admin/SystemInfoWidget.astro
+
+// 1. Definisikan tipe "kunci" yang diizinkan untuk status.
+type StatusKey = 'ok' | 'warning' | 'error' | 'none';
+
+// 2. Terapkan tipe tersebut pada data dummy kita.
+//    Ini memastikan setiap properti 'status' harus salah satu dari StatusKey.
+const systemInfo: { label: string; value: string; status: StatusKey }[] = [
+  { label: 'Server Status', value: 'Online', status: 'ok' },
+  { label: 'Database', value: 'Connected', status: 'ok' },
+  { label: 'Astro Version', value: '4.11.0', status: 'none' },
+  { label: 'Node.js Version', value: '20.14.0', status: 'none' },
+  { label: 'Last Backup', value: 'Today, 02:00', status: 'none' },
+];
+
+// 3. Terapkan tipe tersebut pada peta warna kita.
+//    Record<StatusKey, string> berarti "sebuah objek di mana kuncinya
+//    HARUS berupa StatusKey, dan nilainya adalah sebuah string".
+const statusColorMap: Record<StatusKey, string> = {
+  ok: 'text-green-400',
+  warning: 'text-yellow-400',
+  error: 'text-red-400',
+  none: 'text-zinc-300'
+};
+---
+
+{/* Bagian template HTML di bawah ini tidak perlu diubah sama sekali */}
+
+<div class="bg-zinc-800 rounded-lg p-5">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="font-semibold text-white">Informasi Sistem</h3>
+    <a href="/admin/system" class="text-xs text-blue-400 hover:underline font-semibold">
+      View All
+    </a>
+  </div>
+  <ul class="space-y-3 text-sm">
+    {systemInfo.map(info => (
+      <li class="flex justify-between items-center border-b border-zinc-700/50 pb-2 last:border-b-0 last:pb-0">
+        <span class="text-zinc-400">{info.label}</span>
+        <div class="flex items-center space-x-2">
+          {info.status === 'ok' && (
+            <span class="block w-2 h-2 bg-green-500 rounded-full"></span>
+          )}
+          <span class:list={["font-mono", statusColorMap[info.status]]}>
+            {info.value}
+          </span>
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>

@@ -17,10 +17,13 @@
     "@types/react-dom": "^19.1.6",
     "@types/zen-observable": "^0.8.7",
     "astro": "^5.10.1",
-    "decap-cms-app": "^3.7.1",
+    "marked": "^4.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.11",
     "zen-observable": "^0.10.0"
+  },
+  "devDependencies": {
+    "@types/marked": "^5.0.2"
   }
 }

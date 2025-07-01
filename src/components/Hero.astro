@@ -1,0 +1,63 @@
+---
+import { SITE } from '@/data/site.ts';
+import { getCollection } from 'astro:content';
+import NewPostAlert from './NewPostAlert.jsx';
+
+const allPosts = await getCollection('blog');
+const latestPost = allPosts.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())[0];
+const latestPostPubDateStr = latestPost ? latestPost.data.pubDate.toISOString() : null;
+const latestPostTitle = latestPost ? latestPost.data.title : null;
+const latestPostSlug = latestPost ? latestPost.slug : null;
+
+let showNewPostNotification = false;
+if (latestPostPubDateStr) {
+  const latestPostDate = new Date(latestPostPubDateStr);
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+
+  if (latestPostDate > sevenDaysAgo) {
+    showNewPostNotification = true;
+  }
+}
+---
+
+<section class="relative bg-zinc-900 py-20 sm:py-24 flex items-center justify-center overflow-hidden">
+  <!-- Background blobs -->
+  <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/50 rounded-full blur-3xl opacity-20 animate-blob"></div>
+  <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-500/50 rounded-full blur-3xl opacity-20 animate-blob" style="animation-delay: 2s;"></div>
+  <div class="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-500/50 rounded-full blur-3xl opacity-20 animate-blob" style="animation-delay: 4s;"></div>
+
+  <!-- Content -->
+  <div class="relative z-10 container mx-auto px-4 grid gap-12">
+    <div class="flex flex-col items-center text-center md:text-center">
+      {showNewPostNotification && latestPostTitle && latestPostSlug && (
+        <a
+          href={`/blog/${latestPostSlug}`}
+          class="inline-flex items-center bg-white/5 text-white text-sm font-medium px-4 py-2 rounded-full mb-6 transition-transform duration-200 hover:scale-105 hover:bg-white/10 shadow-lg group"
+        >
+          <NewPostAlert latestPostPubDateStr={latestPostPubDateStr} client:load />
+          <span class="ml-2">
+            Postingan Baru:
+            <span class="font-semibold group-hover:underline"> {latestPostTitle}</span>
+          </span>
+          <i class="ri-arrow-right-line ml-2 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+      )}
+
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 animate-fade-in-up">
+        {SITE.TITLE}
+      </h1>
+
+      <p class="max-w-xl text-lg sm:text-xl text-zinc-400 animate-fade-in-up" style="animation-delay: 250ms;">
+        {SITE.DESCRIPTION}
+      </p>
+
+      <div class="mt-8 flex flex-wrap justify-center gap-4 animate-fade-in-up" style="animation-delay: 500ms;">
+        <a href="#blog-categories" class="bg-white/5 border border-white/10 text-white font-semibold py-3 px-6 rounded-lg hover:bg-white/10 transition-all">
+          Lihat Postingan
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

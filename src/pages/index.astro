@@ -1,0 +1,31 @@
+---
+
+import { SITE } from '@/data/site.ts';
+import Layout from '@/layouts/Layout.astro';
+import Header from '@/components/Header.astro';
+import Hero from '@/components/Hero.astro';
+import SearchSection from '@/components/SearchSection.astro';
+import FeaturedBento from '@/components/FeaturedBento.astro';
+import Category from '@/components/Category.astro';
+import RecentPosts from '@/components/RecentPosts.astro';
+import QnASection from '@/components/QnASection';
+import HighlightComments from '@/components/HighlightComments.tsx';
+import Newsletter from '@/components/Newsletter.astro';
+import AboutMe from '@/components/AboutMe.astro';
+import Footer from '@/components/Footer.astro';
+
+---
+
+<Layout title={SITE.TITLE} description={SITE.DESCRIPTION}>
+	<Header />
+	<Hero />
+	<SearchSection />
+	<FeaturedBento />
+	<Category />
+	<RecentPosts />
+	<QnASection client:load />
+	<HighlightComments client:load />
+	<Newsletter />
+	<AboutMe />
+	<Footer />
+</Layout>

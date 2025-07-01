@@ -1,0 +1,12 @@
+---
+// src/components/SearchSection.astro
+import { getCollection } from 'astro:content';
+import SearchClient from './SearchClient.tsx';
+
+const allPosts = await getCollection('blog');
+---
+
+<section id="search" class="container mx-auto px-4 py-16">
+  <SearchClient client:load posts={allPosts} />
+</section>
+
