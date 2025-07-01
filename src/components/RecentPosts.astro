@@ -80,7 +80,7 @@ function formatDate(dateString: string) {
             </div>
 
             <p class="text-zinc-500 text-xs">
-              {formatDate(post.data.pubDate.toISOString())} {/* Use toISOString() for Date objects */}
+              {formatDate(post.data.pubDate.toISOString())}
             </p>
           </div>
         </a>
@@ -92,11 +92,8 @@ function formatDate(dateString: string) {
 
   {posts.length > 0 && (
     <div class="mt-12 text-center">
-      <a
-        href="/blog"
-        class="inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors text-lg"
-      >
-        Lihat Semua Postingan
+      <a href="/blog/page/1" class="inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors text-lg">
+        Lihat Semua
       </a>
     </div>
   )}
