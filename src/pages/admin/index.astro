@@ -1,9 +1,8 @@
 ---
 // src/pages/admin/index.astro
+import { SITE } from '@/data/site.ts';
 import AdminLayout from '@/layouts/AdminLayout.astro';
 import { getCollection } from 'astro:content';
-
-// Impor semua komponen widget yang diperlukan
 import AuthorCard from '@/components/admin/AuthorCard.astro';
 import LatestPostWidget from '@/components/admin/LatestPostWidget.astro';
 import SystemInfoWidget from '@/components/admin/SystemInfoWidget.astro';
@@ -12,7 +11,6 @@ import StatCard from '@/components/admin/stats/StatCard.astro';
 const allPosts = (await getCollection('blog', ({data}) => data.draft !== true))
   .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
 
-// Dummy data untuk statistik
 const totalViews = "12.5k";
 const totalComments = 129;
 ---
@@ -23,7 +21,7 @@ const totalComments = 129;
     <div class="lg:col-span-3 space-y-8">
       
       <section class="bg-zinc-800 rounded-lg p-6 border border-zinc-700">
-        <h1 class="text-2xl font-bold text-white">Selamat Datang Kembali, Bima!</h1>
+        <h1 class="text-2xl font-bold text-white">Selamat Datang Kembali, {SITE.TITLE}!</h1>
         <p class="text-zinc-400 mt-1">Ini adalah ringkasan dari situs dan konten Anda.</p>
       </section>
 
@@ -35,14 +33,12 @@ const totalComments = 129;
             {allPosts.length > 0 ? (
               allPosts.map((post) => (
                 <li class="flex justify-between items-start bg-zinc-700/50 p-4 rounded-md">
-                  {/* Bagian Kiri: Judul dan Tanggal */}
                   <div>
                     <p class="font-bold text-base text-white pr-4" title={post.data.title}>{post.data.title}</p>
                     <p class="text-xs text-zinc-400 mt-1">
                       {new Date(post.data.pubDate).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}
                     </p>
                   </div>
-                  {/* Bagian Kanan: Link Edit */}
                   <a href={`/admin/edit/${post.slug}`} class="text-blue-400 hover:underline text-sm font-semibold flex-shrink-0 ml-4 pt-0.5">
                     Edit
                   </a>
@@ -69,7 +65,7 @@ const totalComments = 129;
       </div>
     </div>
 
-    <aside class="lg:col-span-1 space-y-8">
+    <aside class="lg:col-span-1 space-y-6">
       <AuthorCard />
       <LatestPostWidget />
       <SystemInfoWidget />

@@ -1,0 +1,60 @@
+---
+// src/pages/rekomendasi/[page].astro
+
+import type { GetStaticPathsOptions, Page } from 'astro';
+import type { Product } from '@/data/products';
+import { products } from '@/data/products.ts';
+import Layout from '@/layouts/Layout.astro';
+import ProductCard from '@/components/ProductCard.tsx';
+import Pagination from '@/components/Pagination.astro';
+
+const PRODUCTS_PER_PAGE = 12;
+
+export type Props = {
+  page: Page<Product>;
+};
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const sortedProducts = [...products].sort((a, b) => {
+    if (a.featured && !b.featured) return -1;
+    if (!a.featured && b.featured) return 1;
+    return b.id - a.id;
+  });
+
+  return paginate(sortedProducts, { pageSize: PRODUCTS_PER_PAGE });
+}
+
+const { page } = Astro.props;
+
+if (!page) {
+  return new Response("Terjadi kesalahan saat membuat halaman pagination.", { status: 500 });
+}
+
+const { data: productList, currentPage, lastPage } = page;
+const seoTitle = `Rekomendasi Produk - Halaman ${currentPage}`;
+const seoDescription = 'Jelajahi semua produk affiliate pilihan saya.';
+---
+
+<Layout title={seoTitle} description={seoDescription}>
+  <main class="bg-zinc-900 py-20">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-white">Semua Rekomendasi</h1>
+        <p class="text-lg text-zinc-400 mt-4 max-w-2xl mx-auto">
+          Berikut adalah kumpulan semua produk yang pernah saya coba, gunakan, dan rekomendasikan untuk Anda.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {productList.map(product => (
+          <ProductCard product={product} client:load />
+        ))}
+      </div>
+
+      <div class="mt-16">
+        {/* Kode ini sudah benar, ia mengirim seluruh objek 'page' */}
+        <Pagination page={page} />
+      </div>
+    </div>
+  </main>
+</Layout>
