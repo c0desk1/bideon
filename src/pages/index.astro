@@ -1,12 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
+import RecentPosts from "../components/RecentPosts.astro";
 ---
 
 <BaseLayout title="Bima Akbar">
 <Hero />
 <section id="recent-post" class="mx-auto px-6">
-  <h1 class="text-3xl font-bold">Halo, selamat datang di blog saya!</h1>
-  <p class="text-muted">Berisi artikel, catatan, dan proyek menarik.</p>
+  <RecentPosts />
 </section>
 </BaseLayout>
