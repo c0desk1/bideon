@@ -11,7 +11,9 @@ interface Props {
 
 const { author } = Astro.props;
 
-const avatarUrl = author.image?.url || "https://ssl.gstatic.com/blogger-profile-default_2x.png";
+const avatarUrl = author?.image?.url?.startsWith("http")
+  ? author.image.url
+  : "https://ssl.gstatic.com/blogger-profile-default_2x.png";
 ---
 
 {author && (
@@ -24,7 +26,10 @@ const avatarUrl = author.image?.url || "https://ssl.gstatic.com/blogger-profile-
     />
     <div>
       <p class="font-semibold text-white">{author.displayName}</p>
-      <a href={author.url} class="text-sm text-muted-foreground hover:text-white transition">
+      <a
+        href={author.url}
+        class="text-sm text-muted-foreground hover:text-white transition"
+      >
         Lihat Profil
       </a>
     </div>
