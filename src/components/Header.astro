@@ -66,45 +66,39 @@ const navItems = [
 ---
 
 <header id="main-header" class="fixed top-0 inset-x-0 z-50 backdrop-blur">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 w-full header-inner-wrapper">
-    
-    <button id="menu-button" class="text-white text-2xl transition md:hidden basis-1/3 md:basis-auto" aria-label="Toggle Menu">
-      <i id="menu-icon" class="ri-menu-3-line"></i>
-    </button>
-
-    <div class="text-base font-semibold text-white text-center md:text-left md:basis-1/3 md:flex-shrink-0 header-left-section">
-      {headerTitle}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 w-full flex items-center justify-between gap-4">
+    <div class="w-10 md:w-auto flex items-center md:flex-1 md:justify-start">
+      <button id="menu-button" class="text-white text-2xl md:hidden" aria-label="Toggle Menu">
+        <i id="menu-icon" class="ri-menu-3-line"></i>
+      </button>
+      <div class="hidden md:block text-white text-base font-semibold">
+        {headerTitle}
+      </div>
     </div>
-
-    <div class="hidden md:flex items-center justify-center flex-grow header-center-section">
-      <nav class="flex items-center space-x-6 uppercase text-sm font-medium">
+    <div class="flex-1 text-center min-w-0">
+      <div class="md:hidden text-white text-base font-semibold truncate">
+        {headerTitle}
+      </div>
+      <nav class="hidden md:flex justify-center space-x-6 uppercase text-sm font-medium text-white">
         {navItems.map((item) => (
-          <a href={item.href} class="text-white hover:text-gray-200 transition">{item.label}</a>
+          <a href={item.href} class="hover:text-gray-200 transition">{item.label}</a>
         ))}
       </nav>
     </div>
-
-    <div class="text-white text-xl flex justify-end md:basis-1/3 md:flex-shrink-0 header-right-section">
+    <div class="w-10 md:w-auto flex justify-end items-center md:flex-1 md:justify-end space-x-3 text-white text-xl">
       {rightIcon === "bookmark" && (
-        <button id="bookmark-button" aria-label="Bookmark" class="hover:text-gray-200 transition cursor-pointer">
+        <button id="bookmark-button" aria-label="Bookmark" class="hover:text-gray-200 transition">
           <i class="ri-bookmark-line"></i>
         </button>
       )}
       {rightIcon === "share" && (
-        <button id="share-button" aria-label="Share" class="hover:text-gray-200 transition cursor-pointer">
+        <button id="share-button" aria-label="Share" class="hover:text-gray-200 transition">
           <i class="ri-share-forward-line"></i>
         </button>
       )}
     </div>
   </div>
-
-  <div id="mobile-menu" class="md:hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-black/80">
-    <nav class="flex flex-col px-6 py-4 space-y-4 uppercase text-sm font-medium items-center">
-      {navItems.map((item) => (
-        <a href={item.href} class="text-left text-white hover:text-gray-200 transition">{item.label}</a>
-      ))}
-    </nav>
-  </div>
+  
 </header>
 
 <script>
