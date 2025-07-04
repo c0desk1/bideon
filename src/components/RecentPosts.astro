@@ -5,18 +5,25 @@ interface Post {
   title: string;
   url: string;
   published: string;
-  content?: string;
-  summary?: string;
-  images?: Array<{ url: string }>;
-  labels?: string[];
+  content?: string; // Konten penuh
+  summary?: string; // Cuplikan
+  images?: Array<{ url: string }>; // Array gambar
+  labels?: string[]; // Label postingan
 }
 
+// Import cheerio untuk membersihkan HTML dari snippet
+import * as cheerio from 'cheerio';
 
+// Mengambil variabel dari .env
+// Pastikan nama variabel di .env sesuai dan diawali dengan VITE_ untuk Astro v5.x
 const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
 const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
 
+// Peringatan jika variabel lingkungan tidak ditemukan (akan tampil di terminal saat dev/build)
 if (!API_KEY || !BLOG_ID) {
-  console.error("Error: Blogger API Key or Blog ID is missing from environment variables.");
+  console.error("⛔️ Error: Blogger API Key or Blog ID is missing from environment variables (.env file).");
+  console.error("Please make sure VITE_BLOGGER_API_KEY and VITE_BLOGGER_BLOG_ID are set in your .env file.");
+  //throw new Error("Missing Blogger API Key or Blog ID in .env"); // Uncomment ini jika Anda ingin build gagal tanpa kunci API
 }
 
 const BASE_URL = `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}`;
@@ -25,6 +32,8 @@ let featuredPost: Post | null = null;
 let recentPosts: Post[] = [];
 
 try {
+  // --- Ambil Featured Post ---
+  // Coba ambil post dengan label 'Featured' terlebih dahulu
   const featuredResponse = await fetch(`${BASE_URL}&labels=Featured&maxResults=1`);
   if (featuredResponse.ok) {
     const featuredData = await featuredResponse.json();
@@ -33,6 +42,7 @@ try {
     }
   }
 
+  // Jika tidak ada post dengan label 'Featured', ambil post terbaru sebagai featured
   if (!featuredPost) {
     const latestFeaturedResponse = await fetch(`${BASE_URL}&maxResults=1`);
     if (latestFeaturedResponse.ok) {
@@ -43,11 +53,14 @@ try {
     }
   }
 
+  // --- Ambil Recent Posts ---
+  // Ambil beberapa post terbaru (misal 5 post, bisa disesuaikan)
   const recentResponse = await fetch(`${BASE_URL}&maxResults=5`);
   if (recentResponse.ok) {
     const recentData = await recentResponse.json();
     if (recentData.items && recentData.items.length > 0) {
       recentPosts = recentData.items;
+      // Filter post unggulan dari daftar post terbaru untuk menghindari duplikasi
       if (featuredPost) {
         recentPosts = recentPosts.filter(post => post.id !== featuredPost!.id);
       }
@@ -55,40 +68,55 @@ try {
   }
 
 } catch (error) {
-  console.error("Gagal mengambil data blog dari Blogger API:", error);
+  console.error("🚨 Gagal mengambil data blog dari Blogger API:", error);
+  // Anda bisa menampilkan pesan fallback di UI jika gagal fetch
 }
 
+// --- Fungsi Pembantu ---
+
+// Fungsi untuk memformat tanggal agar lebih mudah dibaca
 const formatDate = (dateString: string) => {
   const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-  return new Date(dateString).toLocaleDateString('id-ID', options);
+  // Pastikan dateString valid untuk menghindari error
+  try {
+    return new Date(dateString).toLocaleDateString('id-ID', options);
+  } catch (e) {
+    console.error("Invalid date string:", dateString);
+    return "Tanggal tidak valid";
+  }
 };
 
+// Fungsi untuk mendapatkan URL gambar thumbnail post
 const getThumbnailUrl = (post: Post) => {
   if (post.images && post.images.length > 0) {
     return post.images[0].url;
   }
-  
+  // Gambar placeholder jika tidak ada gambar di post
   return 'https://via.placeholder.com/400x200?text=No+Image';
 };
 
+// Fungsi untuk membersihkan tag HTML dari snippet teks menggunakan cheerio
 const cleanSnippet = (htmlString: string | undefined) => {
   if (!htmlString) return '';
-  const doc = new DOMParser().parseFromString(htmlString, 'text/html');
-  return doc.body.textContent || '';
+  // Load HTML string ke cheerio dan ambil teks murninya
+  const $ = cheerio.load(htmlString);
+  return $.text();
 };
 ---
 
 <section class="container mx-auto px-4 py-12">
+  {/* Bagian Featured Post */}
   {featuredPost && (
     <div class="mb-12">
       <h2 class="text-3xl font-bold text-white mb-8 text-center">Featured Post</h2>
       <a href={featuredPost.url} class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform hover:scale-[1.01] transition-transform duration-300 ease-in-out group">
-        <div class="md:flex">
+        <div class="md:flex flex-col md:flex-row"> {/* Disesuaikan untuk fleksibilitas layout */}
           <div class="md:w-1/2">
             <img
               src={getThumbnailUrl(featuredPost)}
               alt={featuredPost.title}
               class="w-full h-64 object-cover md:h-full"
+              loading="lazy"
             />
           </div>
           <div class="md:w-1/2 p-6 flex flex-col justify-between">
@@ -113,6 +141,10 @@ const cleanSnippet = (htmlString: string | undefined) => {
     </div>
   )}
 
+  {/* Garis pemisah antara Featured dan Recent Posts (Opsional) */}
+  <hr class="border-t border-gray-700 my-12" />
+
+  {/* Bagian Recent Posts */}
   <h2 class="text-3xl font-bold text-white mb-8 text-center">Recent Posts</h2>
   {recentPosts.length > 0 ? (
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -122,6 +154,7 @@ const cleanSnippet = (htmlString: string | undefined) => {
             src={getThumbnailUrl(post)}
             alt={post.title}
             class="w-full h-48 object-cover"
+            loading="lazy"
           />
           <div class="p-4">
             <h3 class="text-xl font-semibold text-white group-hover:text-gray-200 transition-colors line-clamp-2">
