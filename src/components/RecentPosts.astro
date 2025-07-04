@@ -5,10 +5,10 @@ interface Post {
   title: string;
   url: string;
   published: string;
-  content?: string; // Full content
-  summary?: string; // Snippet
-  images?: Array<{ url: string }>; // Array of images
-  labels?: string[]; // Post labels
+  content?: string;
+  summary?: string;
+  images?: Array<{ url: string }>;
+  labels?: string[];
 }
 
 import * as cheerio from 'cheerio';
@@ -72,12 +72,10 @@ const formatDate = (dateString: string) => {
 
 const getThumbnailUrl = (post: Post) => {
   if (post.images && post.images.length > 0) {
-    // Blogger often provides different sizes, try to get a better one if possible
     const imageUrl = post.images[0].url;
-    // Replace 'sXXX-c' or 'wXXX-hXXX' with 's1600' for a larger image, or remove it
     return imageUrl.replace(/s\d+(-c)?/, 's600-c').replace(/w\d+-h\d+/, 'w600-h400');
   }
-  return 'https://via.placeholder.com/600x400/1f2937/d1d5db?text=No+Image'; // Darker placeholder
+  return 'https://via.placeholder.com/600x400/1f2937/d1d5db?text=No+Image';
 };
 
 const cleanSnippet = (htmlString: string | undefined) => {
@@ -86,31 +84,25 @@ const cleanSnippet = (htmlString: string | undefined) => {
   return $.text();
 };
 
-// Fungsi untuk mendapatkan slug dari URL Blogger
-// Contoh: https://namablog.blogspot.com/2025/07/my-awesome-post.html -> my-awesome-post
 const getSlugFromBloggerUrl = (url: string): string => {
   try {
     const urlObj = new URL(url);
     const pathParts = urlObj.pathname.split('/');
-    // Ambil bagian terakhir sebelum .html, lalu bersihkan dari tanggal atau angka
-    const lastPart = pathParts[pathParts.length - 1]; // e.g., my-awesome-post.html
-    const slugWithHtml = lastPart.split('.')[0]; // e.g., my-awesome-post
-    // Hapus potensi angka/tanggal di awal jika Blogger menaruhnya
+    const lastPart = pathParts[pathParts.length - 1];
+    const slugWithHtml = lastPart.split('.')[0];
     const finalSlug = slugWithHtml.replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
-    return finalSlug || url; // Fallback ke full URL jika gagal parsing slug
+    return finalSlug || url;
   } catch (e) {
     console.error("Failed to parse slug from URL:", url, e);
-    return url; // Fallback ke full URL jika parsing gagal
+    return url;
   }
 };
 ---
 
 <section class="container mx-auto px-4 py-16 md:py-24">
-  {/* Featured Post Section */}
   {featuredPost && (
     <div class="mb-16">
       <h2 class="text-4xl font-extrabold text-white mb-12 text-center relative after:block after:w-20 after:h-1 after:bg-blue-600 after:mx-auto after:mt-4 after:rounded-full">Featured Post</h2>
-      {/* Mengubah href ke rute Astro dinamis */}
       <a href={`/blog/${getSlugFromBloggerUrl(featuredPost.url)}`} class="block relative group">
         <div class="rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 transform hover:scale-[1.005] transition-transform duration-300 ease-in-out">
           <div class="md:flex flex-col md:flex-row">
@@ -134,13 +126,13 @@ const getSlugFromBloggerUrl = (url: string): string => {
                 <p class="text-gray-400 text-sm mt-3">
                   <span class="font-medium">Dipublikasi:</span> {formatDate(featuredPost.published)}
                 </p>
-                <p class="text-gray-300 mt-5 leading-relaxed line-clamp-3"> {/* line-clamp-3 agar lebih ringkas */}
+                <p class="text-gray-300 mt-5 leading-relaxed line-clamp-3">
                   {cleanSnippet(featuredPost.summary || featuredPost.content)}
                 </p>
               </div>
               <div class="mt-6">
                 <span class="text-blue-500 hover:text-blue-400 transition-colors font-semibold flex items-center justify-end">
-                  Lihat Artikel Lengkapnya
+                  Lihat Lengkapnya
                   <svg class="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                 </span>
               </div>
@@ -152,13 +144,10 @@ const getSlugFromBloggerUrl = (url: string): string => {
   )}
 
   <hr class="border-t border-gray-700 my-16" />
-
-  {/* Recent Posts Section */}
   <h2 class="text-4xl font-extrabold text-white mb-12 text-center relative after:block after:w-20 after:h-1 after:bg-blue-600 after:mx-auto after:mt-4 after:rounded-full">Recent Posts</h2>
   {recentPosts.length > 0 ? (
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
       {recentPosts.map((post) => (
-        {/* Mengubah href ke rute Astro dinamis */}
         <a href={`/blog/${getSlugFromBloggerUrl(post.url)}`} class="block group">
           <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl overflow-hidden shadow-xl border border-gray-700 transform hover:scale-[1.03] transition-transform duration-300 ease-in-out flex flex-col h-full">
             <div class="relative overflow-hidden">
