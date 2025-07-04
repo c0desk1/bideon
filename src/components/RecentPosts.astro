@@ -27,7 +27,6 @@ let featuredPost: Post | null = null;
 let recentPosts: Post[] = [];
 
 try {
-  // Try to fetch a post with 'Featured' label first
   const featuredResponse = await fetch(`${BASE_URL}&labels=Featured&maxResults=1`);
   if (featuredResponse.ok) {
     const featuredData = await featuredResponse.json();
@@ -36,7 +35,6 @@ try {
     }
   }
 
-  // If no 'Featured' post, use the latest post as featured fallback
   if (!featuredPost) {
     const latestFeaturedResponse = await fetch(`${BASE_URL}&maxResults=1`);
     if (latestFeaturedResponse.ok) {
@@ -47,13 +45,11 @@ try {
     }
   }
 
-  // Fetch recent posts
-  const recentResponse = await fetch(`${BASE_URL}&maxResults=5`); // Fetch 5, adjust as needed
+  const recentResponse = await fetch(`${BASE_URL}&maxResults=5`); // Adjust as needed
   if (recentResponse.ok) {
     const recentData = await recentResponse.json();
     if (recentData.items && recentData.items.length > 0) {
       recentPosts = recentData.items;
-      // Filter out the featured post from recent posts to avoid duplication
       if (featuredPost) {
         recentPosts = recentPosts.filter(post => post.id !== featuredPost!.id);
       }
@@ -64,7 +60,6 @@ try {
   console.error("🚨 Failed to fetch blog data from Blogger API:", error);
 }
 
-// Helper function to format date
 const formatDate = (dateString: string) => {
   const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   try {
@@ -75,19 +70,38 @@ const formatDate = (dateString: string) => {
   }
 };
 
-// Helper function to get thumbnail URL
 const getThumbnailUrl = (post: Post) => {
   if (post.images && post.images.length > 0) {
-    return post.images[0].url;
+    // Blogger often provides different sizes, try to get a better one if possible
+    const imageUrl = post.images[0].url;
+    // Replace 'sXXX-c' or 'wXXX-hXXX' with 's1600' for a larger image, or remove it
+    return imageUrl.replace(/s\d+(-c)?/, 's600-c').replace(/w\d+-h\d+/, 'w600-h400');
   }
   return 'https://via.placeholder.com/600x400/1f2937/d1d5db?text=No+Image'; // Darker placeholder
 };
 
-// Helper function to clean HTML from snippet using cheerio
 const cleanSnippet = (htmlString: string | undefined) => {
   if (!htmlString) return '';
   const $ = cheerio.load(htmlString);
   return $.text();
+};
+
+// Fungsi untuk mendapatkan slug dari URL Blogger
+// Contoh: https://namablog.blogspot.com/2025/07/my-awesome-post.html -> my-awesome-post
+const getSlugFromBloggerUrl = (url: string): string => {
+  try {
+    const urlObj = new URL(url);
+    const pathParts = urlObj.pathname.split('/');
+    // Ambil bagian terakhir sebelum .html, lalu bersihkan dari tanggal atau angka
+    const lastPart = pathParts[pathParts.length - 1]; // e.g., my-awesome-post.html
+    const slugWithHtml = lastPart.split('.')[0]; // e.g., my-awesome-post
+    // Hapus potensi angka/tanggal di awal jika Blogger menaruhnya
+    const finalSlug = slugWithHtml.replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+    return finalSlug || url; // Fallback ke full URL jika gagal parsing slug
+  } catch (e) {
+    console.error("Failed to parse slug from URL:", url, e);
+    return url; // Fallback ke full URL jika parsing gagal
+  }
 };
 ---
 
@@ -96,31 +110,31 @@ const cleanSnippet = (htmlString: string | undefined) => {
   {featuredPost && (
     <div class="mb-16">
       <h2 class="text-4xl font-extrabold text-white mb-12 text-center relative after:block after:w-20 after:h-1 after:bg-blue-600 after:mx-auto after:mt-4 after:rounded-full">Featured Post</h2>
-      <a href={featuredPost.url} class="block relative group">
+      {/* Mengubah href ke rute Astro dinamis */}
+      <a href={`/blog/${getSlugFromBloggerUrl(featuredPost.url)}`} class="block relative group">
         <div class="rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 transform hover:scale-[1.005] transition-transform duration-300 ease-in-out">
-          <div class="md:flex">
+          <div class="md:flex flex-col md:flex-row">
             <div class="md:w-1/2 relative">
               <img
                 src={getThumbnailUrl(featuredPost)}
                 alt={featuredPost.title}
-                class="w-full h-80 md:h-full object-cover transition-opacity duration-300 group-hover:opacity-90"
+                class="w-full h-64 md:h-80 object-cover transition-opacity duration-300 group-hover:opacity-90" {/* Tinggi gambar featured lebih compact */}
                 loading="lazy"
               />
-              {/* Overlay untuk efek hover */}
               <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                 <span class="text-white text-lg font-semibold tracking-wide transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">Baca Selengkapnya</span>
               </div>
             </div>
-            <div class="md:w-1/2 p-8 flex flex-col justify-between">
+            <div class="md:w-1/2 p-6 flex flex-col justify-between">
               <div>
                 <span class="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-1 rounded-full mb-3 shadow-md">HIGHLIGHT</span>
-                <h3 class="text-4xl font-extrabold text-white leading-tight group-hover:text-blue-300 transition-colors">
+                <h3 class="text-3xl font-extrabold text-white leading-tight group-hover:text-blue-300 transition-colors"> {/* Ukuran judul lebih kecil */}
                   {featuredPost.title}
                 </h3>
                 <p class="text-gray-400 text-sm mt-3">
                   <span class="font-medium">Dipublikasi:</span> {formatDate(featuredPost.published)}
                 </p>
-                <p class="text-gray-300 mt-5 leading-relaxed line-clamp-4">
+                <p class="text-gray-300 mt-5 leading-relaxed line-clamp-3"> {/* line-clamp-3 agar lebih ringkas */}
                   {cleanSnippet(featuredPost.summary || featuredPost.content)}
                 </p>
               </div>
@@ -144,19 +158,20 @@ const cleanSnippet = (htmlString: string | undefined) => {
   {recentPosts.length > 0 ? (
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
       {recentPosts.map((post) => (
-        <a href={post.url} class="block group">
+        {/* Mengubah href ke rute Astro dinamis */}
+        <a href={`/blog/${getSlugFromBloggerUrl(post.url)}`} class="block group">
           <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl overflow-hidden shadow-xl border border-gray-700 transform hover:scale-[1.03] transition-transform duration-300 ease-in-out flex flex-col h-full">
             <div class="relative overflow-hidden">
               <img
                 src={getThumbnailUrl(post)}
                 alt={post.title}
-                class="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
+                class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105" {/* Tinggi gambar lebih kecil */}
                 loading="lazy"
               />
-              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div> {/* Darker overlay on hover */}
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             <div class="p-6 flex flex-col flex-grow">
-              <h3 class="text-2xl font-bold text-white leading-snug group-hover:text-blue-300 transition-colors line-clamp-2">
+              <h3 class="text-xl font-semibold text-white leading-snug group-hover:text-blue-300 transition-colors line-clamp-2">
                 {post.title}
               </h3>
               <p class="text-gray-400 text-sm mt-3">
