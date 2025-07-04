@@ -1,0 +1,68 @@
+---
+interface Props {
+  content: string;
+}
+
+import * as cheerio from 'cheerio';
+
+const { content } = Astro.props;
+
+const $ = cheerio.load(content);
+
+// 1. Optimasi <img>: tambahkan alt fallback jika tidak ada
+$('img').each((_, el) => {
+  if (!$(el).attr('alt')) {
+    $(el).attr('alt', 'Gambar artikel');
+  }
+  $(el).attr('loading', 'lazy');
+});
+
+// 2. Optimasi <a>: tambahkan rel noopener untuk link eksternal
+$('a[href^="http"]').each((_, el) => {
+  $(el).attr('rel', 'noopener noreferrer');
+  $(el).attr('target', '_blank');
+});
+
+// 3. Optimasi <iframe>: tambahkan title, tabindex, lazy
+$('iframe').each((_, el) => {
+  $(el).attr('title', 'Konten tersemat');
+  $(el).attr('tabindex', '0');
+  $(el).attr('loading', 'lazy');
+});
+
+$('svg').each((_, el) => {
+  if (!$(el).find('title').length) {
+    $(el).prepend('<title>Ikon</title>');
+  }
+});
+
+$('h1,h2,h3,h4,h5,h6').each((_, el) => {
+  if (!$(el).text().trim()) {
+    $(el).text('Tanpa Judul');
+  }
+});
+
+// 6. Optimasi anchor kosong: tambahkan label
+$('a').each((_, el) => {
+  if (!$(el).text().trim()) {
+    $(el).attr('aria-label', 'Link tanpa teks');
+  }
+});
+
+// 7. Optimasi list kosong
+$('ul, ol').each((_, el) => {
+  if (!$(el).children('li').length) {
+    $(el).append('<li>Item kosong</li>');
+  }
+});
+
+// 8. Optimasi table agar mobile-friendly
+$('table').addClass('table-auto w-full border border-gray-700 text-sm');
+$('th, td').addClass('border px-3 py-2');
+
+const sanitizedHtml = $.html();
+---
+
+<div class="prose">
+  <Fragment set:html={sanitizedHtml} />
+</div>
