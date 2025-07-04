@@ -1,0 +1,260 @@
+---
+import { getPostsByLabel } from '../../utils/blogger';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import PostHeader from '../../components/PostHeader.astro';
+import PostBody from '../../components/PostBody.astro';
+import PostComments from '../../components/PostComments.astro';
+import PostNavigation from '../../components/PostNavigation.astro';
+import RelatedPosts from '../../components/RelatedPosts.astro';
+import PostTags from '../../components/PostTags.astro';
+import { generateTOC, type TocItem } from '../../utils/toc';
+import PostTOC from '../../components/PostTOC.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
+import AuthorBox from '../../components/AuthorBox.astro';
+
+
+interface Post {
+  id: string;
+  title: string;
+  url: string;
+  published: string;
+  content?: string;
+  summary?: string;
+  images?: Array<{ url: string }>;
+  labels?: string[];
+  author?: {
+    displayName: string;
+    url: string;
+    image?: {
+      url: string;
+    };
+  };
+}
+
+const { slug } = Astro.params;
+
+const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
+const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
+
+if (!API_KEY || !BLOG_ID) {
+  console.error("Error: Blogger API Key or Blog ID is missing from environment variables (.env file).");
+  console.error("Please ensure VITE_BLOGGER_API_KEY and VITE_BLOGGER_BLOG_ID are correctly set in your .env file.");
+}
+
+export async function getStaticPaths() {
+  const API_KEY_IN_PATHS: string | undefined = import.meta.env.VITE_BLOGGER_API_KEY;
+  const BLOG_ID_IN_PATHS: string | undefined = import.meta.env.VITE_BLOGGER_BLOG_ID;
+
+  if (!API_KEY_IN_PATHS || !BLOG_ID_IN_PATHS) {
+    console.error("Build Error: API Key or Blog ID is missing for getStaticPaths. Please check your .env file.");
+    throw new Error("Missing Blogger API Key or Blog ID for getStaticPaths");
+  }
+
+  const BASE_URL_IN_PATHS = `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID_IN_PATHS}/posts?key=${API_KEY_IN_PATHS}`;
+
+  let paths: { params: { slug: string } }[] = [];
+  let nextPageToken: string | undefined = undefined;
+
+  const getCleanSlug = (url: string): string => {
+    try {
+      const urlObj = new URL(url);
+      const pathParts = urlObj.pathname.split('/');
+      const lastPart = pathParts[pathParts.length - 1];
+      const slugWithHtml = lastPart.split('.')[0];
+      const finalSlug = slugWithHtml.replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+      return finalSlug;
+    } catch (e) {
+      console.error("Failed to parse slug from URL in getStaticPaths:", url, e);
+      return url;
+    }
+  };
+  do {
+    const response: Response = await fetch(`${BASE_URL_IN_PATHS}&maxResults=500${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`);
+    if (!response.ok) {
+      console.error(`Failed to fetch posts for getStaticPaths: ${response.status} - ${response.statusText}`);
+      break;
+    }
+    const data = await response.json();
+    if (data.items) {
+      for (const post of data.items as Post[]) {
+        const slug = getCleanSlug(post.url);
+        if (slug) {
+          paths.push({ params: { slug: slug } });
+        } else {
+          console.warn("Could not generate a clean slug for post URL:", post.url);
+        }
+      }
+    }
+    nextPageToken = data.nextPageToken;
+  } while (nextPageToken);
+  return paths;
+}
+
+const postRes = await fetch(
+  `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts/bypath?path=/${slug}&key=${API_KEY}`
+);
+
+const postData = await postRes.json();
+
+const postId = postData.id;
+const commentsRes = await fetch(
+  `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts/${postId}/comments?key=${API_KEY}`
+);
+
+const commentsData = await commentsRes.json();
+const comments = commentsData.items || [];
+
+let post: Post | null = null;
+
+let postTitle: string = "Halaman Tidak Ditemukan";
+
+const BASE_API_URL_FOR_PAGE = `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}`;
+
+try {
+  const searchResponse = await fetch(`${BASE_API_URL_FOR_PAGE}&q=${encodeURIComponent(slug)}&maxResults=10`);
+  if (searchResponse.ok) {
+    const searchData = await searchResponse.json();
+    if (searchData.items && searchData.items.length > 0) {
+      post = searchData.items.find((item: Post) => {
+        const itemUrlObj = new URL(item.url);
+        const itemPathParts = itemUrlObj.pathname.split('/');
+        const itemLastPart = itemPathParts[itemPathParts.length - 1];
+        const itemSlug = itemLastPart.split('.')[0].replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+        return itemSlug === slug;
+      });
+    }
+  }
+
+  if (!post) {
+      const allPostsResponse = await fetch(`${BASE_API_URL_FOR_PAGE}&maxResults=500`);
+      if (allPostsResponse.ok) {
+          const allPostsData = await allPostsResponse.json();
+          if (allPostsData.items) {
+              post = allPostsData.items.find((item: Post) => {
+                  const itemUrlObj = new URL(item.url);
+                  const itemPathParts = itemUrlObj.pathname.split('/');
+                  const itemLastPart = itemPathParts[itemPathParts.length - 1];
+                  const itemSlug = itemLastPart.split('.')[0].replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+                  return itemSlug === slug;
+              });
+          }
+      }
+  }
+  if (post) {
+    postTitle = post.title;
+  }
+  } catch (error) {
+    console.error(`Failed to fetch post with slug '${slug}':`, error);
+  }
+
+  let toc: TocItem[] = [];
+  let content = post?.content || "";
+
+  if (post?.content) {
+    const tocResult = generateTOC(post.content);
+    toc = tocResult.toc;
+    content = tocResult.contentWithIds;
+  }
+
+  const renderContent = (htmlString: string | undefined): string => {
+    return htmlString || '';
+  };
+
+  let prevPost: Post | null = null;
+  let nextPost: Post | null = null;
+
+if (post) { 
+  const allPostsRes = await fetch(`${BASE_API_URL_FOR_PAGE}&maxResults=500`);
+  const allPostsData = await allPostsRes.json();
+  const allPosts: Post[] = allPostsData.items || [];
+  const index = allPosts.findIndex((p) => p.id === post?.id);
+
+  if (index !== -1) {
+    nextPost = allPosts[index + 1] || null;
+    prevPost = allPosts[index - 1] || null;
+  }
+}
+
+const relatedPosts: any[] = [];
+
+if (post?.labels?.length) {
+
+  const label = post.labels[0];
+
+  const fetchedRelatedPosts = await getPostsByLabel(label);
+
+  relatedPosts.push(
+
+    ...fetchedRelatedPosts
+
+      .filter((p: { url: string | URL; }) => {
+
+        const slugFromUrl = new URL(p.url).pathname.split('/').pop()?.replace('.html', '');
+
+        return slugFromUrl !== slug;
+
+      })
+
+      .map((p: { id: any; url: string | URL; title: any; }) => {
+
+        return {
+
+          id: p.id,
+
+          slug: new URL(p.url).pathname.split('/').pop()?.replace('.html', '') || '',
+
+          title: p.title,
+
+        };
+
+      })
+
+  );
+
+}
+
+---
+
+<BaseLayout title={postTitle}>
+  <Header title={postTitle} rightIcon="share" />
+  <main class="container mx-auto px-4 py-16 md:py-16 text-white">
+    {post ? (
+      <>
+        <article class="max-w-3xl mx-auto">
+            <PostHeader post={post} />
+            <PostTOC toc={toc} />
+            <PostBody content={renderContent(content)} />
+            <ShareButtons url={post.url} title={post.title} />
+            <PostTags labels={post.labels || []} />
+          	<PostComments comments={comments} />
+            <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+            <div class="mt-16 max-w-3xl mx-auto">
+              <a href="/blog" class="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali ke daftar post
+              </a>
+            </div>
+            <RelatedPosts relatedPosts={relatedPosts} />
+            
+            {post.author && <AuthorBox author={post.author} />}
+        </article>
+      </>
+    ) : (
+
+      <div class="max-w-xl mx-auto text-center bg-white/5 backdrop-blur-md p-10 rounded-xl shadow-2xl border border-white/10">
+        <h1 class="text-4xl font-extrabold text-red-500 mb-4">404</h1>
+        <p class="text-gray-300 text-lg mb-6">Ups! Postingan yang Anda cari tidak ditemukan.</p>
+        <a href="/blog" class="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors font-medium">
+          <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Kembali ke Beranda
+        </a>
+      </div>
+    )}
+  </main>
+</BaseLayout>

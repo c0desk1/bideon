@@ -1,0 +1,83 @@
+---
+interface Props {
+  content: string;
+}
+
+import * as cheerio from 'cheerio';
+
+const { content } = Astro.props;
+const $ = cheerio.load(content);
+
+$('img').each((_, el) => {
+  const imageEl = $(el);
+  const src = imageEl.attr('src');
+
+  if (!imageEl.attr('alt')) {
+    imageEl.attr('alt', 'Gambar artikel');
+  }
+  imageEl.attr('loading', 'lazy');
+  imageEl.attr('decoding', 'async');
+  imageEl.attr('fetchpriority', 'low');
+
+  if (src && (src.includes('bp.blogspot.com') || src.includes('googleusercontent.com'))) {
+    const sizeMatch = src.match(/\/s(\d+)/);
+    if (sizeMatch && sizeMatch[1]) {
+      const size = sizeMatch[1];
+      imageEl.attr('width', size);
+      imageEl.attr('height', size);
+    }
+
+    const whMatch = src.match(/\/w(\d+)-h(\d+)/);
+    if (whMatch && whMatch[1] && whMatch[2]) {
+      const width = whMatch[1];
+      const height = whMatch[2];
+      imageEl.attr('width', width);
+      imageEl.attr('height', height);
+    }
+  }
+});
+
+$('a[href^="http"]').each((_, el) => {
+  $(el).attr('rel', 'noopener noreferrer');
+  $(el).attr('target', '_blank');
+});
+
+$('iframe').each((_, el) => {
+  $(el).attr('title', 'Konten tersemat');
+  $(el).attr('tabindex', '0');
+  $(el).attr('loading', 'lazy');
+});
+
+$('svg').each((_, el) => {
+  if (!$(el).find('title').length) {
+    $(el).prepend('<title>Ikon</title>');
+  }
+});
+
+$('h1,h2,h3,h4,h5,h6').each((_, el) => {
+  if (!$(el).text().trim()) {
+    $(el).text('Tanpa Judul');
+  }
+});
+
+$('a').each((_, el) => {
+  if (!$(el).text().trim()) {
+    $(el).attr('aria-label', 'Link tanpa teks');
+  }
+});
+
+$('ul, ol').each((_, el) => {
+  if (!$(el).children('li').length) {
+    $(el).append('<li>Item kosong</li>');
+  }
+});
+
+$('table').addClass('table-auto w-full border border-gray-700 text-sm');
+$('th, td').addClass('border px-3 py-2');
+
+const sanitizedHtml = $.html();
+---
+
+<div class="prose">
+  <Fragment set:html={sanitizedHtml} />
+</div>
