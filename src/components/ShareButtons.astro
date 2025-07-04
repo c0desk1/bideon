@@ -1,22 +1,83 @@
 ---
 // src/components/ShareButtons.astro
-const { url, title } = Astro.props;
-const encodedUrl = encodeURIComponent(url);
+interface Props {
+  title: string;
+  url: string;
+}
+
+const { title, url } = Astro.props;
+
+// Encoding URL dan Judul untuk penggunaan di link share
 const encodedTitle = encodeURIComponent(title);
+const encodedUrl = encodeURIComponent(url);
+
+// URL untuk berbagi ke berbagai platform
+const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
+const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`;
+const linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}`;
+const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedTitle}%20${encodedUrl}`;
+const telegramUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`;
+const emailUrl = `mailto:?subject=${encodedTitle}&body=${encodedUrl}`;
 ---
 
-<div class="mt-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-  <span class="text-white/50">Bagikan:</span>
-  
-  <a href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`} target="_blank" rel="noopener noreferrer" class="hover:text-green-400 transition">
-    <i class="ri-whatsapp-line"></i> WhatsApp
+<div class="share-buttons-container flex items-center justify-start gap-4 mt-8 py-4 border-t border-color-border">
+  <span class="text-color-text-muted text-lg font-semibold mr-2">Share This Post:</span>
+  <a href={twitterUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter" class="share-icon twitter-bg">
+    <i class="ri-twitter-x-fill"></i>
   </a>
-
-  <a href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`} target="_blank" rel="noopener noreferrer" class="hover:text-sky-400 transition">
-    <i class="ri-twitter-x-line"></i> X (Twitter)
+  <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" class="share-icon facebook-bg">
+    <i class="ri-facebook-fill"></i>
   </a>
-
-  <button onclick={`navigator.clipboard.writeText('${url}')`} class="hover:text-blue-400 transition flex items-center gap-1">
-    <i class="ri-link-m"></i> Salin Link
-    </button>
+  <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" class="share-icon linkedin-bg">
+    <i class="ri-linkedin-fill"></i>
+  </a>
+  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" class="share-icon whatsapp-bg">
+    <i class="ri-whatsapp-fill"></i>
+  </a>
+  <a href={telegramUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on Telegram" class="share-icon telegram-bg">
+    <i class="ri-telegram-fill"></i>
+  </a>
+  <a href={emailUrl} aria-label="Share via Email" class="share-icon email-bg">
+    <i class="ri-mail-fill"></i>
+  </a>
 </div>
+
+<style>
+  .share-buttons-container {
+    /* Gaya untuk container, border-t dan gap sudah di Tailwind */
+    /* background-color: var(--color-card-bg); */ /* Opsional jika ingin background berbeda */
+    /* border-bottom: 1px solid var(--color-border); */
+  }
+
+  .share-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.25rem;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .share-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+
+  .twitter-bg { background-color: #1DA1F2; }
+  .facebook-bg { background-color: #1877F2; }
+  .linkedin-bg { background-color: #0A66C2; }
+  .whatsapp-bg { background-color: #25D366; }
+  .telegram-bg { background-color: #26A5E4; }
+  .email-bg { background-color: #BBBBBB; }
+
+  .twitter-bg:hover { background-color: #0088CC; }
+  .facebook-bg:hover { background-color: #0056B3; }
+  .linkedin-bg:hover { background-color: #00458C; }
+  .whatsapp-bg:hover { background-color: #1DA851; }
+  .telegram-bg:hover { background-color: #1E8BC3; }
+  .email-bg:hover { background-color: #999999; }
+</style>
