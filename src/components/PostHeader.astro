@@ -1,6 +1,6 @@
 ---
 import { labelToSlug } from '../utils/label';
-import PostsMeta from './PostsMeta.astro';
+import PostsMeta from './PostMeta.astro';
 
 interface Props {
   post: {
@@ -11,6 +11,7 @@ interface Props {
     featureImage?: string;
     author?: {
       displayName: string;
+      url: string;
       image?: { url: string };
     };
   };
