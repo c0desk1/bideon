@@ -110,7 +110,7 @@ const getSlugFromBloggerUrl = (url: string): string => {
               <img
                 src={getThumbnailUrl(featuredPost)}
                 alt={featuredPost.title}
-                class="w-full h-64 md:h-80 object-cover transition-opacity duration-300 group-hover:opacity-90" {/* Tinggi gambar featured lebih compact */}
+                class="w-full h-64 md:h-80 object-cover transition-opacity duration-300 group-hover:opacity-90"
                 loading="lazy"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
@@ -120,7 +120,7 @@ const getSlugFromBloggerUrl = (url: string): string => {
             <div class="md:w-1/2 p-6 flex flex-col justify-between">
               <div>
                 <span class="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-1 rounded-full mb-3 shadow-md">HIGHLIGHT</span>
-                <h3 class="text-3xl font-extrabold text-white leading-tight group-hover:text-blue-300 transition-colors"> {/* Ukuran judul lebih kecil */}
+                <h3 class="text-3xl font-extrabold text-white leading-tight group-hover:text-blue-300 transition-colors">
                   {featuredPost.title}
                 </h3>
                 <p class="text-gray-400 text-sm mt-3">
@@ -154,7 +154,7 @@ const getSlugFromBloggerUrl = (url: string): string => {
               <img
                 src={getThumbnailUrl(post)}
                 alt={post.title}
-                class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105" {/* Tinggi gambar lebih kecil */}
+                class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
               />
               <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
