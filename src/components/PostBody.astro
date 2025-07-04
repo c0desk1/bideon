@@ -1,18 +1,45 @@
 ---
-import * as cheerio from 'cheerio';
-
 interface Props {
   content: string;
 }
+
+import * as cheerio from 'cheerio';
 
 const { content } = Astro.props;
 const $ = cheerio.load(content);
 
 $('img').each((_, el) => {
-  if (!$(el).attr('alt')) {
-    $(el).attr('alt', 'Gambar artikel');
+  const imageEl = $(el);
+  const src = imageEl.attr('src');
+
+  if (!imageEl.attr('alt')) {
+    imageEl.attr('alt', 'Gambar artikel');
   }
-  $(el).attr('loading', 'lazy');
+  imageEl.attr('loading', 'lazy');
+  imageEl.attr('decoding', 'async');
+  imageEl.attr('fetchpriority', 'low');
+
+  if (src && (src.includes('bp.blogspot.com') || src.includes('googleusercontent.com'))) {
+    const sizeMatch = src.match(/\/s(\d+)/);
+    if (sizeMatch && sizeMatch[1]) {
+      const size = sizeMatch[1];
+      imageEl.attr('width', size);
+      imageEl.attr('height', size);
+    }
+
+    const whMatch = src.match(/\/w(\d+)-h(\d+)/);
+    if (whMatch && whMatch[1] && whMatch[2]) {
+      const width = whMatch[1];
+      const height = whMatch[2];
+      imageEl.attr('width', width);
+      imageEl.attr('height', height);
+    }
+  }
+});
+
+$('a[href^="http"]').each((_, el) => {
+  $(el).attr('rel', 'noopener noreferrer');
+  $(el).attr('target', '_blank');
 });
 
 $('iframe').each((_, el) => {
@@ -21,39 +48,36 @@ $('iframe').each((_, el) => {
   $(el).attr('loading', 'lazy');
 });
 
-
-const siteUrl = Astro.site ? Astro.site.origin : '';
-
-$('a[href^="http"]').each((_, el) => {
-  const linkEl = $(el);
-  const href = linkEl.attr('href') || '';
-  if (siteUrl && !href.startsWith(siteUrl)) {
-    linkEl.attr('rel', 'noopener noreferrer nofollow');
-    linkEl.attr('target', 'blank');
+$('svg').each((_, el) => {
+  if (!$(el).find('title').length) {
+    $(el).prepend('<title>Ikon</title>');
   }
 });
 
-$('table').each((_, el) => {
-  const tableEl = $(el);
-  if (!tableEl.parent().hasClass('responsive-table-wrapper')) {
-    tableEl.wrap('<div class="responsive-table-wrapper" style="overflow-x: auto;"></div>');
+$('h1,h2,h3,h4,h5,h6').each((_, el) => {
+  if (!$(el).text().trim()) {
+    $(el).text('Tanpa Judul');
   }
-  if (!tableEl.find('caption').length) {
-    tableEl.prepend('<caption>Tabel data</caption>');
-  }
-  tableEl.addClass('table-auto w-full border border-gray-700 text-sm');
 });
 
+$('a').each((_, el) => {
+  if (!$(el).text().trim()) {
+    $(el).attr('aria-label', 'Link tanpa teks');
+  }
+});
+
+$('ul, ol').each((_, el) => {
+  if (!$(el).children('li').length) {
+    $(el).append('<li>Item kosong</li>');
+  }
+});
+
+$('table').addClass('table-auto w-full border border-gray-700 text-sm');
 $('th, td').addClass('border px-3 py-2');
-$('svg:not(:has(title))').prepend('<title>Ikon</title>');
-$('h1,h2,h3,h4,h5,h6').filter((_, el) => !$(el).text().trim()).text('Tanpa Judul');
-$('a').filter((_, el) => !$(el).text().trim()).attr('aria-label', 'Tautan tanpa teks');
-$('ul, ol').filter((_, el) => !$(el).children('li').length).append('<li>Item kosong</li>');
-$('script, style, link[rel="stylesheet"]').remove();
 
 const sanitizedHtml = $.html();
 ---
 
-<div class="prose max-w-full prose-sm sm:prose-base">
+<div class="prose">
   <Fragment set:html={sanitizedHtml} />
 </div>
