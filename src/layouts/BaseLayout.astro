@@ -8,13 +8,15 @@ const { title = "Bima Akbar" } = Astro.props;
 <html lang="id">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
   </head>
   <body>
     <Header />
-    <main>
+    <main class="pt-20">
       <slot />
     </main>
     <Footer />
