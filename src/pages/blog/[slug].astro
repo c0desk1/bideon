@@ -1,52 +1,72 @@
 ---
-// src/pages/blog/[slug].astro
-import BlogLayout from '../../layouts/BlogLayout.astro';
+interface Post {
+  id: string;
+  title: string;
+  url: string;
+  published: string;
+  content?: string;
+  summary?: string;
+  images?: Array<{ url: string }>;
+  labels?: string[];
+}
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 
-// Import cheerio untuk membersihkan HTML dari konten post
 import * as cheerio from 'cheerio';
 
 const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
 const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
 
-// Peringatan jika variabel lingkungan tidak ditemukan
 if (!API_KEY || !BLOG_ID) {
   console.error("⛔️ Error: Blogger API Key or Blog ID is missing from environment variables (.env file).");
-  console.error("Please make sure VITE_BLOGGER_API_KEY and VITE_BLOGGER_BLOG_ID are set in your .env file.");
+  console.error("Please ensure VITE_BLOGGER_API_KEY and VITE_BLOGGER_BLOG_ID are correctly set in your .env file.");
 }
 
-const BASE_URL = `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}`;
 
-// Fungsi untuk mendapatkan semua jalur (path) yang mungkin untuk [slug]
-// Ini diperlukan oleh Astro untuk Static Site Generation (SSG)
 export async function getStaticPaths() {
+  const API_KEY_IN_PATHS: string | undefined = import.meta.env.VITE_BLOGGER_API_KEY;
+  const BLOG_ID_IN_PATHS: string | undefined = import.meta.env.VITE_BLOGGER_BLOG_ID;
+
+  if (!API_KEY_IN_PATHS || !BLOG_ID_IN_PATHS) {
+    console.error("⛔️ Build Error: API Key or Blog ID is missing for getStaticPaths. Please check your .env file.");
+    throw new Error("Missing Blogger API Key or Blog ID for getStaticPaths");
+  }
+
+  const BASE_URL_IN_PATHS = `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID_IN_PATHS}/posts?key=${API_KEY_IN_PATHS}`;
+
   let paths: { params: { slug: string } }[] = [];
   let nextPageToken: string | undefined = undefined;
 
-  // Loop untuk mengambil semua postingan
+  const getCleanSlug = (url: string): string => {
+    try {
+      const urlObj = new URL(url);
+      const pathParts = urlObj.pathname.split('/');
+      const lastPart = pathParts[pathParts.length - 1];
+      const slugWithHtml = lastPart.split('.')[0];
+      const finalSlug = slugWithHtml.replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+      return finalSlug;
+    } catch (e) {
+      console.error("Failed to parse slug from URL in getStaticPaths:", url, e);
+      return url;
+    }
+  };
+
   do {
-    const response = await fetch(`${BASE_URL}&maxResults=500${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`);
+
+    const response: Response = await fetch(`${BASE_URL_IN_PATHS}&maxResults=500${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`);
     if (!response.ok) {
-      console.error(`Failed to fetch posts for getStaticPaths: ${response.statusText}`);
+      console.error(`🚨 Failed to fetch posts for getStaticPaths: ${response.status} - ${response.statusText}`);
       break;
     }
     const data = await response.json();
     if (data.items) {
-      for (const post of data.items) {
-        try {
-          const urlObj = new URL(post.url);
-          const pathParts = urlObj.pathname.split('/');
-          const lastPart = pathParts[pathParts.length - 1];
-          const slug = lastPart.split('.')[0]; // my-awesome-post.html -> my-awesome-post
-          const finalSlug = slug.replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, ''); // Clean potential date prefixes
-
-          if (finalSlug) {
-            paths.push({ params: { slug: finalSlug } });
-          } else {
-            console.warn("Could not generate slug for post URL:", post.url);
-          }
-        } catch (e) {
-          console.error("Error parsing slug from URL:", post.url, e);
+      for (const post of data.items as Post[]) {
+        const slug = getCleanSlug(post.url);
+        if (slug) {
+          paths.push({ params: { slug: slug } });
+        } else {
+          console.warn("Skipping post due to invalid slug:", post.url);
         }
       }
     }
@@ -56,38 +76,38 @@ export async function getStaticPaths() {
   return paths;
 }
 
-// Mendapatkan data untuk slug tertentu
 const { slug } = Astro.params;
 
 let post: Post | null = null;
-let postTitle: string = "Halaman Tidak Ditemukan"; // Default title
+let postTitle: string = "Halaman Tidak Ditemukan";
+
+const BASE_API_URL_FOR_PAGE = `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}`;
 
 try {
-  // Mencari postingan berdasarkan slug
-  // Catatan: Blogger API tidak memiliki endpoint langsung untuk mencari post by slug.
-  // Kita harus mengambil semua post (atau beberapa) dan mencari secara lokal.
-  // Ini bisa tidak efisien untuk blog sangat besar tanpa caching.
-  // Atau, jika Anda tahu ID postingan, bisa fetch by ID.
-  const searchResponse = await fetch(`${BASE_URL}&q=${encodeURIComponent(slug)}&maxResults=10`); // Cari post yang mungkin mengandung slug
+  const searchResponse = await fetch(`${BASE_API_URL_FOR_PAGE}&q=${encodeURIComponent(slug)}&maxResults=10`);
   if (searchResponse.ok) {
     const searchData = await searchResponse.json();
     if (searchData.items && searchData.items.length > 0) {
-      // Filter hasil yang paling cocok berdasarkan slug
       post = searchData.items.find((item: Post) => {
-        const itemSlug = new URL(item.url).pathname.split('/').pop()?.split('.')[0].replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+        const itemUrlObj = new URL(item.url);
+        const itemPathParts = itemUrlObj.pathname.split('/');
+        const itemLastPart = itemPathParts[itemPathParts.length - 1];
+        const itemSlug = itemLastPart.split('.')[0].replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
         return itemSlug === slug;
       });
     }
   }
 
-  // Fallback: Jika pencarian tidak menemukan, coba ambil semua post dan filter
   if (!post) {
-      const allPostsResponse = await fetch(`${BASE_URL}&maxResults=500`); // Ambil lebih banyak post jika mungkin
+      const allPostsResponse = await fetch(`${BASE_API_URL_FOR_PAGE}&maxResults=500`);
       if (allPostsResponse.ok) {
           const allPostsData = await allPostsResponse.json();
           if (allPostsData.items) {
               post = allPostsData.items.find((item: Post) => {
-                  const itemSlug = new URL(item.url).pathname.split('/').pop()?.split('.')[0].replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+                  const itemUrlObj = new URL(item.url);
+                  const itemPathParts = itemUrlObj.pathname.split('/');
+                  const itemLastPart = itemPathParts[itemPathParts.length - 1];
+                  const itemSlug = itemLastPart.split('.')[0].replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
                   return itemSlug === slug;
               });
           }
@@ -102,26 +122,34 @@ try {
   console.error(`🚨 Failed to fetch post with slug '${slug}':`, error);
 }
 
-// Fungsi untuk membersihkan dan merender HTML konten postingan
-const renderContent = (htmlString: string | undefined) => {
-  if (!htmlString) return '';
-  // Cheerio hanya untuk membersihkan, kita ingin HTML-nya tetap ada untuk ditampilkan
-  // Astro akan merender string HTML sebagai innerHTML
-  return htmlString;
+const renderContent = (htmlString: string | undefined): string => {
+  return htmlString || '';
 };
 
-const formatDate = (dateString: string) => {
+
+const formatDate = (dateString: string): string => {
   const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   try {
     return new Date(dateString).toLocaleDateString('id-ID', options);
   } catch (e) {
-    console.error("Invalid date string:", dateString);
+    console.error("Invalid date string:", dateString, e);
     return "Invalid Date";
   }
 };
+
+
+const getThumbnailUrl = (post: Post): string => {
+  if (post.images && post.images.length > 0) {
+    const imageUrl = post.images[0].url;
+
+    return imageUrl.replace(/s\d+(-c)?/, 's1600-c').replace(/w\d+-h\d+/, 'w1200-h800');
+  }
+  return 'https://via.placeholder.com/1200x800/1f2937/d1d5db?text=No+Image';
+};
 ---
 
-<BlogLayout title={postTitle}>
+<BaseLayout title={postTitle}>
+ 
   <Header title={postTitle} rightIcon="share" />
   <main class="container mx-auto px-4 py-24 md:py-32 text-white">
     {post ? (
@@ -133,6 +161,7 @@ const formatDate = (dateString: string) => {
           Dipublikasi pada: <span class="font-medium">{formatDate(post.published)}</span>
         </p>
 
+       
         {post.images && post.images.length > 0 && (
           <img
             src={getThumbnailUrl(post)}
@@ -142,8 +171,8 @@ const formatDate = (dateString: string) => {
           />
         )}
 
+       
         <div class="prose prose-invert prose-lg max-w-none text-gray-200 leading-relaxed break-words">
-          {/* Render konten HTML mentah dari Blogger */}
           <Fragment set:html={renderContent(post.content)} />
         </div>
 
@@ -156,6 +185,7 @@ const formatDate = (dateString: string) => {
         </div>
       </article>
     ) : (
+     
       <div class="max-w-xl mx-auto text-center bg-gray-900 p-10 rounded-xl shadow-2xl border border-gray-700">
         <h1 class="text-4xl font-extrabold text-red-500 mb-4">404</h1>
         <p class="text-gray-300 text-lg mb-6">Ups! Postingan yang Anda cari tidak ditemukan.</p>
@@ -166,4 +196,4 @@ const formatDate = (dateString: string) => {
       </div>
     )}
   </main>
-</BlogLayout>
+</BaseLayout>
