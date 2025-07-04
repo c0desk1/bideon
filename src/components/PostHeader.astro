@@ -58,7 +58,7 @@ const getSlugFromBloggerUrl = (url: string): string => {
 };
 ---
 
-<div class="relative w-full overflow-hidden mb-12 py-12 md:py-16 text-white text-center">
+<div class="relative w-full overflow-hidden mb-12 py-12 md:py-16 text-white text-left">
     {/* Main content area, centered */}
     <div class="relative z-10 max-w-4xl mx-auto px-4 md:px-0">
         {/* Breadcrumb - Clean and understated */}
@@ -101,12 +101,12 @@ const getSlugFromBloggerUrl = (url: string): string => {
                 <span>Oleh <span class="font-semibold text-white">Unknown Author</span></span>
             )}
             
-            <span class="text-gray-500 hidden sm:inline-block">&bull;</span> {/* Separator, hidden on very small screens */}
+            <span class="text-gray-500 hidden sm:inline-block">&bull;</span>
             
             {/* Published Date */}
             <span class="mt-1 sm:mt-0">{formatDate(post.published)}</span>
             
-            <span class="text-gray-500 hidden sm:inline-block">&bull;</span> {/* Separator */}
+            <span class="text-gray-500 hidden sm:inline-block">&bull;</span>
             
             {/* Read Time */}
             <span class="mt-1 sm:mt-0">{getReadTime(post.content)}</span>
