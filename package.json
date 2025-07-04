@@ -12,6 +12,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "astro": "^5.11.0",
     "tailwindcss": "^4.1.11",
-"cheerio": "^1.0.0-rc.12"
+	"cheerio": "^1.0.0-rc.12",
+	"lite-youtube-embed": "^0.3.0"
   }
 }
