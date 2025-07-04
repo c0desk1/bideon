@@ -9,28 +9,23 @@ interface Props {
 
 const { post } = Astro.props;
 
-// Helper function to get the image URL
 const getHeroImageUrl = (post: Props['post']): string => {
   if (post.images && post.images.length > 0) {
     const imageUrl = post.images[0].url;
-    // Request a moderately large image size, suitable for hero but not overkill
-    // w1200-h675 (16:9 aspect ratio) or s1200-c (square crop if original is larger)
     return imageUrl.replace(/s\d+(-c)?/, 's1200-c').replace(/w\d+-h\d+/, 'w1200-h675');
   }
-  // Fallback to a plain dark placeholder if no image
   return 'https://via.placeholder.com/1200x675/1f2937/d1d5db?text=No+Image';
 };
 
 const heroImageUrl = getHeroImageUrl(post);
 ---
 
-<div class="relative w-full overflow-hidden mb-12 rounded-xl border border-gray-800 shadow-lg">
+<div class="relative w-full overflow-hidden mb-6 rounded-xl border border-gray-800 shadow-lg">
   <img
     src={heroImageUrl}
     alt={post.title}
     class="w-full h-auto object-cover max-h-[400px] md:max-h-[500px] rounded-xl"
     loading="eager"
   />
-  {/* Optional: Subtle gradient overlay for extra polish if desired, mostly transparent */}
   <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
 </div>
