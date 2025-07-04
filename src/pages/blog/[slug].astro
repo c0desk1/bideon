@@ -14,6 +14,7 @@ interface Post {
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import PostHeader from '../../components/PostHeader.astro';
+import PostHero from '../../components/PostHero.astro';
 
 import * as cheerio from 'cheerio';
 
@@ -133,6 +134,7 @@ const renderContent = (htmlString: string | undefined): string => {
     {post ? (
       <article class="max-w-3xl mx-auto">
         <PostHeader post={post} />
+<PostHero post={post} />
         <div class="bg-gray-900 p-8 md:p-10 rounded-xl shadow-2xl border border-gray-700">
           <div class="prose prose-invert prose-lg max-w-none text-gray-200 leading-relaxed break-words">
             <Fragment set:html={renderContent(post.content)} />
