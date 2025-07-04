@@ -1,4 +1,5 @@
 ---
+// src/pages/blog/[slug].astro
 interface Post {
   id: string;
   title: string;
@@ -12,6 +13,7 @@ interface Post {
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
+import PostHeader from '../../components/PostHeader.astro';
 
 import * as cheerio from 'cheerio';
 
@@ -19,17 +21,16 @@ const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
 const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
 
 if (!API_KEY || !BLOG_ID) {
-  console.error("Error: Blogger API Key or Blog ID is missing from environment variables (.env file).");
+  console.error("⛔️ Error: Blogger API Key or Blog ID is missing from environment variables (.env file).");
   console.error("Please ensure VITE_BLOGGER_API_KEY and VITE_BLOGGER_BLOG_ID are correctly set in your .env file.");
 }
-
 
 export async function getStaticPaths() {
   const API_KEY_IN_PATHS: string | undefined = import.meta.env.VITE_BLOGGER_API_KEY;
   const BLOG_ID_IN_PATHS: string | undefined = import.meta.env.VITE_BLOGGER_BLOG_ID;
 
   if (!API_KEY_IN_PATHS || !BLOG_ID_IN_PATHS) {
-    console.error("Build Error: API Key or Blog ID is missing for getStaticPaths. Please check your .env file.");
+    console.error("⛔️ Build Error: API Key or Blog ID is missing for getStaticPaths. Please check your .env file.");
     throw new Error("Missing Blogger API Key or Blog ID for getStaticPaths");
   }
 
@@ -53,10 +54,9 @@ export async function getStaticPaths() {
   };
 
   do {
-
     const response: Response = await fetch(`${BASE_URL_IN_PATHS}&maxResults=500${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`);
     if (!response.ok) {
-      console.error(`Failed to fetch posts for getStaticPaths: ${response.status} - ${response.statusText}`);
+      console.error(`🚨 Failed to fetch posts for getStaticPaths: ${response.status} - ${response.statusText}`);
       break;
     }
     const data = await response.json();
@@ -66,7 +66,7 @@ export async function getStaticPaths() {
         if (slug) {
           paths.push({ params: { slug: slug } });
         } else {
-          console.warn("Skipping post due to invalid slug:", post.url);
+          console.warn("Could not generate a clean slug for post URL:", post.url);
         }
       }
     }
@@ -125,57 +125,19 @@ try {
 const renderContent = (htmlString: string | undefined): string => {
   return htmlString || '';
 };
-
-
-const formatDate = (dateString: string): string => {
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-  try {
-    return new Date(dateString).toLocaleDateString('id-ID', options);
-  } catch (e) {
-    console.error("Invalid date string:", dateString, e);
-    return "Invalid Date";
-  }
-};
-
-
-const getThumbnailUrl = (post: Post): string => {
-  if (post.images && post.images.length > 0) {
-    const imageUrl = post.images[0].url;
-
-    return imageUrl.replace(/s\d+(-c)?/, 's1600-c').replace(/w\d+-h\d+/, 'w1200-h800');
-  }
-  return 'https://via.placeholder.com/1200x800/1f2937/d1d5db?text=No+Image';
-};
 ---
 
 <BaseLayout title={postTitle}>
- 
   <Header title={postTitle} rightIcon="share" />
   <main class="container mx-auto px-4 py-24 md:py-32 text-white">
     {post ? (
-      <article class="max-w-3xl mx-auto p-8 md:p-4">
-        <h1 class="text-4xl md:text-5xl font-extrabold text-blue-400 mb-6 leading-tight text-center">
-          {post.title}
-        </h1>
-        <p class="text-gray-400 text-sm md:text-base text-center mb-8">
-          Dipublikasi pada: <span class="font-medium">{formatDate(post.published)}</span>
-        </p>
-
-       
-        {post.images && post.images.length > 0 && (
-          <img
-            src={getThumbnailUrl(post)}
-            alt={post.title}
-            class="w-full h-auto max-h-96 object-cover rounded-lg mb-8 shadow-md"
-            loading="lazy"
-          />
-        )}
-
-       
-        <div class="prose prose-invert prose-lg max-w-none text-gray-200 leading-relaxed break-words">
-          <Fragment set:html={renderContent(post.content)} />
+      <article class="max-w-3xl mx-auto">
+        <PostHeader post={post} />
+        <div class="bg-gray-900 p-8 md:p-10 rounded-xl shadow-2xl border border-gray-700">
+          <div class="prose prose-invert prose-lg max-w-none text-gray-200 leading-relaxed break-words">
+            <Fragment set:html={renderContent(post.content)} />
+          </div>
         </div>
-
         <div class="mt-12 pt-8 border-t border-gray-700 text-center">
           <p class="text-gray-500 text-sm">Terima kasih sudah membaca!</p>
           <a href="/blog" class="inline-flex items-center text-blue-500 hover:text-blue-400 transition-colors mt-4">
@@ -185,7 +147,6 @@ const getThumbnailUrl = (post: Post): string => {
         </div>
       </article>
     ) : (
-     
       <div class="max-w-xl mx-auto text-center bg-gray-900 p-10 rounded-xl shadow-2xl border border-gray-700">
         <h1 class="text-4xl font-extrabold text-red-500 mb-4">404</h1>
         <p class="text-gray-300 text-lg mb-6">Ups! Postingan yang Anda cari tidak ditemukan.</p>
