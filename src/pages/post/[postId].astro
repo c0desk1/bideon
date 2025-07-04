@@ -1,8 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostHeader from '../../components/posts/PostHeader.astro';
-import PostBody from '../../components/posts/PostBody.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
+import PostBody from '../../components/posts/PostBody.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
+import AuthorBox from '../../components/AuthorBox.astro';
 import ReadingProgress from '../../components/ReadingProgress.astro';
 import { parse as parseHtml } from 'node-html-parser';
 import { formatDate, estimateReadTime, getImageUrl } from '../../utils/helpers';
@@ -49,6 +51,10 @@ const postAuthorImage = post?.author?.image?.url;
 const postLabels = post?.labels || [];
 const dummyViewsCount = Math.floor(Math.random() * 5000) + 100;
 
+const authorName = post?.author?.displayName || '';
+const authorImage = post?.author?.image?.url || '';
+const authorUrl = post?.author?.url || '';
+
 interface HeadingData {
   id: string;
   level: number;
@@ -75,9 +81,6 @@ if (post?.content) {
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
     {post ? (
       <article>
-        {post.images && post.images.length > 0 && (
-            <img src={getImageUrl(post)} alt={post.title} class="w-full h-auto rounded-lg mb-8" />
-        )}
         <PostHeader
           title={postTitle}
           authorName={postAuthorName}
@@ -92,6 +95,16 @@ if (post?.content) {
           <TableOfContents headings={tocHeadings} />
         )}
         <PostBody content={post.content || ''} />
+        <ShareButtons
+          title={postTitle}
+          url={Astro.url.href}
+        />
+        <AuthorBox
+          authorName={authorName}
+          authorImage={authorImage}
+          authorUrl={authorUrl}
+          authorAbout={""}
+        />
       </article>
     ) : (
       <p class="text-center text-color-text-muted">Post not found.</p>
