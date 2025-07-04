@@ -1,6 +1,6 @@
 ---
 import { labelToSlug } from '../utils/label';
-import PostMeta from './PostMeta.astro';
+import PostsMeta from './PostsMeta.astro';
 
 interface Props {
   post: {
@@ -55,6 +55,6 @@ const { post } = Astro.props;
       {post.title}
     </h1>
 
-    <PostMeta author={post.author} published={post.published} content={post.content} />
+    <PostsMeta author={post.author} published={post.published} content={post.content} />
   </div>
 </header>
