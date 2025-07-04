@@ -81,7 +81,7 @@ const getSlugFromBloggerUrl = (url: string): string => {
     </h1>
     <div class="flex flex-wrap items-center text-gray-400 text-sm md:text-base font-medium space-x-2 sm:space-x-4">
       {post.author?.image && (
-        <img src={post.author.image.url} alt={post.author.displayName} class="w-7 h-7 rounded-full mr-1 object-cover border border-gray-700" />
+       <img src={post.author?.image?.url || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author?.displayName || 'Unknown')}&background=1E293B&color=ffffff&size=64`} alt={post.author?.displayName} class="w-7 h-7 rounded-full mr-1 object-cover border border-gray-700" />
       )}
       <span>
         Oleh <span class="font-semibold text-white">{post.author?.displayName || 'Unknown Author'}</span>
