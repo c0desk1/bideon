@@ -5,25 +5,18 @@ interface Post {
   title: string;
   url: string;
   published: string;
-  content?: string; // Konten penuh
-  summary?: string; // Cuplikan
-  images?: Array<{ url: string }>; // Array gambar
-  labels?: string[]; // Label postingan
+  content?: string;
+  summary?: string;
+  images?: Array<{ url: string }>;
+  labels?: string[];
 }
 
-// Mengambil variabel dari .env
-// Pastikan nama variabel di .env sesuai, contohnya:
-// VITE_BLOGGER_API_KEY="AIzaSyAF5IX_benL0vfFXYas3BYQrenGpbl4hek"
-// VITE_BLOGGER_BLOG_ID="5920132421647282747"
-// Catatan: Jika Anda menggunakan Astro 3.x ke atas, mungkin Anda perlu VITE_ di depan nama variabel.
+
 const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
 const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
 
-// Pastikan kunci API dan ID Blog tersedia
 if (!API_KEY || !BLOG_ID) {
   console.error("Error: Blogger API Key or Blog ID is missing from environment variables.");
-  // Atau lempar error agar build gagal jika ini krusial
-  // throw new Error("Missing API Key or Blog ID");
 }
 
 const BASE_URL = `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}`;
@@ -32,8 +25,6 @@ let featuredPost: Post | null = null;
 let recentPosts: Post[] = [];
 
 try {
-  // --- Ambil Featured Post ---
-  // Coba ambil post dengan label 'Featured'
   const featuredResponse = await fetch(`${BASE_URL}&labels=Featured&maxResults=1`);
   if (featuredResponse.ok) {
     const featuredData = await featuredResponse.json();
@@ -42,7 +33,6 @@ try {
     }
   }
 
-  // Jika tidak ada post dengan label 'Featured', ambil post terbaru sebagai featured
   if (!featuredPost) {
     const latestFeaturedResponse = await fetch(`${BASE_URL}&maxResults=1`);
     if (latestFeaturedResponse.ok) {
@@ -53,14 +43,11 @@ try {
     }
   }
 
-  // --- Ambil Recent Posts ---
-  // Ambil beberapa post terbaru (misal 5 post)
-  const recentResponse = await fetch(`${BASE_URL}&maxResults=5`); // Ambil lebih banyak jika ingin
+  const recentResponse = await fetch(`${BASE_URL}&maxResults=5`);
   if (recentResponse.ok) {
     const recentData = await recentResponse.json();
     if (recentData.items && recentData.items.length > 0) {
       recentPosts = recentData.items;
-      // Filter post unggulan dari daftar post terbaru jika ada dan sama
       if (featuredPost) {
         recentPosts = recentPosts.filter(post => post.id !== featuredPost!.id);
       }
@@ -71,22 +58,19 @@ try {
   console.error("Gagal mengambil data blog dari Blogger API:", error);
 }
 
-// Fungsi pembantu untuk memformat tanggal
 const formatDate = (dateString: string) => {
   const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   return new Date(dateString).toLocaleDateString('id-ID', options);
 };
 
-// Fungsi untuk mendapatkan gambar thumbnail
 const getThumbnailUrl = (post: Post) => {
   if (post.images && post.images.length > 0) {
     return post.images[0].url;
   }
-  // Fallback jika tidak ada gambar (bisa gambar placeholder default)
+  
   return 'https://via.placeholder.com/400x200?text=No+Image';
 };
 
-// Fungsi untuk membersihkan HTML dari snippet
 const cleanSnippet = (htmlString: string | undefined) => {
   if (!htmlString) return '';
   const doc = new DOMParser().parseFromString(htmlString, 'text/html');
