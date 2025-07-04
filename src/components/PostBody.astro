@@ -9,17 +9,16 @@ const { content } = Astro.props;
 const $ = cheerio.load(content);
 
 $('img').each((_, el) => {
-  const imageEl = $(el);
-  const src = imageEl.attr('src');
-
-  if (src && (src.includes('bp.blogspot.com') || src.includes('googleusercontent.com'))) {
-    imageEl.addClass('blogger-image-to-optimize');
+  if (!$(el).attr('alt')) {
+    $(el).attr('alt', 'Gambar artikel');
   }
+  $(el).attr('loading', 'lazy');
+});
 
-  if (!imageEl.attr('alt')) {
-    imageEl.attr('alt', 'Gambar artikel');
-  }
-  imageEl.attr('loading', 'lazy');
+$('iframe').each((_, el) => {
+  $(el).attr('title', 'Konten tersemat');
+  $(el).attr('tabindex', '0');
+  $(el).attr('loading', 'lazy');
 });
 
 
@@ -58,20 +57,3 @@ const sanitizedHtml = $.html();
 <div class="prose max-w-full prose-sm sm:prose-base">
   <Fragment set:html={sanitizedHtml} />
 </div>
-
-<script>
-  function optimizeBloggerImages() {
-    const images = document.querySelectorAll('.blogger-image-to-optimize');
-
-    images.forEach(img => {
-      const currentSrc = img.getAttribute('src');
-      if (currentSrc) {
-        const baseUrl = currentSrc.split(/\/(s\d+|w\d+-h\d+)/)[0];
-        const newSrc = `${baseUrl}/s1200-rw`;
-        img.setAttribute('src', newSrc);
-        img.classList.remove('blogger-image-to-optimize');
-      }
-    });
-  }
-  document.addEventListener('DOMContentLoaded', optimizeBloggerImages);
-</script>
