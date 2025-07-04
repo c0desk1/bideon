@@ -162,22 +162,12 @@ if (post?.labels?.length) {
   <main class="container mx-auto px-4 py-16 md:py-16 text-white">
     {post ? (
       <>
-      <article class="max-w-3xl mx-auto">
-        <PostHeader post={post} />
-        <PostBody content={renderContent(post.content)} />
-        <div class="mt-20 border-t border-white/10 pt-10 text-center backdrop-blur-md rounded-xl bg-white/5 shadow-inner">
-          <p class="text-gray-400 text-sm tracking-wide">Terima kasih sudah membaca 🙏</p>
-          <a href="/blog" class="inline-flex items-center mt-4 text-blue-400 hover:text-blue-300 transition-colors font-medium">
-            <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-              viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Kembali ke Blog
-          </a>
-        </div>
-      </article>
-
-      <RelatedPosts relatedPosts={relatedPosts} />
+        <article class="max-w-3xl mx-auto">
+          <PostHeader post={post} />
+          <PostBody content={renderContent(post.content)} />
+          <RelatedPosts relatedPosts={relatedPosts} />
+        </article>
+        
       </>
     ) : (
       <div class="max-w-xl mx-auto text-center bg-white/5 backdrop-blur-md p-10 rounded-xl shadow-2xl border border-white/10">
