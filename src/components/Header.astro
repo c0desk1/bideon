@@ -1,11 +1,17 @@
 ---
-// Import Astro properties and utility functions
+// src/components/Header.astro
+// Hapus `rightIcon` dari Props karena tidak lagi digunakan secara langsung untuk bookmark/share di sini.
+// interface Props {
+//   title?: string;
+//   rightIcon?: "bookmark" | "share"; // Ini bisa dihapus jika tidak ada lagi fungsi bookmark/share di header
+// }
+// const { title: propTitle = "NOTME", rightIcon = "bookmark" } = Astro.props; // Sesuaikan juga di sini
+
 interface Props {
   title?: string;
-  rightIcon?: "bookmark" | "share";
 }
 
-const { title: propTitle = "NOTME", rightIcon = "bookmark" } = Astro.props;
+const { title: propTitle = "NOTME" } = Astro.props;
 
 let headerTitle: string = propTitle;
 
@@ -68,38 +74,39 @@ const navItems = [
 <header id="main-header" class="fixed top-0 inset-x-0 z-50 backdrop-blur">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 w-full flex items-center justify-between gap-4">
     <div class="w-10 md:w-auto flex items-center md:flex-1 md:justify-start">
-      <button id="menu-button" class="text-white text-2xl md:hidden" aria-label="Toggle Menu">
+      <button id="menu-button" class="text-color-text text-2xl md:hidden" aria-label="Toggle Menu">
         <i id="menu-icon" class="ri-menu-3-line"></i>
       </button>
-      <div class="hidden md:block text-white text-base font-semibold">
+      <div class="hidden md:block text-color-text text-base font-semibold">
         {headerTitle}
       </div>
     </div>
     <div class="flex-1 text-center min-w-0">
-      <div class="md:hidden text-white text-base font-semibold truncate">
+      <div class="md:hidden text-color-text text-base font-semibold truncate">
         {headerTitle}
       </div>
-      <nav class="hidden md:flex justify-center space-x-6 uppercase text-sm font-medium text-white">
+      <nav class="hidden md:flex justify-center space-x-6 uppercase text-sm font-medium text-color-text">
         {navItems.map((item) => (
-          <a href={item.href} class="hover:text-gray-200 transition">{item.label}</a>
+          <a href={item.href} class="hover:text-color-text-hover transition">{item.label}</a>
         ))}
       </nav>
     </div>
-    <div class="w-10 md:w-auto flex justify-end items-center md:flex-1 md:justify-end space-x-3 text-white text-xl">
-      {rightIcon === "bookmark" && (
-        <button id="bookmark-button" aria-label="Bookmark" class="hover:text-gray-200 transition">
-          <i class="ri-bookmark-line"></i>
-        </button>
-      )}
-      {rightIcon === "share" && (
-        <button id="share-button" aria-label="Share" class="hover:text-gray-200 transition">
-          <i class="ri-share-forward-line"></i>
-        </button>
-      )}
+    <div class="w-10 md:w-auto flex justify-end items-center md:flex-1 md:justify-end space-x-3 text-color-text text-xl">
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark/Light Mode">
+        <i class="icon sun-icon ri-sun-line"></i>
+        <div class="theme-toggle-thumb"></div>
+        <i class="icon moon-icon ri-moon-line"></i>
+      </button>
     </div>
   </div>
-  
-</header>
+  <div id="mobile-menu" class="md:hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out mobile-menu-bg">
+    <nav class="flex flex-col px-6 py-4 space-y-4 uppercase text-sm font-medium items-center">
+      {navItems.map((item) => (
+      <a href={item.href} class="text-left text-color-text hover:text-color-text-hover transition">{item.label}</a>
+      ))}
+      </nav>
+    </div>
+  </header>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -107,10 +114,36 @@ const navItems = [
     const mobileMenu = document.getElementById("mobile-menu");
     const menuIcon = document.getElementById("menu-icon");
     const mainHeader = document.getElementById("main-header");
+    const themeToggle = document.getElementById("theme-toggle");
+    const htmlElement = document.documentElement;
 
-    const bookmarkButton = document.getElementById("bookmark-button");
-    const shareButton = document.getElementById("share-button");
+    if (themeToggle && htmlElement) {
+      const setTheme = (theme: 'dark' | 'light') => {
+        if (theme === 'light') {
+          htmlElement.classList.add('light-mode');
+          localStorage.setItem('theme', 'light');
+        } else {
+          htmlElement.classList.remove('light-mode');
+          localStorage.setItem('theme', 'dark');
+        }
+      };
 
+      const storedTheme = localStorage.getItem('theme');
+      const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+
+      if (storedTheme) {
+        setTheme(storedTheme as 'dark' | 'light');
+      } else if (prefersLight) {
+        setTheme('light');
+      } else {
+        setTheme('dark');
+      }
+
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = htmlElement.classList.contains('light-mode') ? 'light' : 'dark';
+        setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      });
+    }
     if (menuButton && mobileMenu && menuIcon) {
       menuButton.addEventListener("click", () => {
         mobileMenu.classList.toggle("max-h-0");
@@ -120,65 +153,6 @@ const navItems = [
         menuIcon.className = isOpen ? "ri-menu-3-line" : "ri-close-line";
       });
     }
-
-    if (bookmarkButton) {
-      const updateBookmarkStatus = () => {
-        const currentPage = window.location.href;
-        const bookmarks: string[] = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-        const bookmarkIcon = bookmarkButton.querySelector('i');
-
-        if (bookmarkIcon) {
-          if (bookmarks.includes(currentPage)) {
-            bookmarkIcon.className = "ri-bookmark-fill";
-          } else {
-            bookmarkIcon.className = "ri-bookmark-line";
-          }
-        }
-      };
-
-      updateBookmarkStatus();
-
-      bookmarkButton.addEventListener("click", () => {
-        const currentPage = window.location.href;
-        let bookmarks: string[] = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-
-        if (bookmarks.includes(currentPage)) {
-          bookmarks = bookmarks.filter((url: string) => url !== currentPage);
-          alert("Bookmark dihapus!");
-        } else {
-          bookmarks.push(currentPage);
-          alert("Bookmark ditambahkan!");
-        }
-        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-        updateBookmarkStatus();
-      });
-    }
-
-    if (shareButton) {
-      shareButton.addEventListener("click", async () => {
-        const shareData = {
-          title: document.title || "Halaman ini",
-          text: "Lihat halaman menarik ini: ",
-          url: window.location.href,
-        };
-
-        try {
-          if (navigator.share) {
-            await navigator.share(shareData);
-            console.log('Konten berhasil dibagikan');
-          } else {
-            await navigator.clipboard.writeText(shareData.url);
-            alert("URL halaman disalin ke clipboard!");
-          }
-        } catch (error) {
-          console.error('Gagal membagikan atau menyalin URL:', error);
-          if (!navigator.share) {
-             alert("Browser Anda tidak mendukung Web Share API. URL: " + shareData.url);
-          }
-        }
-      });
-    }
-
     if (mainHeader) {
       const handleScroll = () => {
         if (window.scrollY > 5) {
