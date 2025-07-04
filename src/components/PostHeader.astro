@@ -58,58 +58,38 @@ const getSlugFromBloggerUrl = (url: string): string => {
 };
 ---
 
-<div class="relative w-full overflow-hidden mb-12 py-12 md:py-16 text-white text-left">
-    {/* Main content area, centered */}
-    <div class="relative z-10 max-w-4xl mx-auto px-4 md:px-0">
-        {/* Breadcrumb - Clean and understated */}
-        <nav class="text-xs md:text-sm font-medium breadcrumbs text-gray-400 mb-4 flex justify-center items-center space-x-2">
-            <a href="/" class="hover:text-white transition-colors">Home</a>
-            <span class="text-gray-500">/</span>
-            <a href="/blog" class="hover:text-white transition-colors">Blog</a>
-            <span class="text-gray-500">/</span>
-            <span class="font-semibold text-gray-200 max-w-[150px] md:max-w-xs truncate block">{post.title}</span>
-        </nav>
-
-        {/* Labels/Categories - If available, displayed elegantly */}
-        {post.labels && post.labels.length > 0 && (
-            <div class="mb-4 flex flex-wrap justify-center gap-2">
-                {post.labels.map(label => (
-                    <span class="bg-gray-700/50 text-blue-300 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm">
-                        {label.toUpperCase()}
-                    </span>
-                ))}
-            </div>
-        )}
-
-        {/* Post Title - Prominent and elegant */}
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-8 leading-tight tracking-tight text-white drop-shadow-sm">
-            {post.title}
-        </h1>
-
-        {/* Author, Time, and Read Duration Info - Clean and concise */}
-        <div class="flex flex-wrap items-center justify-center text-gray-400 text-sm md:text-base font-medium space-x-2 sm:space-x-4">
-            {/* Author */}
-            {post.author && (
-              <>
-                {post.author.image && (
-                    <img src={post.author.image.url} alt={post.author.displayName} class="w-7 h-7 rounded-full mr-1 object-cover border border-gray-700" />
-                )}
-                <span>Oleh <span class="font-semibold text-white">{post.author.displayName || 'Unknown Author'}</span></span>
-              </>
-            )}
-            {!post.author && (
-                <span>Oleh <span class="font-semibold text-white">Unknown Author</span></span>
-            )}
-            
-            <span class="text-gray-500 hidden sm:inline-block">&bull;</span>
-            
-            {/* Published Date */}
-            <span class="mt-1 sm:mt-0">{formatDate(post.published)}</span>
-            
-            <span class="text-gray-500 hidden sm:inline-block">&bull;</span>
-            
-            {/* Read Time */}
-            <span class="mt-1 sm:mt-0">{getReadTime(post.content)}</span>
-        </div>
+<div class="relative w-full overflow-hidden mb-6 py-12 md:py-12 text-white text-left">
+  <div class="relative z-10 max-w-4xl mx-auto px-4 md:px-0">
+    <nav class="text-xs md:text-sm font-medium breadcrumbs text-gray-400 mb-4 flex items-center space-x-2">
+      <a href="/" class="hover:text-white transition-colors">Home</a>
+      <span class="text-gray-500">/</span>
+      <a href="/blog" class="hover:text-white transition-colors">Blog</a>
+      <span class="text-gray-500">/</span>
+      <span class="font-semibold text-gray-200 max-w-[150px] md:max-w-xs truncate block">{post.title}</span>
+    </nav>
+    {post.labels && post.labels.length > 0 && (
+      <div class="mb-4 flex flex-wrap gap-2">
+        {post.labels.map(label => (
+          <span class="bg-gray-700/50 text-blue-300 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm">
+            {label.toUpperCase()}
+          </span>
+        ))}
+      </div>
+    )}
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-8 leading-tight tracking-tight text-white drop-shadow-sm">
+      {post.title}
+    </h1>
+    <div class="flex flex-wrap items-center text-gray-400 text-sm md:text-base font-medium space-x-2 sm:space-x-4">
+      {post.author?.image && (
+        <img src={post.author.image.url} alt={post.author.displayName} class="w-7 h-7 rounded-full mr-1 object-cover border border-gray-700" />
+      )}
+      <span>
+        Oleh <span class="font-semibold text-white">{post.author?.displayName || 'Unknown Author'}</span>
+      </span>
+      <span class="text-gray-500 hidden sm:inline-block">&bull;</span>
+      <span class="mt-1 sm:mt-0">{formatDate(post.published)}</span>
+      <span class="text-gray-500 hidden sm:inline-block">&bull;</span>
+      <span class="mt-1 sm:mt-0">{getReadTime(post.content)}</span>
     </div>
+  </div>
 </div>
