@@ -1,68 +1,90 @@
 ---
+import * as cheerio from 'cheerio';
+import 'lite-youtube-embed/src/lite-yt-embed.css';
+
 interface Props {
   content: string;
 }
 
-import * as cheerio from 'cheerio';
-
 const { content } = Astro.props;
-
 const $ = cheerio.load(content);
 
-// 1. Optimasi <img>: tambahkan alt fallback jika tidak ada
 $('img').each((_, el) => {
-  if (!$(el).attr('alt')) {
-    $(el).attr('alt', 'Gambar artikel');
+  const imageEl = $(el);
+  let src = imageEl.attr('src');
+
+  if (src && (src.includes('bp.blogspot.com') || src.includes('googleusercontent.com'))) {
+    let baseUrl = src.replace(/\/s\d+(\-c)?\//, '/').replace(/\/w\d+\-h\d+(\-c)?\//, '/');
+    const sizes = [400, 800, 1200, 1600];
+    const srcset = sizes.map(size => `${baseUrl}s${size}-rw ${size}w`).join(', ');
+
+    imageEl.attr('src', `${baseUrl}s800-rw`);
+    imageEl.attr('srcset', srcset);
+    imageEl.attr('sizes', '(max-width: 800px) 100vw, 800px');
+    imageEl.attr('loading', 'lazy');
+    imageEl.attr('decoding', 'async');
+    imageEl.attr('width', '800');
+    imageEl.removeAttr('height');
   }
-  $(el).attr('loading', 'lazy');
 });
 
-// 2. Optimasi <a>: tambahkan rel noopener untuk link eksternal
-$('a[href^="http"]').each((_, el) => {
-  $(el).attr('rel', 'noopener noreferrer');
-  $(el).attr('target', '_blank');
-});
-
-// 3. Optimasi <iframe>: tambahkan title, tabindex, lazy
 $('iframe').each((_, el) => {
-  $(el).attr('title', 'Konten tersemat');
-  $(el).attr('tabindex', '0');
-  $(el).attr('loading', 'lazy');
-});
+  const iframeEl = $(el);
+  const src = iframeEl.attr('src');
 
-$('svg').each((_, el) => {
-  if (!$(el).find('title').length) {
-    $(el).prepend('<title>Ikon</title>');
+  if (src && src.includes('youtube.com/embed/')) {
+    const videoId = src.split('/').pop()?.split('?')[0];
+    if (videoId) {
+      const liteYoutubeEl = $(`<lite-youtube videoid="${videoId}" style="background-image: url('https://i.ytimg.com/vi/${videoId}/hqdefault.jpg');">`);
+      liteYoutubeEl.append($('<div class="lty-playbtn"></div>'));
+      iframeEl.replaceWith(liteYoutubeEl);
+    }
+  } else {
+    iframeEl.attr('title', 'Konten tersemat');
+    iframeEl.attr('loading', 'lazy');
   }
 });
 
-$('h1,h2,h3,h4,h5,h6').each((_, el) => {
-  if (!$(el).text().trim()) {
-    $(el).text('Tanpa Judul');
+const siteUrl = Astro.site ? Astro.site.origin : '';
+
+$('a[href^="http"]').each((_, el) => {
+  const linkEl = $(el);
+  const href = linkEl.attr('href') || '';
+  if (siteUrl && !href.startsWith(siteUrl)) {
+    linkEl.attr('rel', 'noopener noreferrer nofollow');
+    linkEl.attr('target', '_blank');
   }
 });
 
-// 6. Optimasi anchor kosong: tambahkan label
-$('a').each((_, el) => {
-  if (!$(el).text().trim()) {
-    $(el).attr('aria-label', 'Link tanpa teks');
+$('table').each((_, el) => {
+  const tableEl = $(el);
+  if (!tableEl.parent().hasClass('responsive-table-wrapper')) {
+    tableEl.wrap('<div class="responsive-table-wrapper" style="overflow-x: auto;"></div>');
   }
-});
-
-// 7. Optimasi list kosong
-$('ul, ol').each((_, el) => {
-  if (!$(el).children('li').length) {
-    $(el).append('<li>Item kosong</li>');
+  if (!tableEl.find('caption').length) {
+    tableEl.prepend('<caption>Tabel data</caption>');
   }
+  tableEl.addClass('table-auto w-full border border-gray-700 text-sm');
 });
-
-// 8. Optimasi table agar mobile-friendly
-$('table').addClass('table-auto w-full border border-gray-700 text-sm');
 $('th, td').addClass('border px-3 py-2');
+$('img:not([alt])').attr('alt', 'Gambar artikel');
+$('svg:not(:has(title))').prepend('<title>Ikon</title>');
+$('h1,h2,h3,h4,h5,h6').filter((_, el) => !$(el).text().trim()).text('Tanpa Judul');
+$('a').filter((_, el) => !$(el).text().trim()).attr('aria-label', 'Tautan tanpa teks');
+$('ul, ol').filter((_, el) => !$(el).children('li').length).append('<li>Item kosong</li>');
+$('script, style, link[rel="stylesheet"]').remove();
+
 
 const sanitizedHtml = $.html();
 ---
 
-<div class="prose">
+<div class="prose max-w-full prose-sm sm:prose-base">
   <Fragment set:html={sanitizedHtml} />
 </div>
+
+<style is:global>
+  .responsive-table-wrapper {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+  }
+</style>
