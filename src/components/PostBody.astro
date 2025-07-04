@@ -15,14 +15,12 @@ $('img').each((_, el) => {
   if (src && (src.includes('bp.blogspot.com') || src.includes('googleusercontent.com'))) {
     const baseUrl = src.split(/\/(s\d+|w\d+-h\d+)/)[0];
     if (baseUrl) {
-      const sizes = [400, 800, 1200, 1600];
-      const srcset = sizes.map(size => `${baseUrl}/s${size}-rw ${size}w`).join(', ');
-      imageEl.attr('src', `${baseUrl}/s800-rw`);
-      imageEl.attr('srcset', srcset);
-      imageEl.attr('sizes', '(max-width: 800px) 100vw, 800px');
+      imageEl.attr('src', `${baseUrl}/s1200-rw`);
+      imageEl.removeAttr('srcset');
+      imageEl.removeAttr('sizes');
       imageEl.attr('loading', 'lazy');
       imageEl.attr('decoding', 'async');
-      imageEl.attr('width', '800');
+      imageEl.attr('width', '1200');
       imageEl.removeAttr('height');
     }
   }
