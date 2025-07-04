@@ -1,50 +1,169 @@
 ---
-import BlogLayout from "../../layouts/BlogLayout.astro";
-import PostHeader from "../../components/PostHeader.astro";
+// src/pages/blog/[slug].astro
+import BlogLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
 
-type BloggerPost = {
-  title: string;
-  content: string;
-  published: string;
-  url: string;
-  images?: { url: string }[];
-  author?: { displayName: string };
-};
+// Import cheerio untuk membersihkan HTML dari konten post
+import * as cheerio from 'cheerio';
 
-export async function getStaticPaths() {
-  const res = await fetch("https://www.googleapis.com/blogger/v3/blogs/5920132421647282747/posts?key=AIzaSyAF5IX_benL0vfFXYas3BYQrenGpbl4hek");
-  const json = await res.json();
-  const posts: BloggerPost[] = json.items || [];
+const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
+const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
 
-  return posts.map((post) => {
-    const slug = post.url.split("/").filter(Boolean).pop();
-    return {
-      params: { slug },
-      props: { post },
-    };
-  });
+// Peringatan jika variabel lingkungan tidak ditemukan
+if (!API_KEY || !BLOG_ID) {
+  console.error("⛔️ Error: Blogger API Key or Blog ID is missing from environment variables (.env file).");
+  console.error("Please make sure VITE_BLOGGER_API_KEY and VITE_BLOGGER_BLOG_ID are set in your .env file.");
 }
 
-const { post }: { post: BloggerPost } = Astro.props;
+const BASE_URL = `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}`;
 
-const title = post.title;
-const content = post.content;
-const author = post.author?.displayName ?? "Bima Akbar";
-const published = new Date(post.published).toLocaleDateString("id-ID", {
-  day: "numeric", month: "long", year: "numeric"
-});
-const readingTime = Math.ceil(post.content.length / 650);
-const image: string = post.images?.[0]?.url ?? "";
+// Fungsi untuk mendapatkan semua jalur (path) yang mungkin untuk [slug]
+// Ini diperlukan oleh Astro untuk Static Site Generation (SSG)
+export async function getStaticPaths() {
+  let paths: { params: { slug: string } }[] = [];
+  let nextPageToken: string | undefined = undefined;
+
+  // Loop untuk mengambil semua postingan
+  do {
+    const response = await fetch(`${BASE_URL}&maxResults=500${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`);
+    if (!response.ok) {
+      console.error(`Failed to fetch posts for getStaticPaths: ${response.statusText}`);
+      break;
+    }
+    const data = await response.json();
+    if (data.items) {
+      for (const post of data.items) {
+        try {
+          const urlObj = new URL(post.url);
+          const pathParts = urlObj.pathname.split('/');
+          const lastPart = pathParts[pathParts.length - 1];
+          const slug = lastPart.split('.')[0]; // my-awesome-post.html -> my-awesome-post
+          const finalSlug = slug.replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, ''); // Clean potential date prefixes
+
+          if (finalSlug) {
+            paths.push({ params: { slug: finalSlug } });
+          } else {
+            console.warn("Could not generate slug for post URL:", post.url);
+          }
+        } catch (e) {
+          console.error("Error parsing slug from URL:", post.url, e);
+        }
+      }
+    }
+    nextPageToken = data.nextPageToken;
+  } while (nextPageToken);
+
+  return paths;
+}
+
+// Mendapatkan data untuk slug tertentu
+const { slug } = Astro.params;
+
+let post: Post | null = null;
+let postTitle: string = "Halaman Tidak Ditemukan"; // Default title
+
+try {
+  // Mencari postingan berdasarkan slug
+  // Catatan: Blogger API tidak memiliki endpoint langsung untuk mencari post by slug.
+  // Kita harus mengambil semua post (atau beberapa) dan mencari secara lokal.
+  // Ini bisa tidak efisien untuk blog sangat besar tanpa caching.
+  // Atau, jika Anda tahu ID postingan, bisa fetch by ID.
+  const searchResponse = await fetch(`${BASE_URL}&q=${encodeURIComponent(slug)}&maxResults=10`); // Cari post yang mungkin mengandung slug
+  if (searchResponse.ok) {
+    const searchData = await searchResponse.json();
+    if (searchData.items && searchData.items.length > 0) {
+      // Filter hasil yang paling cocok berdasarkan slug
+      post = searchData.items.find((item: Post) => {
+        const itemSlug = new URL(item.url).pathname.split('/').pop()?.split('.')[0].replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+        return itemSlug === slug;
+      });
+    }
+  }
+
+  // Fallback: Jika pencarian tidak menemukan, coba ambil semua post dan filter
+  if (!post) {
+      const allPostsResponse = await fetch(`${BASE_URL}&maxResults=500`); // Ambil lebih banyak post jika mungkin
+      if (allPostsResponse.ok) {
+          const allPostsData = await allPostsResponse.json();
+          if (allPostsData.items) {
+              post = allPostsData.items.find((item: Post) => {
+                  const itemSlug = new URL(item.url).pathname.split('/').pop()?.split('.')[0].replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+                  return itemSlug === slug;
+              });
+          }
+      }
+  }
+
+  if (post) {
+    postTitle = post.title;
+  }
+
+} catch (error) {
+  console.error(`🚨 Failed to fetch post with slug '${slug}':`, error);
+}
+
+// Fungsi untuk membersihkan dan merender HTML konten postingan
+const renderContent = (htmlString: string | undefined) => {
+  if (!htmlString) return '';
+  // Cheerio hanya untuk membersihkan, kita ingin HTML-nya tetap ada untuk ditampilkan
+  // Astro akan merender string HTML sebagai innerHTML
+  return htmlString;
+};
+
+const formatDate = (dateString: string) => {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  try {
+    return new Date(dateString).toLocaleDateString('id-ID', options);
+  } catch (e) {
+    console.error("Invalid date string:", dateString);
+    return "Invalid Date";
+  }
+};
 ---
 
-<BlogLayout title={title}>
-  <PostHeader
-    title={title}
-    author={author}
-    published={published}
-    readingTime={readingTime}
-    image={image}
-/>
+<BlogLayout title={postTitle}>
+  <Header title={postTitle} rightIcon="share" />
+  <main class="container mx-auto px-4 py-24 md:py-32 text-white">
+    {post ? (
+      <article class="max-w-3xl mx-auto bg-gray-900 p-8 md:p-10 rounded-xl shadow-2xl border border-gray-700">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-blue-400 mb-6 leading-tight text-center">
+          {post.title}
+        </h1>
+        <p class="text-gray-400 text-sm md:text-base text-center mb-8">
+          Dipublikasi pada: <span class="font-medium">{formatDate(post.published)}</span>
+        </p>
 
-  <div set:html={content}></div>
+        {post.images && post.images.length > 0 && (
+          <img
+            src={getThumbnailUrl(post)}
+            alt={post.title}
+            class="w-full h-auto max-h-96 object-cover rounded-lg mb-8 shadow-md"
+            loading="eager"
+          />
+        )}
+
+        <div class="prose prose-invert prose-lg max-w-none text-gray-200 leading-relaxed break-words">
+          {/* Render konten HTML mentah dari Blogger */}
+          <Fragment set:html={renderContent(post.content)} />
+        </div>
+
+        <div class="mt-12 pt-8 border-t border-gray-700 text-center">
+          <p class="text-gray-500 text-sm">Terima kasih sudah membaca!</p>
+          <a href="/blog" class="inline-flex items-center text-blue-500 hover:text-blue-400 transition-colors mt-4">
+            <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Kembali ke Blog
+          </a>
+        </div>
+      </article>
+    ) : (
+      <div class="max-w-xl mx-auto text-center bg-gray-900 p-10 rounded-xl shadow-2xl border border-gray-700">
+        <h1 class="text-4xl font-extrabold text-red-500 mb-4">404</h1>
+        <p class="text-gray-300 text-lg mb-6">Ups! Postingan yang Anda cari tidak ditemukan.</p>
+        <a href="/blog" class="inline-flex items-center text-blue-500 hover:text-blue-400 transition-colors">
+          <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          Kembali ke Daftar Blog
+        </a>
+      </div>
+    )}
+  </main>
 </BlogLayout>
