@@ -1,0 +1,42 @@
+---
+interface Post {
+  id: string;
+  title: string;
+  url: string;
+}
+
+const { prevPost, nextPost }: { prevPost?: Post | null; nextPost?: Post | null } = Astro.props;
+
+const getSlugFromUrl = (url: string): string => {
+  const slug = new URL(url).pathname.split("/").pop()?.replace(".html", "");
+  return slug || "";
+};
+---
+
+{(prevPost || nextPost) && (
+  <nav class="mt-16 max-w-3xl mx-auto border-t border-white/10 pt-8 flex justify-between items-start gap-8 text-white/80 text-sm">
+    {prevPost ? (
+      <a
+        href={`/blog/${getSlugFromUrl(prevPost.url)}`}
+        class="w-1/2 hover:text-white transition"
+      >
+        <div class="text-white/50 text-xs">← Sebelumnya</div>
+        <div class="text-base font-semibold leading-snug">{prevPost.title}</div>
+      </a>
+    ) : (
+      <div class="w-1/2" />
+    )}
+
+    {nextPost ? (
+      <a
+        href={`/blog/${getSlugFromUrl(nextPost.url)}`}
+        class="w-1/2 text-right hover:text-white transition"
+      >
+        <div class="text-white/50 text-xs">Berikutnya →</div>
+        <div class="text-base font-semibold leading-snug">{nextPost.title}</div>
+      </a>
+    ) : (
+      <div class="w-1/2" />
+    )}
+  </nav>
+)}

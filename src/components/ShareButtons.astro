@@ -1,0 +1,22 @@
+---
+// src/components/ShareButtons.astro
+const { url, title } = Astro.props;
+const encodedUrl = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+---
+
+<div class="mt-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+  <span class="text-white/50">Bagikan:</span>
+  
+  <a href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`} target="_blank" rel="noopener noreferrer" class="hover:text-green-400 transition">
+    <i class="ri-whatsapp-line"></i> WhatsApp
+  </a>
+
+  <a href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`} target="_blank" rel="noopener noreferrer" class="hover:text-sky-400 transition">
+    <i class="ri-twitter-x-line"></i> X (Twitter)
+  </a>
+
+  <button onclick={`navigator.clipboard.writeText('${url}')`} class="hover:text-blue-400 transition flex items-center gap-1">
+    <i class="ri-link-m"></i> Salin Link
+    </button>
+</div>

@@ -1,0 +1,36 @@
+---
+// src/components/posts/PostHeader.astro
+import PostMeta from './PostMeta.astro';
+
+interface Props {
+  title: string;
+  authorName: string;
+  authorImage?: string;
+  publishedDate: string;
+  updatedDate?: string;
+  readTime: string;
+  viewsCount?: number;
+  labels?: string[];
+}
+
+const { title, authorName, authorImage, publishedDate, updatedDate, readTime, viewsCount, labels } = Astro.props;
+---
+<div>
+  <PostMeta
+    authorName={authorName}
+    authorImage={authorImage}
+    publishedDate={publishedDate}
+    updatedDate={updatedDate}
+    readTime={readTime}
+    viewsCount={viewsCount}
+    
+  />
+  <h1 class="text-4xl font-bold text-hero-foreground mb-4">{title}</h1>
+  {labels && labels.length > 0 && (
+    <div class="flex flex-wrap gap-2 mt-4 mb-4">
+      {labels.map((label: string) => (
+        <span class="bg-white/10 text-white/80 backdrop-blur-md text-xs px-2 py-1 rounded-full">{label}</span>
+      ))}
+    </div>
+  )}
+</div>

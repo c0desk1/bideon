@@ -1,0 +1,61 @@
+---
+const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
+const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
+
+interface BlogData {
+  name: string;
+  description: string;
+  favicon: string;
+}
+
+let blogData: BlogData | null = null;
+
+if (!API_KEY || !BLOG_ID) {
+  console.error("Error: API_KEY atau BLOG_ID belum diset di environment variables");
+} else {
+  try {
+    const res = await fetch(`https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}?key=${API_KEY}`);
+    if (res.ok) {
+      blogData = await res.json();
+    } else {
+      console.error("Gagal fetch data blog:", res.status, res.statusText);
+    }
+  } catch (error) {
+    console.error("Error fetch blog data:", error);
+  }
+}
+
+const title = blogData?.name || "Bima Akbar";
+const description = blogData?.description || "Blog Bima Akbar - tempat berbagi konten menarik";
+const faviconUrl = blogData?.favicon || "/favicon.ico";
+---
+
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href={faviconUrl} />
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+
+    <!-- Google Analytics / Tag Manager -->
+    <!--
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+    -->
+
+    <!-- Iklan atau script pihak ketiga lain bisa ditempatkan di sini -->
+
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

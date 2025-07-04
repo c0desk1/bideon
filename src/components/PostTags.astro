@@ -1,0 +1,19 @@
+---
+interface Props {
+  labels: string[];
+}
+const { labels = [] } = Astro.props;
+---
+
+{labels.length > 0 && (
+  <div class="mt-8 flex flex-wrap gap-2">
+    {labels.map(label => (
+      <a
+        href={`/blog/label/${encodeURIComponent(label)}`}
+        class="px-3 py-1 text-sm bg-white/5 border border-white/10 rounded-full text-muted-foreground hover:text-white transition"
+      >
+        {label}
+      </a>
+    ))}
+  </div>
+)}

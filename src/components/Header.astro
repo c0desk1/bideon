@@ -1,0 +1,200 @@
+---
+// Import Astro properties and utility functions
+interface Props {
+  title?: string;
+  rightIcon?: "bookmark" | "share";
+}
+
+const { title: propTitle = "NOTME", rightIcon = "bookmark" } = Astro.props;
+
+let headerTitle: string = propTitle;
+
+const fetchBlogName = async (): Promise<string | undefined> => {
+  try {
+    const response = await fetch(
+      "https://www.googleapis.com/blogger/v3/blogs/5920132421647282747?key=AIzaSyAF5IX_benL0vfFXYas3BYQrenGpbl4hek"
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data?.name;
+    }
+  } catch (error) {
+    console.error("Gagal mengambil info blog dari Blogger API:", error);
+  }
+  return undefined;
+};
+
+const fetchLatestPostTitle = async (): Promise<string | undefined> => {
+  try {
+    const postsResponse = await fetch(
+      "https://www.googleapis.com/blogger/v3/blogs/5920132421647282747/posts?key=AIzaSyAF5IX_benL0vfFXYas3BYQrenGpbl4hek&maxResults=1"
+    );
+    if (postsResponse.ok) {
+      const postsData = await postsResponse.json();
+      return postsData.items?.[0]?.title;
+    }
+  } catch (error) {
+    console.error("Gagal mengambil postingan dari Blogger API:", error);
+  }
+  return undefined;
+};
+
+if (Astro.url.pathname === '/404' || Astro.url.pathname === '/404/') {
+  headerTitle = "ERROR";
+} else if (Astro.url.pathname === '/about' || Astro.url.pathname === '/about/') {
+  headerTitle = "About";
+} else if (Astro.url.pathname === '/contact' || Astro.url.pathname === '/contact/') {
+  headerTitle = "Contact";
+} else {
+  const blogName = await fetchBlogName();
+  if (blogName) {
+    headerTitle = blogName;
+  } else {
+    const latestPostTitle = await fetchLatestPostTitle();
+    if (latestPostTitle) {
+      headerTitle = latestPostTitle;
+    }
+  }
+}
+
+const navItems = [
+  { label: "Home", href: "/" },
+  { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
+---
+
+<header id="main-header" class="fixed top-0 inset-x-0 z-50 backdrop-blur">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 w-full header-inner-wrapper">
+    
+    <button id="menu-button" class="text-white text-2xl transition md:hidden basis-1/3 md:basis-auto" aria-label="Toggle Menu">
+      <i id="menu-icon" class="ri-menu-3-line"></i>
+    </button>
+
+    <div class="text-base font-semibold text-white text-center md:text-left md:basis-1/3 md:flex-shrink-0 header-left-section">
+      {headerTitle}
+    </div>
+
+    <div class="hidden md:flex items-center justify-center flex-grow header-center-section">
+      <nav class="flex items-center space-x-6 uppercase text-sm font-medium">
+        {navItems.map((item) => (
+          <a href={item.href} class="text-white hover:text-gray-200 transition">{item.label}</a>
+        ))}
+      </nav>
+    </div>
+
+    <div class="text-white text-xl flex justify-end md:basis-1/3 md:flex-shrink-0 header-right-section">
+      {rightIcon === "bookmark" && (
+        <button id="bookmark-button" aria-label="Bookmark" class="hover:text-gray-200 transition cursor-pointer">
+          <i class="ri-bookmark-line"></i>
+        </button>
+      )}
+      {rightIcon === "share" && (
+        <button id="share-button" aria-label="Share" class="hover:text-gray-200 transition cursor-pointer">
+          <i class="ri-share-forward-line"></i>
+        </button>
+      )}
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="md:hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out bg-black/80">
+    <nav class="flex flex-col px-6 py-4 space-y-4 uppercase text-sm font-medium items-center">
+      {navItems.map((item) => (
+        <a href={item.href} class="text-left text-white hover:text-gray-200 transition">{item.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const menuButton = document.getElementById("menu-button");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const menuIcon = document.getElementById("menu-icon");
+    const mainHeader = document.getElementById("main-header");
+
+    const bookmarkButton = document.getElementById("bookmark-button");
+    const shareButton = document.getElementById("share-button");
+
+    if (menuButton && mobileMenu && menuIcon) {
+      menuButton.addEventListener("click", () => {
+        mobileMenu.classList.toggle("max-h-0");
+        mobileMenu.classList.toggle("max-h-64");
+
+        const isOpen = menuIcon.classList.contains("ri-close-line");
+        menuIcon.className = isOpen ? "ri-menu-3-line" : "ri-close-line";
+      });
+    }
+
+    if (bookmarkButton) {
+      const updateBookmarkStatus = () => {
+        const currentPage = window.location.href;
+        const bookmarks: string[] = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+        const bookmarkIcon = bookmarkButton.querySelector('i');
+
+        if (bookmarkIcon) {
+          if (bookmarks.includes(currentPage)) {
+            bookmarkIcon.className = "ri-bookmark-fill";
+          } else {
+            bookmarkIcon.className = "ri-bookmark-line";
+          }
+        }
+      };
+
+      updateBookmarkStatus();
+
+      bookmarkButton.addEventListener("click", () => {
+        const currentPage = window.location.href;
+        let bookmarks: string[] = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+
+        if (bookmarks.includes(currentPage)) {
+          bookmarks = bookmarks.filter((url: string) => url !== currentPage);
+          alert("Bookmark dihapus!");
+        } else {
+          bookmarks.push(currentPage);
+          alert("Bookmark ditambahkan!");
+        }
+        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+        updateBookmarkStatus();
+      });
+    }
+
+    if (shareButton) {
+      shareButton.addEventListener("click", async () => {
+        const shareData = {
+          title: document.title || "Halaman ini",
+          text: "Lihat halaman menarik ini: ",
+          url: window.location.href,
+        };
+
+        try {
+          if (navigator.share) {
+            await navigator.share(shareData);
+            console.log('Konten berhasil dibagikan');
+          } else {
+            await navigator.clipboard.writeText(shareData.url);
+            alert("URL halaman disalin ke clipboard!");
+          }
+        } catch (error) {
+          console.error('Gagal membagikan atau menyalin URL:', error);
+          if (!navigator.share) {
+             alert("Browser Anda tidak mendukung Web Share API. URL: " + shareData.url);
+          }
+        }
+      });
+    }
+
+    if (mainHeader) {
+      const handleScroll = () => {
+        if (window.scrollY > 5) {
+          mainHeader.classList.add("scrolled-header");
+        } else {
+          mainHeader.classList.remove("scrolled-header");
+        }
+      };
+      window.addEventListener("scroll", handleScroll);
+      handleScroll();
+    }
+  });
+</script>

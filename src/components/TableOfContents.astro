@@ -1,0 +1,46 @@
+---
+// src/components/TableOfContents.astro
+interface HeadingData {
+  id: string;
+  level: number;
+  text: string;
+}
+
+interface Props {
+  headings: HeadingData[];
+}
+
+const { headings } = Astro.props;
+const filteredHeadings = headings.filter(h => h.level >= 2 && h.level <= 3);
+
+const getIndentClass = (level: number) => {
+  if (level === 3) return 'ml-4';
+  if (level === 4) return 'ml-8';
+  return '';
+};
+---
+
+{filteredHeadings.length > 0 && (
+  <nav class="toc-container mb-8 p-4 border border-color-border rounded-lg bg-color-card-bg shadow-md">
+    <h3 class="text-xl font-bold text-color-text mb-4">Table of Contents</h3>
+    <ul class="space-y-2">
+      {filteredHeadings.map((heading) => (
+        <li class="toc-item">
+          <a href={`#${heading.id}`} class={`block text-color-text-muted hover:text-color-text transition ${getIndentClass(heading.level)}`}>
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style>
+  .toc-container a {
+    word-break: break-word;
+    line-height: 1.4;
+  }
+  .toc-item:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+</style>
