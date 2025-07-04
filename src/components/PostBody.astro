@@ -1,6 +1,5 @@
 ---
 import * as cheerio from 'cheerio';
-import 'lite-youtube-embed/src/lite-yt-embed.css';
 
 interface Props {
   content: string;
@@ -11,40 +10,18 @@ const $ = cheerio.load(content);
 
 $('img').each((_, el) => {
   const imageEl = $(el);
-  let src = imageEl.attr('src');
+  const src = imageEl.attr('src');
+
   if (src && (src.includes('bp.blogspot.com') || src.includes('googleusercontent.com'))) {
-    const baseUrl = src.split(/\/(s\d+|w\d+-h\d+)/)[0];
-    if (baseUrl) {
-      imageEl.attr('src', `${baseUrl}/s1200-rw`);
-      imageEl.removeAttr('srcset');
-      imageEl.removeAttr('sizes');
-      imageEl.attr('loading', 'lazy');
-      imageEl.attr('decoding', 'async');
-      imageEl.attr('width', '1200');
-      imageEl.removeAttr('height');
-    }
+    imageEl.addClass('blogger-image-to-optimize');
   }
+
   if (!imageEl.attr('alt')) {
     imageEl.attr('alt', 'Gambar artikel');
   }
+  imageEl.attr('loading', 'lazy');
 });
 
-$('iframe').each((_, el) => {
-  const iframeEl = $(el);
-  const src = iframeEl.attr('src');
-
-  if (src && src.includes('youtube.com/embed/')) {
-    const videoId = src.split('/').pop()?.split('?')[0];
-    if (videoId) {
-      const liteYoutubeEl = $(`<lite-youtube videoid="${videoId}" style="background-image: url('https://i.ytimg.com/vi/${videoId}/hqdefault.jpg');">`);
-      liteYoutubeEl.append($('<div class="lty-playbtn"></div>'));
-      iframeEl.replaceWith(liteYoutubeEl);
-    }
-  } else {
-    iframeEl.attr('title', 'Konten tersemat');
-    iframeEl.attr('loading', 'lazy');
-  }
-});
 
 const siteUrl = Astro.site ? Astro.site.origin : '';
 
@@ -53,7 +30,7 @@ $('a[href^="http"]').each((_, el) => {
   const href = linkEl.attr('href') || '';
   if (siteUrl && !href.startsWith(siteUrl)) {
     linkEl.attr('rel', 'noopener noreferrer nofollow');
-    linkEl.attr('target', '_blank');
+    linkEl.attr('target', 'blank');
   }
 });
 
@@ -67,14 +44,13 @@ $('table').each((_, el) => {
   }
   tableEl.addClass('table-auto w-full border border-gray-700 text-sm');
 });
+
 $('th, td').addClass('border px-3 py-2');
-$('img:not([alt])').attr('alt', 'Gambar artikel');
 $('svg:not(:has(title))').prepend('<title>Ikon</title>');
 $('h1,h2,h3,h4,h5,h6').filter((_, el) => !$(el).text().trim()).text('Tanpa Judul');
 $('a').filter((_, el) => !$(el).text().trim()).attr('aria-label', 'Tautan tanpa teks');
 $('ul, ol').filter((_, el) => !$(el).children('li').length).append('<li>Item kosong</li>');
 $('script, style, link[rel="stylesheet"]').remove();
-
 
 const sanitizedHtml = $.html();
 ---
@@ -83,9 +59,19 @@ const sanitizedHtml = $.html();
   <Fragment set:html={sanitizedHtml} />
 </div>
 
-<style is:global>
-  .responsive-table-wrapper {
-    margin-top: 1.5em;
-    margin-bottom: 1.5em;
+<script>
+  function optimizeBloggerImages() {
+    const images = document.querySelectorAll('.blogger-image-to-optimize');
+
+    images.forEach(img => {
+      const currentSrc = img.getAttribute('src');
+      if (currentSrc) {
+        const baseUrl = currentSrc.split(/\/(s\d+|w\d+-h\d+)/)[0];
+        const newSrc = `${baseUrl}/s1200-rw`;
+        img.setAttribute('src', newSrc);
+        img.classList.remove('blogger-image-to-optimize');
+      }
+    });
   }
-</style>
+  document.addEventListener('DOMContentLoaded', optimizeBloggerImages);
+</script>
