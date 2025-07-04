@@ -1,11 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostHeader from '../../components/posts/PostHeader.astro';
-import TableOfContents from '../../components/TableOfContents.astro';
 import PostBody from '../../components/posts/PostBody.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
 import ShareButtons from '../../components/ShareButtons.astro';
-import AuthorBox from '../../components/AuthorBox.astro';
 import ReadingProgress from '../../components/ReadingProgress.astro';
+import RelatedPosts from '../../components/RelatedPosts.astro';
+import AuthorBox from '../../components/AuthorBox.astro';
+
 import { parse as parseHtml } from 'node-html-parser';
 import { formatDate, estimateReadTime, getImageUrl } from '../../utils/helpers';
 
@@ -21,7 +23,7 @@ export async function getStaticPaths() {
   let allPosts: any[] = [];
   try {
     const response = await fetch(
-      `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}&maxResults=500&fetchImages=true`
+      `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}&maxResults=100&fetchImages=true&orderBy=published`
     );
     if (response.ok) {
       const data = await response.json();
@@ -35,13 +37,33 @@ export async function getStaticPaths() {
     console.error("Failed to fetch posts for getStaticPaths:", error);
   }
 
-  return allPosts.map(post => ({
-    params: { postId: post.id },
-    props: { post: post },
-  }));
+  return allPosts.map(post => {
+    const relatedPosts = allPosts
+      .filter(p => p.id !== post.id)
+      .slice(0, 3)
+      .map(p => ({
+          title: p.title,
+          url: p.url,
+          id: p.id,
+          images: p.images,
+          published: p.published,
+          summary: p.summary,
+          content: p.content,
+          author: p.author
+      }));
+
+    return {
+      params: { postId: post.id },
+      props: {
+        post: post,
+        relatedPosts: relatedPosts,
+      },
+    };
+  });
 }
 
-const { post } = Astro.props;
+const { post, relatedPosts } = Astro.props;
+
 const postTitle = post?.title || 'No Title';
 const postPublishedDate = formatDate(post?.published || '');
 const postUpdatedDate = formatDate(post?.updated || '');
@@ -65,8 +87,7 @@ let tocHeadings: HeadingData[] = [];
 if (post?.content) {
   const root = parseHtml(post.content);
   let headingCounter = 0;
-
-  root.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((headingEl: { tagName: string; id: string; setAttribute: (arg0: string, arg1: any) => void; innerText: any; }) => {
+  root.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(headingEl => {
     const level = parseInt(headingEl.tagName.substring(1), 10);
     let id = headingEl.id || `heading-${headingCounter++}`;
     headingEl.setAttribute('id', id);
@@ -105,6 +126,10 @@ if (post?.content) {
           authorUrl={authorUrl}
           authorAbout={""}
         />
+         {relatedPosts && relatedPosts.length > 0 && (
+          <RelatedPosts relatedPosts={relatedPosts} />
+        )}
+
       </article>
     ) : (
       <p class="text-center text-color-text-muted">Post not found.</p>
