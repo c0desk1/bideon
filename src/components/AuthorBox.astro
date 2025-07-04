@@ -1,4 +1,5 @@
 ---
+// src/components/AuthorBox.astro
 interface Props {
   author: {
     displayName: string;
@@ -14,15 +15,17 @@ const { author } = Astro.props;
 
 {author && (
   <div class="flex items-center gap-4 p-4 mt-12 bg-white/5 rounded-xl border border-white/10">
-    <img
-      src={author.image?.url || '/default-avatar.png'}
-      alt={author.displayName}
-      class="w-12 h-12 rounded-full object-cover"
-      loading="lazy"
-    />
-    <div>
-      <p class="font-semibold text-white">{author.displayName}</p>
-      <a href={author.url} class="text-sm text-muted-foreground hover:text-white transition">Lihat Profil</a>
-    </div>
+    <a href={author.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-4">
+      <img
+        src={author.image?.url || 'https://www.gravatar.com/avatar/?d=mp&s=150'}
+        alt={author.displayName}
+        class="w-12 h-12 rounded-full object-cover"
+        loading="lazy"
+      />
+      <div>
+        <p class="font-semibold text-white">{author.displayName}</p>
+        <p class="text-sm text-muted-foreground hover:text-white transition">Lihat Profil</p>
+      </div>
+    </a>
   </div>
 )}
