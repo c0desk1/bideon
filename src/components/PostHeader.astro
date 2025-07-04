@@ -3,13 +3,22 @@
 interface Props {
   post: {
     title: string;
+    url: string; // Add url for breadcrumb
     published: string;
     images?: Array<{ url: string }>;
+    author?: { // Add author interface
+      displayName: string;
+      url: string;
+      image?: {
+        url: string;
+      };
+    };
   };
 }
 
 const { post } = Astro.props;
 
+// Helper function to format date
 const formatDate = (dateString: string): string => {
   const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
   try {
@@ -20,6 +29,7 @@ const formatDate = (dateString: string): string => {
   }
 };
 
+// Helper function to get thumbnail URL
 const getThumbnailUrl = (post: Props['post']): string => {
   if (post.images && post.images.length > 0) {
     const imageUrl = post.images[0].url;
@@ -27,25 +37,75 @@ const getThumbnailUrl = (post: Props['post']): string => {
   }
   return 'https://via.placeholder.com/1200x800/1f2937/d1d5db?text=No+Image';
 };
+
+// Helper to get slug (needed for breadcrumb link to specific blog post)
+const getSlugFromBloggerUrl = (url: string): string => {
+  try {
+    const urlObj = new URL(url);
+    const pathParts = urlObj.pathname.split('/');
+    const lastPart = pathParts[pathParts.length - 1];
+    const slugWithHtml = lastPart.split('.')[0];
+    const finalSlug = slugWithHtml.replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+    return finalSlug || url;
+  } catch (e) {
+    console.error("Failed to parse slug from URL:", url, e);
+    return url;
+  }
+};
 ---
 
-<div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl border border-gray-700 p-8 md:p-10 mb-12">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-blue-400 mb-4 leading-tight text-center">
-        {post.title}
-    </h1>
-    <p class="text-gray-400 text-sm md:text-base text-center mb-8">
-        Dipublikasi pada: <span class="font-medium text-gray-300">{formatDate(post.published)}</span>
-    </p>
+<div class="relative rounded-xl overflow-hidden shadow-2xl border border-gray-700 mb-12">
+    {/* Background Image with Overlay */}
+    <div class="absolute inset-0 z-0">
+        <img
+            src={getThumbnailUrl(post)}
+            alt={post.title}
+            class="w-full h-full object-cover"
+            loading="eager"
+        />
+        {/* Darker Overlay for text readability */}
+        <div class="absolute inset-0 bg-black/70 md:bg-gradient-to-t md:from-black/90 md:via-black/70 md:to-transparent"></div>
+    </div>
 
-    {post.images && post.images.length > 0 && (
-        <div class="relative w-full h-auto max-h-96 overflow-hidden rounded-lg shadow-xl mb-8">
-            <img
-                src={getThumbnailUrl(post)}
-                alt={post.title}
-                class="w-full h-full object-cover"
-                loading="eager"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+    {/* Content (Breadcrumb, Title, Author/Date Info) - Positioned over the image */}
+    <div class="relative z-10 p-8 md:p-12 text-white flex flex-col justify-between min-h-[400px] md:min-h-[500px]">
+        {/* Breadcrumb */}
+        <nav class="text-sm font-medium breadcrumbs mb-4 md:mb-8 text-gray-300">
+            <ul class="flex items-center space-x-2">
+                <li><a href="/" class="hover:text-blue-400 transition-colors">Home</a></li>
+                <li class="inline-block mx-1">/</li>
+                <li><a href="/blog" class="hover:text-blue-400 transition-colors">Blog</a></li>
+                <li class="inline-block mx-1">/</li>
+                <li class="text-white truncate max-w-[200px] md:max-w-md">{post.title}</li>
+            </ul>
+        </nav>
+
+        <div class="max-w-4xl mx-auto text-center flex-grow flex flex-col justify-center"> {/* Centered vertically */}
+            {/* Judul Postingan Utama */}
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 leading-tight drop-shadow-lg"
+                style="text-shadow: 0 0 15px rgba(0,255,255,0.4), 0 0 25px rgba(0,255,255,0.3), 0 0 35px rgba(0,255,255,0.2);">
+                {post.title}
+            </h1>
         </div>
-    )}
+
+        {/* Author and Date Info - positioned at the bottom */}
+        <div class="mt-auto text-center"> {/* Use mt-auto to push to bottom */}
+            <div class="flex items-center justify-center text-gray-300 text-sm md:text-base">
+                {post.author && post.author.image && (
+                    <img src={post.author.image.url} alt={post.author.displayName} class="w-8 h-8 rounded-full mr-3 border-2 border-blue-500 shadow-md" />
+                )}
+                <span>Oleh <a href={post.author?.url || '#'} class="font-semibold text-white hover:text-blue-400 transition-colors">{post.author?.displayName || 'Unknown Author'}</a></span>
+                <span class="mx-2">&bull;</span>
+                <span>{formatDate(post.published)}</span>
+            </div>
+            {/* Opsi: Tambah read time atau kategori di sini juga */}
+            {/* {post.labels && post.labels.length > 0 && (
+                <div class="mt-4">
+                    {post.labels.map(label => (
+                        <span class="inline-block bg-gray-700 text-blue-300 text-xs font-semibold px-3 py-1 rounded-full mr-2 mb-2">{label}</span>
+                    ))}
+                </div>
+            )} */}
+        </div>
+    </div>
 </div>
