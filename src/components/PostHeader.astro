@@ -3,9 +3,10 @@
 interface Props {
   post: {
     title: string;
-    url: string; // Add url for potential canonical link, though not directly used in header UI
+    url: string;
     published: string;
-    images?: Array<{ url: string }>;
+    content?: string; // Need content to calculate read time
+    labels?: string[]; // To display labels/categories
     author?: {
       displayName: string;
       url: string;
@@ -29,59 +30,86 @@ const formatDate = (dateString: string): string => {
   }
 };
 
-// Helper function to get thumbnail URL for a subtle background
-const getSubtleBackgroundUrl = (post: Props['post']): string => {
-  if (post.images && post.images.length > 0) {
-    const imageUrl = post.images[0].url;
-    // Get a larger image, but it will be heavily blurred/darkened
-    return imageUrl.replace(/s\d+(-c)?/, 's1600-c').replace(/w\d+-h\d+/, 'w1600-h900');
-  }
-  return ''; // Return empty if no image, for a plain dark background
+// Helper function to calculate estimated read time
+// Assumes average reading speed of 200 words per minute
+const getReadTime = (contentHtml: string | undefined): string => {
+  if (!contentHtml) return '0 min read';
+  // Strip HTML tags for accurate word count
+  const textContent = contentHtml.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, '');
+  const words = textContent.split(/\s+/).filter(word => word.length > 0);
+  const wordCount = words.length;
+  const minutes = Math.ceil(wordCount / 200);
+  return `${minutes} min read`;
 };
 
-const subtleBgUrl = getSubtleBackgroundUrl(post);
+// Helper function to get clean slug for breadcrumb (if needed)
+const getSlugFromBloggerUrl = (url: string): string => {
+  try {
+    const urlObj = new URL(url);
+    const pathParts = urlObj.pathname.split('/');
+    const lastPart = pathParts[pathParts.length - 1];
+    const slugWithHtml = lastPart.split('.')[0];
+    const finalSlug = slugWithHtml.replace(/^\d{4}\/\d{2}\//, '').replace(/^\d{1,2}\./, '');
+    return finalSlug || url;
+  } catch (e) {
+    console.error("Failed to parse slug from URL:", url, e);
+    return url;
+  }
+};
 ---
 
-<div class="relative w-full overflow-hidden mb-12 py-16 md:py-24 text-white text-center">
-    {/* Optional: Subtle background image (blurred/darkened) if available */}
-    {subtleBgUrl && (
-        <div class="absolute inset-0 z-0 opacity-20 filter blur-xl"> {/* Soft blur for background */}
-            <img
-                src={subtleBgUrl}
-                alt=""
-                class="w-full h-full object-cover"
-                aria-hidden="true"
-            />
-            {/* Further darken the background if image is used */}
-            <div class="absolute inset-0 bg-black/50"></div>
-        </div>
-    )}
-
-    {/* Main content area */}
+<div class="relative w-full overflow-hidden mb-12 py-12 md:py-16 text-white text-center">
+    {/* Main content area, centered */}
     <div class="relative z-10 max-w-4xl mx-auto px-4 md:px-0">
         {/* Breadcrumb - Clean and understated */}
-        <nav class="text-xs md:text-sm font-medium breadcrumbs text-gray-400 mb-6 flex justify-center items-center space-x-2">
+        <nav class="text-xs md:text-sm font-medium breadcrumbs text-gray-400 mb-4 flex justify-center items-center space-x-2">
             <a href="/" class="hover:text-white transition-colors">Home</a>
-            <span class="opacity-50">/</span>
+            <span class="text-gray-500">/</span>
             <a href="/blog" class="hover:text-white transition-colors">Blog</a>
-            <span class="opacity-50">/</span>
-            <span class="font-semibold text-gray-200 truncate max-w-[150px] md:max-w-xs">{post.title}</span>
+            <span class="text-gray-500">/</span>
+            <span class="font-semibold text-gray-200 max-w-[150px] md:max-w-xs truncate block">{post.title}</span>
         </nav>
 
+        {/* Labels/Categories - If available, displayed elegantly */}
+        {post.labels && post.labels.length > 0 && (
+            <div class="mb-4 flex flex-wrap justify-center gap-2">
+                {post.labels.map(label => (
+                    <span class="bg-gray-700/50 text-blue-300 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur-sm">
+                        {label.toUpperCase()}
+                    </span>
+                ))}
+            </div>
+        )}
+
         {/* Post Title - Prominent and elegant */}
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-8 leading-tight tracking-tight text-white">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-8 leading-tight tracking-tight text-white drop-shadow-sm">
             {post.title}
         </h1>
 
-        {/* Author and Date Info - Clean and concise */}
-        <div class="flex items-center justify-center text-gray-400 text-sm md:text-base font-medium">
-            {post.author && post.author.image && (
-                <img src={post.author.image.url} alt={post.author.displayName} class="w-7 h-7 rounded-full mr-2 object-cover" />
+        {/* Author, Time, and Read Duration Info - Clean and concise */}
+        <div class="flex flex-wrap items-center justify-center text-gray-400 text-sm md:text-base font-medium space-x-2 sm:space-x-4">
+            {/* Author */}
+            {post.author && (
+              <>
+                {post.author.image && (
+                    <img src={post.author.image.url} alt={post.author.displayName} class="w-7 h-7 rounded-full mr-1 object-cover border border-gray-700" />
+                )}
+                <span>Oleh <span class="font-semibold text-white">{post.author.displayName || 'Unknown Author'}</span></span>
+              </>
             )}
-            <span>Oleh <span class="font-semibold text-white">{post.author?.displayName || 'Unknown Author'}</span></span>
-            <span class="mx-2 opacity-50">&bull;</span>
-            <span>{formatDate(post.published)}</span>
-            {/* Opsi: Tambah read time atau kategori di sini juga jika ada data */}
+            {!post.author && (
+                <span>Oleh <span class="font-semibold text-white">Unknown Author</span></span>
+            )}
+            
+            <span class="text-gray-500 hidden sm:inline-block">&bull;</span> {/* Separator, hidden on very small screens */}
+            
+            {/* Published Date */}
+            <span class="mt-1 sm:mt-0">{formatDate(post.published)}</span>
+            
+            <span class="text-gray-500 hidden sm:inline-block">&bull;</span> {/* Separator */}
+            
+            {/* Read Time */}
+            <span class="mt-1 sm:mt-0">{getReadTime(post.content)}</span>
         </div>
     </div>
 </div>
