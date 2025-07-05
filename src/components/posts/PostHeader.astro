@@ -47,10 +47,15 @@ const { title, authorName, authorImage, publishedDate, updatedDate, readTime, la
     authorName={authorName}
     authorImage={authorImage}
     publishedDate={publishedDate}
-    updatedDate={updatedDate}
     readTime={readTime}
     labels={labels}
   />
+  
+  {updatedDate && publishedDate !== updatedDate && (
+    <div class="flex items-center text-sm text-color-text-muted mb-2">
+      <i class="ri-refresh-line mr-1"></i> Updated {updatedDate}
+    </div>
+  )}
 
   {labels && labels.length > 0 && (
     <div class="flex flex-wrap gap-2 mt-4 mb-4">
