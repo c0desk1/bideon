@@ -1,3 +1,4 @@
+
 ---
 // src/components/posts/PostHeader.astro
 import PostMeta from './PostMeta.astro';
@@ -14,14 +15,12 @@ interface Props {
   publishedDate: string;
   updatedDate?: string;
   readTime: string;
-  viewsCount?: number;
   labels?: string[];
   homeCrumb: Crumb;
   categoryCrumb?: Crumb | null;
-  postCrumb: Crumb;
 }
 
-const { title, authorName, authorImage, publishedDate, updatedDate, readTime, viewsCount, labels, homeCrumb, categoryCrumb, postCrumb } = Astro.props;
+const { title, authorName, authorImage, publishedDate, updatedDate, readTime, labels, homeCrumb, categoryCrumb } = Astro.props;
 ---
 <div>
   <nav aria-label="breadcrumb" class="text-sm text-color-text-muted mb-4">
@@ -39,12 +38,6 @@ const { title, authorName, authorImage, publishedDate, updatedDate, readTime, vi
           </a>
         </li>
       )}
-      <li class="flex items-center">
-        <span class="mx-2 text-color-text-muted">/</span>
-        <span class="text-color-text font-semibold truncate max-w-[calc(100vw-10rem)] sm:max-w-xs md:max-w-md">
-          {postCrumb.name}
-        </span>
-      </li>
     </ol>
   </nav>
 
@@ -56,7 +49,6 @@ const { title, authorName, authorImage, publishedDate, updatedDate, readTime, vi
     publishedDate={publishedDate}
     updatedDate={updatedDate}
     readTime={readTime}
-    viewsCount={viewsCount}
     labels={labels}
   />
 
