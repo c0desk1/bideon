@@ -1,12 +1,4 @@
 ---
-// src/components/Header.astro
-// Hapus `rightIcon` dari Props karena tidak lagi digunakan secara langsung untuk bookmark/share di sini.
-// interface Props {
-//   title?: string;
-//   rightIcon?: "bookmark" | "share"; // Ini bisa dihapus jika tidak ada lagi fungsi bookmark/share di header
-// }
-// const { title: propTitle = "NOTME", rightIcon = "bookmark" } = Astro.props; // Sesuaikan juga di sini
-
 interface Props {
   title?: string;
 }
@@ -91,7 +83,7 @@ const navItems = [
         ))}
       </nav>
     </div>
-    <div class="w-10 md:w-auto flex justify-end items-center md:flex-1 md:justify-end space-x-3 text-color-text text-xl">
+    <div class="w-10 md:w-10 flex justify-end items-center md:flex-1 md:justify-end space-x-3 text-color-text text-xl">
       <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark/Light Mode">
         <i class="icon sun-icon ri-sun-line"></i>
         <div class="theme-toggle-thumb"></div>
