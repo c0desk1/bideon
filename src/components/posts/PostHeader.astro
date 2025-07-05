@@ -33,7 +33,7 @@ const { title, authorName, authorImage, publishedDate, updatedDate, readTime, la
       {categoryCrumb && (
         <li class="flex items-center">
           <span class="mx-2 text-color-text-muted">/</span>
-          <a href={categoryCrumb.url} class="hover:underline text-color-text-muted hover:text-color-text transition">
+          <a href={categoryCrumb.url} class="text-color-text font-semibold truncate max-w-[calc(100vw-10rem)] sm:max-w-xs md:max-w-md hover:text-color-text-muted transition">
             {categoryCrumb.name}
           </a>
         </li>
