@@ -24,15 +24,15 @@ const { title, authorName, authorImage, publishedDate, updatedDate, readTime, la
 ---
 <div>
   <nav aria-label="breadcrumb" class="text-sm text-color-text-muted mb-4">
-    <ol class="flex items-center space-x-2">
+    <ol class="flex items-center">
       <li class="flex items-center">
-        <a href={homeCrumb.url} class="hover:underline text-color-text-muted hover:text-color-text transition">
+        <a href={homeCrumb.url} class="text-color-text-muted hover:text-color-text transition">
           {homeCrumb.name}
         </a>
       </li>
       {categoryCrumb && (
         <li class="flex items-center">
-          <span class="mx-2 text-color-text-muted">/</span>
+          <span class="mx-2 text-color-text-muted">×</span>
           <a href={categoryCrumb.url} class="text-color-text font-semibold truncate max-w-[calc(100vw-10rem)] sm:max-w-xs md:max-w-md hover:text-color-text-muted transition">
             {categoryCrumb.name}
           </a>
@@ -48,7 +48,6 @@ const { title, authorName, authorImage, publishedDate, updatedDate, readTime, la
     authorImage={authorImage}
     publishedDate={publishedDate}
     readTime={readTime}
-    labels={labels}
   />
   
   {updatedDate && publishedDate !== updatedDate && (
@@ -60,8 +59,31 @@ const { title, authorName, authorImage, publishedDate, updatedDate, readTime, la
   {labels && labels.length > 0 && (
     <div class="flex flex-wrap gap-2 mt-4 mb-4">
       {labels.map((label: string) => (
-        <span class="bg-white/10 text-white/80 backdrop-blur-md text-xs px-2 py-1 rounded-full">{label}</span>
+        <span class="labels backdrop-blur-md">{label}</span>
       ))}
     </div>
   )}
 </div>
+
+<style>
+  .labels {
+    background-color: var(--color-card-bg);
+    border-radius: calc(infinity * 1px);
+    padding-inline: 0.35rem;
+    font-size: 0.75rem;
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+    color: var(--color-text);
+    border: solid 2px var(--color-border);
+    cursor: pointer;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.0em;
+  }
+
+  .labels:hover {
+    color: var(--color-text-hover);
+    background-color: var(--color-bg);
+  }
+</style>
