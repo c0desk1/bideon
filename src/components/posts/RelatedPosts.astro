@@ -24,10 +24,15 @@ const { relatedPosts } = Astro.props;
   </h3>
   
   {relatedPosts && relatedPosts.length > 0 && (
-    <div class="posts-grid">
+    <div class="
+      mobile-carousel-container
+      flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory
+      md:grid md:posts-grid md:overflow-x-visible
+    ">
       {relatedPosts.map((post) => (
         <article class="
-          group flex flex-col 
+          group flex flex-col snap-start
+          w-[80vw] flex-shrink-0 md:w-auto
           rounded-lg border border-[var(--color-border)]
           bg-[var(--color-card-bg)]
           transition-all duration-300 ease-in-out
@@ -60,3 +65,12 @@ const { relatedPosts } = Astro.props;
     </div>
   )}
 </section>
+<style>
+  .mobile-carousel-container::-webkit-scrollbar {
+    display: none;
+  }
+  .mobile-carousel-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
