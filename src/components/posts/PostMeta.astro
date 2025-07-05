@@ -4,11 +4,10 @@ interface Props {
   authorName: string;
   authorImage?: string;
   publishedDate: string;
-  updatedDate?: string;
   readTime: string;
 }
 
-const { authorName, authorImage, publishedDate, updatedDate, readTime } = Astro.props;
+const { authorName, authorImage, publishedDate, readTime } = Astro.props;
 ---
 <div class="flex items-center text-sm text-color-text-muted flex-wrap gap-x-3 gap-y-1 mb-2">
   {authorName && (
@@ -20,23 +19,11 @@ const { authorName, authorImage, publishedDate, updatedDate, readTime } = Astro.
     </div>
   )}
 
-  <span class="dot-separator">•</span>
-
+  <span class="dot-separator">×</span>
   <div class="flex items-center">
     <i class="ri-calendar-line mr-1"></i> {publishedDate}
   </div>
-
-  {updatedDate && publishedDate !== updatedDate && (
-    <>
-      <span class="dot-separator">•</span>
-      <div class="flex items-center">
-        <i class="ri-refresh-line mr-1"></i> Updated {updatedDate}
-      </div>
-    </>
-  )}
-
-  <span class="dot-separator">•</span>
-
+  <span class="dot-separator">×</span>
   <div class="flex items-center">
     <i class="ri-time-line mr-1"></i> {readTime}
   </div>
