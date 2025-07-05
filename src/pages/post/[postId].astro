@@ -172,7 +172,6 @@ if (post?.content) {
               if (entry.isIntersecting) {
                 tocItems.forEach(item => item.classList.remove('active'));
                 correspondingTocItem.classList.add('active');
-                correspondingTocItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
               }
             }
           });
