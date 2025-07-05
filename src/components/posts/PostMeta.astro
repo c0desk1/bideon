@@ -15,7 +15,7 @@ const { authorName, authorImage, publishedDate, readTime } = Astro.props;
       {authorImage && (
         <img src={authorImage} alt={authorName} class="w-6 h-6 rounded-full mr-2 object-cover" loading="lazy" />
       )}
-      By <span class="text-color-text ml-1">{authorName}</span>
+      <span class="text-color-text ml-1">{authorName}</span>
     </div>
   )}
 
