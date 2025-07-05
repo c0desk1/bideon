@@ -21,8 +21,8 @@ const getIndentClass = (level: number) => {
 ---
 
 {filteredHeadings.length > 0 && (
-  <nav class="toc-container mb-8 p-4 border border-color-border rounded-lg bg-color-card-bg shadow-md">
-    <h3 class="text-xl font-bold text-color-text mb-4">Table of Contents</h3>
+  <nav class="toc-container mb-8 p-4 rounded-lg shadow-md">
+    <h3 class="text-xl font-bold text-color-text mb-4">Daftar isi:</h3>
     <ul class="space-y-2">
       {filteredHeadings.map((heading) => (
         <li class="toc-item">
@@ -36,6 +36,20 @@ const getIndentClass = (level: number) => {
 )}
 
 <style>
+  .toc-container {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-accent);
+    
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+
+  html.light-mode .toc-container {
+    background-color: var(--light-color-card-bg);
+    border: 1px solid var(--light-color-border);
+    border-left: 4px solid var(--light-color-accent);
+  }
+
   .toc-container a {
     word-break: break-word;
     line-height: 1.4;
