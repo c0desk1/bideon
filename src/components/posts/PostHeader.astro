@@ -2,6 +2,11 @@
 // src/components/posts/PostHeader.astro
 import PostMeta from './PostMeta.astro';
 
+interface Crumb {
+  name: string;
+  url: string;
+}
+
 interface Props {
   title: string;
   authorName: string;
@@ -11,11 +16,37 @@ interface Props {
   readTime: string;
   viewsCount?: number;
   labels?: string[];
+  homeCrumb: Crumb;
+  categoryCrumb?: Crumb | null;
+  postCrumb: Crumb;
 }
 
 const { title, authorName, authorImage, publishedDate, updatedDate, readTime, viewsCount, labels } = Astro.props;
 ---
 <div>
+<nav aria-label="breadcrumb" class="text-sm text-color-text-muted mb-4">
+    <ol class="flex items-center space-x-2">
+      <li class="flex items-center">
+        <a href={homeCrumb.url} class="hover:underline text-color-text-muted hover:text-color-text transition">
+          {homeCrumb.name}
+        </a>
+      </li>
+      {categoryCrumb && (
+        <li class="flex items-center">
+          <span class="mx-2 text-color-text-muted">/</span>
+          <a href={categoryCrumb.url} class="hover:underline text-color-text-muted hover:text-color-text transition">
+            {categoryCrumb.name}
+          </a>
+        </li>
+      )}
+      <li class="flex items-center">
+        <span class="mx-2 text-color-text-muted">/</span>
+        <span class="text-color-text font-semibold truncate max-w-[calc(100vw-10rem)] sm:max-w-xs md:max-w-md">
+          {postCrumb.name}
+        </span>
+      </li>
+    </ol>
+  </nav>
   <PostMeta
     authorName={authorName}
     authorImage={authorImage}
