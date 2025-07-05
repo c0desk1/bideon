@@ -6,6 +6,7 @@ import TableOfContents from '../../components/TableOfContents.astro';
 import ShareButtons from '../../components/ShareButtons.astro';
 import ReadingProgress from '../../components/ReadingProgress.astro';
 import RelatedPosts from '../../components/RelatedPosts.astro';
+import PostNavigation from '../../components/PostNavigation.astro';
 import AuthorBox from '../../components/AuthorBox.astro';
 
 import { parse as parseHtml } from 'node-html-parser';
@@ -37,7 +38,9 @@ export async function getStaticPaths() {
     console.error("Failed to fetch posts for getStaticPaths:", error);
   }
 
-  return allPosts.map(post => {
+  allPosts.sort((a, b) => new Date(a.published).getTime() - new Date(b.published).getTime());
+
+  return allPosts.map((post, index) => {
     const relatedPosts = allPosts
       .filter(p => p.id !== post.id)
       .slice(0, 3)
@@ -49,13 +52,16 @@ export async function getStaticPaths() {
           published: p.published,
           summary: p.summary,
           content: p.content,
-          author: p.author
+          author: p.author,
       }));
 
     const homeCrumb = { name: "Home", url: "/" };
     const categoryCrumb = post?.labels && post.labels.length > 0
       ? { name: post.labels[0], url: `/category/${encodeURIComponent(post.labels[0])}` }
       : null;
+
+    const prevPost = allPosts[index - 1] ?? undefined;
+    const nextPost = allPosts[index + 1] ?? undefined;
 
     return {
       params: { postId: post.id },
@@ -64,12 +70,14 @@ export async function getStaticPaths() {
         relatedPosts: relatedPosts,
         homeCrumb: homeCrumb,
         categoryCrumb: categoryCrumb,
+        prevPost,
+        nextPost,
       },
     };
   });
 }
 
-const { post, relatedPosts, homeCrumb, categoryCrumb } = Astro.props;
+const { post, relatedPosts, homeCrumb, categoryCrumb, prevPost, nextPost } = Astro.props;
 
 const postTitle = post?.title || 'No Title';
 const postPublishedDate = formatDate(post?.published || '');
@@ -128,6 +136,7 @@ if (post?.content) {
           title={postTitle}
           url={Astro.url.href}
         />
+        <PostNavigation prevPost={prevPost} nextPost={nextPost} />
         <AuthorBox
           authorName={authorName}
           authorImage={authorImage}
@@ -154,7 +163,7 @@ if (post?.content) {
         const headingElements: HTMLElement[] = [];
 
         tocItems.forEach(item => {
-          const id = item.dataset.id;
+          const id = (item as HTMLElement).dataset.id;
           if (id) {
             const heading = document.getElementById(id);
             if (heading) {
