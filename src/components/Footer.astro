@@ -1,6 +1,7 @@
 ---
 const year = new Date().getFullYear();
-const blogName = Astro.locals.blogName;
+const blogData = Astro.locals.blogData;
+const blogName = blogData?.name;
 ---
 
 <footer class="mt-24 border-t border-[color:var(--color-border)] pt-8 pb-12 text-sm text-muted-foreground">
