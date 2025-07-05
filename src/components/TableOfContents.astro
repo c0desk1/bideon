@@ -11,7 +11,7 @@ interface Props {
 }
 
 const { headings } = Astro.props;
-const filteredHeadings = headings.filter(h => h.level >= 2 && h.level <= 3); // Filter heading yang relevan
+const filteredHeadings = headings.filter(h => h.level >= 2 && h.level <= 3);
 
 const getIndentClass = (level: number) => {
   if (level === 3) return 'ml-4';
@@ -74,7 +74,7 @@ const getIndentClass = (level: number) => {
   }
 
   .toc-item.active a {
-    color: var(--color-accent);
+    color: var(--color-text);
     font-weight: bold;
   }
 
