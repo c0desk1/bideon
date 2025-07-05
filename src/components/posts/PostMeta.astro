@@ -1,5 +1,7 @@
 ---
 // src/components/posts/PostMeta.astro
+import { Image } from 'astro:assets'; 
+
 interface Props {
   authorName: string;
   authorImage?: string;
@@ -11,12 +13,20 @@ const { authorName, authorImage, publishedDate, readTime } = Astro.props;
 ---
 <div class="flex items-center text-sm text-color-text-muted flex-wrap gap-x-3 gap-y-1 mb-2">
   {authorName && (
-    <div class="flex items-center">
-      {authorImage && (
-        <img src={authorImage} alt={authorName} class="w-6 h-6 rounded-full mr-2 object-cover" loading="lazy" />
-      )}
-      <span class="text-color-text ml-1">{authorName}</span>
-    </div>
+    <a href="/about" aria-label={`Tentang Author ${authorName}`}>
+      <div class="flex items-center cursor-pointer">
+        {authorImage && (
+          <Image
+            src={authorImage}
+            alt={authorName}
+            width={24}
+            height={24}
+            class="w-6 h-6 rounded-full mr-2 object-cover"
+          />
+        )}
+        <span class="text-color-text ml-1">{authorName}</span>
+      </div>
+    </a>
   )}
 
   <span class="dot-separator">×</span>
