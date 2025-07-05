@@ -6,16 +6,17 @@ import TableOfContents from '../../components/TableOfContents.astro';
 import ShareButtons from '../../components/ShareButtons.astro';
 import ReadingProgress from '../../components/ReadingProgress.astro';
 import RelatedPosts from '../../components/RelatedPosts.astro';
-import PostNavigation from '../../components/PostNavigation.astro';
+import PostNavigation from '../../components/posts/PostNavigation.astro';
 import AuthorBox from '../../components/AuthorBox.astro';
 import Feedback from '../../components/Feedback.astro';
+import PostComments from '../../components/posts/PostComments.astro';
 
 import { parse as parseHtml } from 'node-html-parser';
 import { formatDate, estimateReadTime, getImageUrl } from '../../utils/helpers';
 
 export async function getStaticPaths() {
-  const BLOG_ID = import.meta.env.BLOGGER_BLOG_ID;
-  const API_KEY = import.meta.env.BLOGGER_API_KEY;
+  const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
+  const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
 
   if (!BLOG_ID || !API_KEY) {
     console.error("[getStaticPaths] Missing Blogger Blog ID or API Key.");
@@ -112,6 +113,8 @@ if (post?.content) {
   });
   post.content = root.outerHTML;
 }
+
+const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
 ---
 
 <BaseLayout>
@@ -139,6 +142,7 @@ if (post?.content) {
         />
         <PostNavigation prevPost={prevPost} nextPost={nextPost} />
         <Feedback postId={post.id} />
+        <PostComments postId={post.id} blogId={BLOG_ID} />
         <AuthorBox
           authorName={authorName}
           authorImage={authorImage}
