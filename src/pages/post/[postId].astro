@@ -8,6 +8,7 @@ import ReadingProgress from '../../components/ReadingProgress.astro';
 import RelatedPosts from '../../components/RelatedPosts.astro';
 import PostNavigation from '../../components/PostNavigation.astro';
 import AuthorBox from '../../components/AuthorBox.astro';
+import Feedback from '../../components/Feedback.astro';
 
 import { parse as parseHtml } from 'node-html-parser';
 import { formatDate, estimateReadTime, getImageUrl } from '../../utils/helpers';
@@ -137,11 +138,12 @@ if (post?.content) {
           url={Astro.url.href}
         />
         <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+        <Feedback postId={post.id} />
         <AuthorBox
           authorName={authorName}
           authorImage={authorImage}
           authorUrl={authorUrl}
-          authorAbout={""}
+          authorAbout={"not much"}
         />
         {relatedPosts && relatedPosts.length > 0 && (
           <RelatedPosts relatedPosts={relatedPosts} />
