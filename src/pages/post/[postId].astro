@@ -64,6 +64,12 @@ export async function getStaticPaths() {
 
 const { post, relatedPosts } = Astro.props;
 
+const homeCrumb = { name: "Home", url: "/" };
+const categoryCrumb = post?.labels && post.labels.length > 0
+  ? { name: post.labels[0], url: `/category/${encodeURIComponent(post.labels[0])}` } // Asumsi ada halaman /category/[label]
+  : null;
+const postCrumb = { name: post?.title || 'No Title', url: Astro.url.href };
+
 const postTitle = post?.title || 'No Title';
 const postPublishedDate = formatDate(post?.published || '');
 const postUpdatedDate = formatDate(post?.updated || '');
@@ -111,6 +117,9 @@ if (post?.content) {
           readTime={postReadTime}
           viewsCount={dummyViewsCount}
           labels={postLabels}
+			homeCrumb={homeCrumb}
+          categoryCrumb={categoryCrumb}
+          postCrumb={postCrumb}
         />
         {tocHeadings.length > 0 && (
           <TableOfContents headings={tocHeadings} />
