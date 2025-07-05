@@ -1,4 +1,5 @@
 ---
+// src/layouts/BaseLayout.astro
 import "../styles/global.css";
 import BaseHead from '../components/BaseHead.astro';
 import Header from "../components/Header.astro";
@@ -13,37 +14,16 @@ const { title: pageTitle } = Astro.props;
 const blogData = Astro.locals.blogData;
 const siteName = blogData?.name || "Bima Akbar";
 
-const GTM_ID = import.meta.env.VITE_GTM_ID;
-const GSV_ID = import.meta.env.VITE_GOOGLE_SITE_VERIFY;
-
-const title = blogData?.name || "Bima Akbar";
-const description = blogData?.description || "Bima Akbar - tempat berbagi konten menarik";
-
-const faviconUrl = "/favicon.svg";
-
-const gtmScript = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
-j.src='https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${GTM_ID}');`;
-
-let headerTitle: string;
-if (Astro.url.pathname.startsWith('/post/')) {
-  headerTitle = pageTitle || siteName;
-} else {
-  headerTitle = siteName;
-}
+const headerTitle = pageTitle || siteName;
 
 const finalSeoTitle = pageTitle ? `${pageTitle} | ${siteName}` : siteName;
 const seoDescription = blogData?.description || "Bima Akbar - tempat berbagi konten menarik";
-
 ---
 
 <html lang="id">
   <BaseHead title={finalSeoTitle} description={seoDescription} />
-  <body class="min-h-screen bg-background">
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TJXJBGLX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <body class="min-h-screen">
+    <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${import.meta.env.VITE_GTM_ID}`} height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <Header title={headerTitle} />
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-16">
       <slot />
