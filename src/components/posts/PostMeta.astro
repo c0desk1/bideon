@@ -6,10 +6,9 @@ interface Props {
   publishedDate: string;
   updatedDate?: string;
   readTime: string;
-  viewsCount?: number;
 }
 
-const { authorName, authorImage, publishedDate, updatedDate, readTime, viewsCount } = Astro.props;
+const { authorName, authorImage, publishedDate, updatedDate, readTime } = Astro.props;
 ---
 <div class="flex items-center text-sm text-color-text-muted flex-wrap gap-x-3 gap-y-1 mb-2">
   {authorName && (
@@ -41,15 +40,6 @@ const { authorName, authorImage, publishedDate, updatedDate, readTime, viewsCoun
   <div class="flex items-center">
     <i class="ri-time-line mr-1"></i> {readTime}
   </div>
-
-  {viewsCount !== undefined && (
-    <>
-      <span class="dot-separator">•</span>
-      <div class="flex items-center">
-        <i class="ri-eye-line mr-1"></i> {viewsCount.toLocaleString()} Views
-      </div>
-    </>
-  )}
 </div>
 
 <style>
