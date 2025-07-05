@@ -14,7 +14,7 @@ const { title: pageTitle } = Astro.props;
 const blogData = Astro.locals.blogData;
 const siteName = blogData?.name || "Bima Akbar";
 
-const headerTitle = pageTitle || siteName;
+const headerTitle = siteName;
 
 const finalSeoTitle = pageTitle ? `${pageTitle} | ${siteName}` : siteName;
 const seoDescription = blogData?.description || "Bima Akbar - tempat berbagi konten menarik";
