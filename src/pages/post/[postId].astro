@@ -1,3 +1,4 @@
+
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostHeader from '../../components/posts/PostHeader.astro';
@@ -16,7 +17,7 @@ export async function getStaticPaths() {
   const API_KEY = import.meta.env.BLOGGER_API_KEY;
 
   if (!BLOG_ID || !API_KEY) {
-    console.error("Missing Blogger Blog ID or API Key for getStaticPaths.");
+    console.error("[getStaticPaths] Missing Blogger Blog ID or API Key.");
     return [];
   }
 
@@ -31,7 +32,7 @@ export async function getStaticPaths() {
         allPosts = data.items;
       }
     } else {
-      console.error(`Error fetching posts for getStaticPaths: ${response.status} - ${response.statusText}`);
+      console.error(`[getStaticPaths] Error fetching posts for getStaticPaths: ${response.status} - ${response.statusText}`);
     }
   } catch (error) {
     console.error("Failed to fetch posts for getStaticPaths:", error);
@@ -66,7 +67,7 @@ const { post, relatedPosts } = Astro.props;
 
 const homeCrumb = { name: "Home", url: "/" };
 const categoryCrumb = post?.labels && post.labels.length > 0
-  ? { name: post.labels[0], url: `/category/${encodeURIComponent(post.labels[0])}` } // Asumsi ada halaman /category/[label]
+  ? { name: post.labels[0], url: `/category/${encodeURIComponent(post.labels[0])}` }
   : null;
 const postCrumb = { name: post?.title || 'No Title', url: Astro.url.href };
 
@@ -117,7 +118,7 @@ if (post?.content) {
           readTime={postReadTime}
           viewsCount={dummyViewsCount}
           labels={postLabels}
-			homeCrumb={homeCrumb}
+          homeCrumb={homeCrumb}
           categoryCrumb={categoryCrumb}
           postCrumb={postCrumb}
         />
@@ -135,7 +136,7 @@ if (post?.content) {
           authorUrl={authorUrl}
           authorAbout={""}
         />
-         {relatedPosts && relatedPosts.length > 0 && (
+        {relatedPosts && relatedPosts.length > 0 && (
           <RelatedPosts relatedPosts={relatedPosts} />
         )}
 
