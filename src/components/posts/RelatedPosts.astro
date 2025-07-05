@@ -1,6 +1,5 @@
 ---
-// src/components/RelatedPosts.astro
-import { getImageUrl, formatDate, stripHtml, estimateReadTime } from '../../utils/helpers';
+import { getImageUrl, formatDate, stripHtml } from '../../utils/helpers';
 
 interface RelatedPostData {
   id: string;
@@ -10,8 +9,6 @@ interface RelatedPostData {
   published: string;
   summary?: string;
   content?: string;
-  author?: { displayName: string };
-  labels?: string[];
 }
 
 interface Props {
@@ -21,44 +18,45 @@ interface Props {
 const { relatedPosts } = Astro.props;
 ---
 
-<div class="related-posts-section mt-12 py-8 border-t border-color-text-muted rounded-lg">
-  <h3 class="text-2xl font-bold text-center text-color-text mb-8">Related Posts</h3>
-  <div class="posts-grid">
-    {relatedPosts.map((post) => (
-      <article class="post-card group flex flex-col">
-        <a href={`/post/${post.id}`} class="block h-full relative">
-          {post.labels && post.labels.length > 0 && (
-            <div class="absolute top-3 left-3 bg-gray-700 text-white text-xs px-2 py-1 rounded-full z-10">{post.labels[0]}</div>
-          )}
-          <img src={getImageUrl(post)} alt={post.title} class="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-        </a>
-        <div class="p-4 bg-gray-900 flex-grow rounded-b-lg flex flex-col justify-between">
-          <div>
-            <div class="flex items-center text-sm text-color-text-muted mb-2">
-              <i class="ri-calendar-line mr-1"></i> {formatDate(post.published)}
-              <span class="mx-2">•</span>
-              <i class="ri-time-line mr-1"></i> {estimateReadTime(post.content || post.summary || '')}
+<section class="related-posts-section mt-16 py-8 border-t border-[var(--color-border)]">
+  <h3 class="text-2xl font-bold text-center text-[var(--color-text)] mb-8">
+    Baca Juga
+  </h3>
+  
+  {relatedPosts && relatedPosts.length > 0 && (
+    <div class="posts-grid">
+      {relatedPosts.map((post) => (
+        <article class="
+          group flex flex-col 
+          rounded-lg border border-[var(--color-border)]
+          bg-[var(--color-card-bg)]
+          transition-all duration-300 ease-in-out
+          hover:border-[var(--color-accent)]
+          hover:-translate-y-1
+          shadow-sm hover:shadow-lg hover:shadow-[var(--color-accent)]/10
+        ">
+          <a href={`/post/${post.id}`} class="block">
+            <img 
+              src={getImageUrl(post)} 
+              alt={post.title} 
+              class="w-full h-40 object-cover rounded-t-lg"
+              loading="lazy" 
+              decoding="async"
+            />
+          </a>
+          <div class="p-4 flex flex-col flex-grow">
+            <h4 class="text-lg font-semibold text-[var(--color-text)] mb-2 group-hover:text-[var(--color-accent)] transition-colors">
+              <a href={`/post/${post.id}`}>{post.title}</a>
+            </h4>
+            <p class="text-sm text-[var(--color-text-muted)] flex-grow mb-4">
+              {stripHtml(post.content || post.summary || '').substring(0, 80)}...
+            </p>
+            <div class="text-xs text-[var(--color-text-muted)]">
+              {formatDate(post.published)}
             </div>
-            <h3 class="text-xl font-semibold text-color-text group-hover:text-color-text-hover transition mb-2">{post.title}</h3>
-            <p class="text-sm text-color-text-muted mb-4">{stripHtml(post.summary || post.content || '').substring(0, 100)}...</p>
           </div>
-          
-          <div>
-            {post.author && (
-              <div class="text-sm text-color-text-muted mb-2">
-                By <span class="text-color-text">{post.author.displayName}</span>
-              </div>
-            )}
-            {post.labels && post.labels.length > 0 && (
-              <div class="flex flex-wrap gap-2">
-                {post.labels.map((label: string) => (
-                  <span class="bg-gray-700 text-white text-xs px-2 py-1 rounded-full">{label}</span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </article>
-    ))}
-  </div>
-</div>
+        </article>
+      ))}
+    </div>
+  )}
+</section>
