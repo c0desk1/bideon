@@ -16,7 +16,7 @@ const basePath = '/post';
     {prevPost && (
       <a href={`${basePath}/${prevPost.id}`} class="group transition-colors duration-200">
         <span class="text-sm text-zinc-400">Previous</span>
-        <h3 class="flex items-center gap-2 text-lg font-medium text-zinc-50 group-hover:text-white">
+        <h3 class="flex items-center gap-2 text-sm font-medium text-zinc-50 group-hover:text-white">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -41,7 +41,7 @@ const basePath = '/post';
     {nextPost && (
       <a href={`${basePath}/${nextPost.id}`} class="group inline-block transition-colors duration-200">
         <span class="text-sm text-zinc-400">Next</span>
-        <h3 class="flex items-center justify-end gap-2 text-lg font-medium text-zinc-50 group-hover:text-white">
+        <h3 class="flex items-center justify-end gap-2 text-sm font-medium text-zinc-50 group-hover:text-white">
           {nextPost.title}
           <svg
             xmlns="http://www.w3.org/2000/svg"
