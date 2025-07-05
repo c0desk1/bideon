@@ -1,0 +1,36 @@
+---
+const year = new Date().getFullYear();
+const blogName = Astro.locals.blogName;
+---
+
+<footer class="mt-24 border-t border-[color:var(--color-border)] pt-8 pb-12 text-sm text-muted-foreground">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div class="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+
+      <div class="text-center md:text-left text-[color:var(--color-text-muted)]">
+        &copy; {year} <a href="/" class="text-[color:var(--color-text)] hover:underline">{blogName}</a>. Semua hak dilindungi.
+      </div>
+
+      <div class="flex justify-center gap-4">
+        <a href="https://tiktok.com/@bimaakbarmusicc" target="_blank" class="hover:text-[color:var(--color-text-hover)]" aria-label="TikTok">
+          <i class="ri-tiktok-line text-lg"></i>
+        </a>
+        <a href="https://instagram.com/notmesound" target="_blank" class="hover:text-[color:var(--color-text-hover)]" aria-label="Instagram">
+          <i class="ri-instagram-line text-lg"></i>
+        </a>
+        <a href="https://youtube.com/@bimaakbarmusic" target="_blank" class="hover:text-[color:var(--color-text-hover)]" aria-label="YouTube">
+          <i class="ri-youtube-line text-lg"></i>
+        </a>
+
+      </div>
+
+      <div class="text-center md:text-right">
+        <a href="/privacy-policy" class="hover:underline hover:text-[color:var(--color-text-hover)]">Kebijakan Privasi</a>
+        <span class="mx-2 hidden md:inline">·</span>
+        <a href="/terms" class="hover:underline hover:text-[color:var(--color-text-hover)]">Syarat & Ketentuan</a>
+      </div>
+
+    </div>
+  </div>
+</footer>

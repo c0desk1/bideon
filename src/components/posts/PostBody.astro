@@ -1,0 +1,9 @@
+---
+// src/components/posts/PostBody.astro
+interface Props {
+  content: string;
+}
+
+const { content } = Astro.props;
+---
+<div class="prose mt-8" set:html={content} />
