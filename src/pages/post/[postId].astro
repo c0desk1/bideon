@@ -1,4 +1,3 @@
-
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostHeader from '../../components/posts/PostHeader.astro';
@@ -32,7 +31,7 @@ export async function getStaticPaths() {
         allPosts = data.items;
       }
     } else {
-      console.error(`[getStaticPaths] Error fetching posts for getStaticPaths: ${response.status} - ${response.statusText}`);
+      console.error(`[getStaticPaths] Error fetching posts: ${response.status} - ${response.statusText}`);
     }
   } catch (error) {
     console.error("Failed to fetch posts for getStaticPaths:", error);
@@ -53,23 +52,26 @@ export async function getStaticPaths() {
           author: p.author
       }));
 
+    const homeCrumb = { name: "Home", url: "/" };
+    const categoryCrumb = post?.labels && post.labels.length > 0
+      ? { name: post.labels[0], url: `/category/${encodeURIComponent(post.labels[0])}` }
+      : null;
+    const postCrumb = { name: post?.title || 'No Title', url: `/post/${post.id}` };
+
     return {
       params: { postId: post.id },
       props: {
         post: post,
         relatedPosts: relatedPosts,
+        homeCrumb: homeCrumb,
+        categoryCrumb: categoryCrumb,
+        postCrumb: postCrumb,
       },
     };
   });
 }
 
-const { post, relatedPosts } = Astro.props;
-
-const homeCrumb = { name: "Home", url: "/" };
-const categoryCrumb = post?.labels && post.labels.length > 0
-  ? { name: post.labels[0], url: `/category/${encodeURIComponent(post.labels[0])}` }
-  : null;
-const postCrumb = { name: post?.title || 'No Title', url: Astro.url.href };
+const { post, relatedPosts, homeCrumb, categoryCrumb, postCrumb } = Astro.props;
 
 const postTitle = post?.title || 'No Title';
 const postPublishedDate = formatDate(post?.published || '');
@@ -83,6 +85,7 @@ const dummyViewsCount = Math.floor(Math.random() * 5000) + 100;
 const authorName = post?.author?.displayName || '';
 const authorImage = post?.author?.image?.url || '';
 const authorUrl = post?.author?.url || '';
+
 
 interface HeadingData {
   id: string;
@@ -109,6 +112,9 @@ if (post?.content) {
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
     {post ? (
       <article>
+        {post.images && post.images.length > 0 && (
+            <img src={getImageUrl(post)} alt={post.title} class="w-full h-auto rounded-lg mb-8" />
+        )}
         <PostHeader
           title={postTitle}
           authorName={postAuthorName}
@@ -139,7 +145,6 @@ if (post?.content) {
         {relatedPosts && relatedPosts.length > 0 && (
           <RelatedPosts relatedPosts={relatedPosts} />
         )}
-
       </article>
     ) : (
       <p class="text-center text-color-text-muted">Post not found.</p>
