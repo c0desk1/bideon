@@ -7,46 +7,42 @@ interface Props {
 
 const { title, url } = Astro.props;
 
-// Encoding URL dan Judul untuk penggunaan di link share
 const encodedTitle = encodeURIComponent(title);
 const encodedUrl = encodeURIComponent(url);
 
-// URL untuk berbagi ke berbagai platform
 const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
 const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedTitle}`;
-const linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}`;
 const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedTitle}%20${encodedUrl}`;
 const telegramUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`;
 const emailUrl = `mailto:?subject=${encodedTitle}&body=${encodedUrl}`;
 ---
 
-<div class="share-buttons-container flex items-center justify-start gap-3 mt-8 py-4 border-t border-color-border">
-  <span class="text-color-text-muted text-base font-semibold mr-2">Share This Post:</span>
-  
-  {/* Tombol Copy Link */}
-  <button id="copy-link-button" class="share-button copy-link-button" aria-label="Copy Link">
-    <i class="ri-link-m"></i> {/* Menggunakan ri-link-m (medium size) */}
-  </button>
+<div class="share-card-section mt-8 p-6 rounded-lg">
+  <div class="share-content-wrapper flex flex-col items-start md:flex-row md:items-center md:justify-start md:gap-4">
+    <span class="text-color-text-muted text-base font-semibold mb-4 md:mb-0 md:mr-2">Bagikan:</span>
+    
+    <div class="flex flex-wrap items-center justify-start gap-3">
+      <button id="copy-link-button" class="share-button copy-link-button" aria-label="Copy Link">
+        <i class="ri-link-m"></i>
+      </button>
 
-  {/* Tombol Share Individu */}
-  <a href={twitterUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on X" class="share-button twitter">
-    <i class="ri-twitter-x-fill"></i>
-  </a>
-  <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" class="share-button facebook">
-    <i class="ri-facebook-fill"></i>
-  </a>
-  <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" class="share-button linkedin">
-    <i class="ri-linkedin-fill"></i>
-  </a>
-  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" class="share-button whatsapp">
-    <i class="ri-whatsapp-fill"></i>
-  </a>
-  <a href={telegramUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on Telegram" class="share-button telegram">
-    <i class="ri-telegram-fill"></i>
-  </a>
-  <a href={emailUrl} aria-label="Share via Email" class="share-button email">
-    <i class="ri-mail-fill"></i>
-  </a>
+      <a href={twitterUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on X" class="share-button social-button twitter">
+        <i class="ri-twitter-x-fill"></i>
+      </a>
+      <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" class="share-button social-button facebook">
+        <i class="ri-facebook-fill"></i>
+      </a>
+      <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" class="share-button social-button whatsapp">
+        <i class="ri-whatsapp-fill"></i>
+      </a>
+      <a href={telegramUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on Telegram" class="share-button social-button telegram">
+        <i class="ri-telegram-fill"></i>
+      </a>
+      <a href={emailUrl} aria-label="Share via Email" class="share-button social-button email">
+        <i class="ri-mail-fill"></i>
+      </a>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -54,34 +50,26 @@ const emailUrl = `mailto:?subject=${encodedTitle}&body=${encodedUrl}`;
     const copyLinkButton = document.getElementById("copy-link-button");
 
     if (copyLinkButton) {
-      const pageUrl = window.location.href; // URL halaman saat ini
+      const pageUrl = window.location.href;
 
       copyLinkButton.addEventListener("click", async () => {
         try {
           await navigator.clipboard.writeText(pageUrl);
-          // Umpan balik visual: ganti ikon sementara
           const originalIconClass = copyLinkButton.querySelector('i')?.className;
-          const originalButtonText = copyLinkButton.innerHTML;
-
+          
           if (copyLinkButton.querySelector('i')) {
-             copyLinkButton.querySelector('i')!.className = "ri-check-line"; // Ikon centang
-          } else {
-             // Fallback jika tidak ada <i>, langsung ganti teks
-             copyLinkButton.innerHTML = `<i class="ri-check-line"></i>`;
+             copyLinkButton.querySelector('i')!.className = "ri-check-line";
           }
          
-          // Kembalikan ikon atau teks setelah beberapa detik
           setTimeout(() => {
             if (originalIconClass) {
                 copyLinkButton.querySelector('i')!.className = originalIconClass;
-            } else {
-                copyLinkButton.innerHTML = originalButtonText;
             }
-          }, 2000); // 2 detik
+          }, 1500);
           
         } catch (err) {
           console.error('Failed to copy URL: ', err);
-          alert("Failed to copy link. Please copy manually: " + pageUrl); // Fallback alert
+          alert("Failed to copy link. Please copy manually: " + pageUrl);
         }
       });
     }
@@ -89,72 +77,50 @@ const emailUrl = `mailto:?subject=${encodedTitle}&body=${encodedUrl}`;
 </script>
 
 <style>
-  /* Container styles handled by Tailwind classes */
+  .share-card-section {
+    border-top: 1px solid rgba(var(--color-text-rgb), 0.1);
+  }
+
+  html.light-mode .share-card-section {
+    border-top: 1px solid rgba(var(--light-color-text-rgb), 0.08);
+  }
 
   .share-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px; /* Ukuran tombol */
-    height: 40px;
-    border-radius: 6px; /* Sudut sedikit membulat, bukan lingkaran penuh */
-    background-color: var(--color-card-bg); /* Background dari variabel tema */
-    border: 1px solid var(--color-border); /* Border dari variabel tema */
-    color: var(--color-text-muted); /* Warna ikon default, muted */
-    font-size: 1.25rem; /* Ukuran ikon */
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Bayangan lembut ala Vercel */
-    text-decoration: none; /* Hilangkan underline pada link */
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 1.5rem;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-decoration: none;
     cursor: pointer;
   }
 
   .share-button:hover {
-    transform: translateY(-1px); /* Efek naik sangat halus */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* Bayangan sedikit lebih dalam */
-    color: var(--color-text); /* Ikon menjadi terang */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    color: var(--color-text);
   }
 
-  /* --- Warna Hover Spesifik Brand (Background atau Ikon) --- */
-  /* Kita akan ubah warna background saat hover menjadi warna brand */
+  .share-button.twitter:hover { background-color: #1DA1F2; border-color: #1DA1F2; color: white; }
+  .share-button.facebook:hover { background-color: #1877F2; border-color: #1877F2; color: white; }
+  .share-button.linkedin:hover { background-color: #0A66C2; border-color: #0A66C2; color: white; }
+  .share-button.whatsapp:hover { background-color: #25D366; border-color: #25D366; color: white; }
+  .share-button.telegram:hover { background-color: #26A5E4; border-color: #26A5E4; color: white; }
+  .share-button.email:hover { background-color: #BBBBBB; border-color: #BBBBBB; color: black; }
 
-  .share-button.twitter:hover {
-    background-color: #1DA1F2; /* Twitter Blue */
-    border-color: #1DA1F2;
-    color: white; /* Teks putih saat hover */
-  }
-  .share-button.facebook:hover {
-    background-color: #1877F2; /* Facebook Blue */
-    border-color: #1877F2;
-    color: white;
-  }
-  .share-button.linkedin:hover {
-    background-color: #0A66C2; /* LinkedIn Blue */
-    border-color: #0A66C2;
-    color: white;
-  }
-  .share-button.whatsapp:hover {
-    background-color: #25D366; /* WhatsApp Green */
-    border-color: #25D366;
-    color: white;
-  }
-  .share-button.telegram:hover {
-    background-color: #26A5E4; /* Telegram Blue */
-    border-color: #26A5E4;
-    color: white;
-  }
-  .share-button.email:hover {
-    background-color: #BBBBBB; /* Email Gray */
-    border-color: #BBBBBB;
-    color: black; /* Teks hitam karena background terang */
-  }
-
-  /* Gaya untuk tombol Copy Link */
   .copy-link-button {
-    background-color: var(--color-bg); /* Background sama dengan body/header, atau card-bg */
+    background-color: var(--color-bg);
     color: var(--color-text-muted);
   }
   .copy-link-button:hover {
-    background-color: var(--color-border); /* Background border saat hover */
+    background-color: var(--color-border);
     border-color: var(--color-border);
     color: var(--color-text);
   }
