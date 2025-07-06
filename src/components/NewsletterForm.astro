@@ -1,49 +1,50 @@
 ---
-const siteKey = import.meta.env.VITE_PUBLIC_TURNSTILE_SITE_KEY;
-
-const turnstile = `
-  window.onTurnstileSuccess = function (token) {
-    const form = document.getElementById("newsletter-form");
-    const emailInput = form.querySelector('input[name="email"]');
-    const email = emailInput?.value || "";
-    const btn = document.getElementById("newsletter-submit-btn");
-
-    if (!email || !token) {
-      alert("Email atau token kosong.");
-      return;
-    }
-
-    btn.disabled = true;
-    btn.innerText = "Mengirim...";
-
-    fetch("/api/newsletter-submit", {
-      method: "POST",
-      body: new URLSearchParams({
-        email: email,
-        "cf-turnstile-response": token
-      })
-    })
-    .then(res => {
-      if (res.ok) {
-        alert("🎉 Langganan berhasil!");
-        form.reset();
-      } else {
-        res.text().then(text => alert("❌ Gagal: " + text));
-      }
-    })
-    .catch(() => alert("❌ Gagal mengirim form."))
-    .finally(() => {
-      btn.disabled = false;
-      btn.innerText = "Langganan";
-    });
-  };
+const script = `
+  function showToast(message, type = "success") {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.className =
+      "fixed bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-md text-sm font-medium z-50 transition-all shadow-md " +
+      (type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white");
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+  }
 
   window.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("newsletter-form");
     const btn = document.getElementById("newsletter-submit-btn");
-    if (btn) {
-      btn.addEventListener("click", function () {
-        if (typeof window.turnstile !== "undefined") {
-          window.turnstile.execute();
+
+    if (form && btn) {
+      btn.addEventListener("click", async function () {
+        const emailInput = form.querySelector('input[name="email"]');
+        const email = emailInput?.value.trim();
+
+        if (!email) {
+          showToast("Masukkan email terlebih dahulu.", "error");
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Mengirim...";
+
+        try {
+          const res = await fetch("/api/newsletter-submit", {
+            method: "POST",
+            body: new URLSearchParams({ email }),
+          });
+
+          const text = await res.text();
+          if (res.ok) {
+            showToast("🎉 Langganan berhasil!");
+            form.reset();
+          } else {
+            showToast("❌ Gagal: " + text, "error");
+          }
+        } catch (err) {
+          showToast("❌ Gagal mengirim form.", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerText = "Langganan";
         }
       });
     }
@@ -65,7 +66,6 @@ const turnstile = `
       required
       class="w-full sm:w-auto sm:flex-grow rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
     />
-    <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-token" />
     <button
       type="button"
       id="newsletter-submit-btn"
@@ -75,18 +75,7 @@ const turnstile = `
     </button>
   </form>
 
-  <div class="sr-only">
-    <div
-      class="cf-turnstile"
-      data-sitekey={typeof siteKey === "string" ? siteKey : ""}
-      data-size="invisible"
-      data-theme="auto"
-      data-callback="onTurnstileSuccess"
-    ></div>
-  </div>
-
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  <script is:inline set:html={turnstile}></script>
+  <script is:inline set:html={script}></script>
 
   <p class="mt-6 text-xs text-[var(--color-text-muted)]">
     Kami tidak jual datamu. Bisa berhenti kapan saja.
