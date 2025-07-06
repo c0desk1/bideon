@@ -1,4 +1,6 @@
 import type { APIContext } from "astro";
+import { verifyTurnstile } from "../../utils/turnstile";
+import { subscribeToButtondown } from "../../utils/buttondown";
 
 export async function POST({ request }: APIContext) {
   const formData = await request.formData();
@@ -9,24 +11,13 @@ export async function POST({ request }: APIContext) {
     return new Response("Data tidak lengkap", { status: 400 });
   }
 
-  const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-    method: "POST",
-    body: new URLSearchParams({
-      secret: import.meta.env.TURNSTILE_SECRET_TOKEN,
-      response: token,
-    }),
-  });
-
-  const verifyData = await verifyRes.json();
-  if (!verifyData.success) {
+  const isHuman = await verifyTurnstile(token);
+  if (!isHuman) {
     return new Response("Verifikasi bot gagal", { status: 403 });
   }
 
-  const result = await fetch("https://buttondown.email/api/emails/embed-subscribe/bimaakbar", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ email, embed: "1" }),
+  const success = await subscribeToButtondown(email);
+  return new Response(success ? "Berhasil langganan!" : "Gagal langganan.", {
+    status: success ? 200 : 500,
   });
-
-  return new Response(result.ok ? "Berhasil langganan!" : "Gagal langganan.", { status: result.ok ? 200 : 500 });
 }
