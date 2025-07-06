@@ -130,20 +130,10 @@ const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
 ---
 
 <BaseLayout>
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-24">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pt-16">
     {post ? (
       <article>
-        <PostHeader
-          title={postTitle}
-          authorName={postAuthorName}
-          authorImage={postAuthorImage}
-          publishedDate={postPublishedDate}
-          updatedDate={postUpdatedDate}
-          readTime={postReadTime}
-          labels={postLabels}
-          homeCrumb={homeCrumb}
-          categoryCrumb={categoryCrumb}
-        />
+        <PostHeader title={postTitle} authorName={postAuthorName} authorImage={postAuthorImage} publishedDate={postPublishedDate} updatedDate={postUpdatedDate} readTime={postReadTime} labels={postLabels} homeCrumb={homeCrumb} categoryCrumb={categoryCrumb} />
         {tocHeadings.length > 0 && (
           <TableOfContents headings={tocHeadings} />
         )}

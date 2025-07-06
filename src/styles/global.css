@@ -8,7 +8,7 @@
   --color-text-rgb: 255, 255, 255;
   --color-text-hover: #eaeaea;
   --color-text-muted: #888888;
-  --color-border: #333333;
+  --color-border: rgba(255, 255, 255, 0.1);
   --color-card-bg: #111111;
 
   --color-accent: #0070f3;
@@ -215,7 +215,6 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   .header-center-section { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
   .header-right-section { flex-basis: 33.333333%; flex-shrink: 0; display: flex; justify-content: flex-end; }
   .posts-grid { grid-template-columns: repeat(2, 1fr); }
-
   
 }
 

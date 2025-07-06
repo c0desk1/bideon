@@ -1,18 +1,18 @@
 ---
 // src/components/NewsletterForm.astro
 ---
-<div class="mt-16 rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] p-6 text-center">
+<div class="py-8 px-8 mx-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] text-center">
     <h3 class="text-xl font-bold text-[var(--color-text)]">
       Berlangganan
     </h3>
     <p class="mt-2 text-[var(--color-text-muted)]">
       Dapatkan artikel terbaru langsung dikirim ke kotak masuk Anda.
     </p>
-    
+    <!-- @ts-ignore -->
     <form
       action="https://buttondown.email/api/emails/embed-subscribe/bimaakbar" method="post"
       target="popupwindow"
-      onsubmit="window.open('https://buttondown.email/bimaakbar', 'popupwindow')" class="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
+      onsubmit="window.open('https://buttondown.email/bimaakbar', 'popupwindow', 'noopener,noreferrer')" class="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
     >
       <label for="bd-email" class="sr-only">Masukkan email Anda</label>
       <input
