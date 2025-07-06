@@ -1,9 +1,10 @@
 name = "bima-akbar"
+main = "./dist/_worker.js"
 compatibility_date = "2025-07-07"
 
 [assets]
 directory = "./dist"
 
-kv_namespaces = [
-  { binding = "SESSION", id = "<db57629ff0ee4d9d856a71ad49047f3f>" }
-]
+[[kv_namespaces]]
+binding = "BIMA_KV_SPACE"
+id = "30c729861a2b4e21b15c8ce0f5539e75"
