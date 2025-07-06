@@ -1,5 +1,5 @@
 ---
-const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const siteKey = import.meta.env.VITE_PUBLIC_TURNSTILE_SITE_KEY;
 
 const turnstile = `
   window.onTurnstileReady = function (token) {
@@ -54,13 +54,17 @@ const turnstile = `
   </form>
 
   <div class="sr-only">
-    <div
-      class="cf-turnstile"
-      data-sitekey={siteKey}
-      data-size="invisible"
-      data-theme="auto"
-      data-callback="onTurnstileReady"
-    ></div>
+   {siteKey && typeof siteKey === "string" ? (
+      <div
+        class="cf-turnstile"
+        data-sitekey={siteKey}
+        data-size="invisible"
+        data-theme="auto"
+        data-callback="onTurnstileReady"
+      ></div>
+    ) : (
+      <p class="text-red-500 text-sm mt-4">Turnstile belum dikonfigurasi.</p>
+    )}
   </div>
 
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
