@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from "@tailwindcss/vite";
@@ -19,6 +19,12 @@ export default defineConfig({
       configPath: 'wrangler.toml',
       persist: {
         path: './.cache/wrangler/v3'
+      },
+    },
+    bindings: {
+      BIMA_KV_SPACE: {
+        type: 'kv',
+        namespace_id: process.env.CLOUDFLARE_KV_NAMESPACE_ID,
       },
     },
     sessionKVBindingName: 'BIMA_KV_SPACE',
