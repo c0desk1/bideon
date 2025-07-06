@@ -106,6 +106,15 @@ const authorName = post?.author?.displayName || '';
 const authorImage = post?.author?.image?.url || '';
 const authorUrl = post?.author?.url || '';
 
+const root = parseHtml(post.content || '');
+const plainText = root.innerText;
+const postDescription = plainText.slice(0, 150);
+let ogImage = null;
+const firstImg = root.querySelector('img');
+if (firstImg) {
+  ogImage = firstImg.getAttribute('src');
+}
+
 
 interface HeadingData {
   id: string;
@@ -132,8 +141,8 @@ const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
 
 <BaseLayout
   title={post.title}
-  description={post.summary}
-  image={post.heroImageUrl}
+  description={postDescription}
+  image={ogImage || '/bimaakbar-og-default.png'}
   url={`https://bimaakbar.my.id/post/${post.id}`}>
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pt-16">
     {post ? (
