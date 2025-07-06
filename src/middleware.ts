@@ -18,7 +18,7 @@ async function fetchBlogInfo(BLOG_ID: string, API_KEY: string): Promise<BlogInfo
   return {
     name: data.name,
     description: data.description,
-    image: data.image ?? { url: "/favicon.svg" }
+    image: data.image ?? { url: "/bimaakbar-og-default.png" }
   };
 }
 
@@ -39,7 +39,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.blogData = {
       name: "Bima Akbar",
       description: "Default description",
-      image: { url: "/favicon.svg" }
+      image: { url: "/bimaakbar-og-default.png" }
     } as BlogInfo;
     context.locals.recentPosts = [];
     return next();
@@ -59,7 +59,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.blogData = {
       name: "Bima Akbar",
       description: "Default description",
-      image: { url: "/favicon.svg" }
+      image: { url: "/bimaakbar-og-default.png" }
     } as BlogInfo;
     context.locals.recentPosts = [];
   }
