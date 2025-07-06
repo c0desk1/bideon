@@ -17,10 +17,7 @@ const blogData = Astro.locals.blogData;
 const siteName = blogData?.name || "Bima Akbar";
 const siteDescription = blogData.description;
 
-const finalTitle =
-  pageTitle && pageTitle !== siteName
-    ? `${pageTitle} × ${siteName}`
-    : siteName;
+const finalTitle = pageTitle || siteName;
 
 const finalDescription = description || siteDescription;
 
