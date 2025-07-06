@@ -14,5 +14,12 @@ export default defineConfig({
   output: 'server',
   adapter: cloudflare({
     imageService: 'cloudflare',
+    mode: 'directory',
+    bindings: {
+      BIMA__KV_TOKEN: {
+        type: 'kv',
+        namespace_id: process.env.CLOUDFLARE_KV_NAMESPACE_ID,
+      },
+    },
  }),
 });
