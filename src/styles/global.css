@@ -234,13 +234,11 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   gap: 1.5rem;
 }
 
-/* --- START: Revised .post-card styles (formerly .article-card) --- */
-/* This section consolidates the styling for your article/post cards */
 .post-card {
-  border-radius: 0.75rem; /* rounded-xl */
+  border-radius: 0.75rem;
   overflow: hidden;
-  border: 1px solid var(--color-border); /* border-neutral-800 -> var(--color-border) */
-  background-color: rgba(var(--color-bg-rgb), 0.6); /* bg-neutral-900/60 -> rgba dengan var(--color-bg-rgb) */
+  border: 1px solid var(--color-border);
+  background-color: rgba(var(--color-bg-rgb), 0.6);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
@@ -249,29 +247,25 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
   border-color: var(--color-accent);
-  background-color: var(--post-card-bg); /* Match hover background */
+  background-color: var(--post-card-bg);
 }
 
-/* Specific styling for the image wrapper within the card */
-.post-card .image-wrapper { /* renamed from .article-image-wrapper for consistency */
+.post-card .image-wrapper {
   position: relative;
 }
 
-/* Image styling */
-.post-card .post-image { /* renamed from .article-image for consistency */
+.post-card .post-image {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
   border-bottom: 1px solid var(--color-border);
 }
 
-/* Image hover effect */
 .post-card:hover .post-image {
   filter: brightness(0.9);
 }
 
-/* Featured badge styling */
-.post-card .featured-badge { /* Added .post-card parent for specificity */
+.post-card .featured-badge {
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
@@ -280,14 +274,13 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.25rem 0.5rem;
-  border-radius: 9999px; /* Rounded-full */
+  border-radius: 9999px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   text-transform: uppercase;
   z-index: 20;
 }
 
-/* Content section padding and layout */
-.post-card .content-section { /* renamed from .article-content for consistency */
+.post-card .content-section {
   padding: 1rem;
   display: flex;
   flex-direction: column;
@@ -295,8 +288,7 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   background-color: var(--post-card-bg);
 }
 
-/* Metadata (date, read time) styling */
-.post-card .meta-info { /* renamed from .article-meta for consistency */
+.post-card .meta-info {
   display: flex;
   align-items: center;
   font-size: 0.75rem;
@@ -308,8 +300,7 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   font-size: 0.875rem;
 }
 
-/* Article title styling */
-.post-card .post-title { /* renamed from .article-title for consistency */
+.post-card .post-title {
   font-size: 1rem;
   color: var(--color-text);
   font-weight: 600;
@@ -325,14 +316,12 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   text-decoration: underline;
 }
 
-/* Summary paragraph styling */
-.post-card .post-summary { /* renamed from .article-summary for consistency */
+.post-card .post-summary {
   font-size: 0.875rem;
   color: var(--color-text-muted);
 }
 
-/* Author information styling */
-.post-card .author-section { /* renamed from .author-info for consistency */
+.post-card .author-section {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -352,7 +341,6 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   color: var(--color-text);
 }
 
-/* Labels/tags container */
 .post-card .labels-container {
   display: flex;
   flex-wrap: wrap;
@@ -360,11 +348,10 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   margin-top: 0.5rem;
 }
 
-/* Individual label/tag styling */
-.post-card .label-tag { /* Added .post-card parent for specificity */
+.post-card .label-tag {
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
-  border-radius: 9999px; /* Rounded-full */
+  border-radius: 9999px;
   background-color: var(--post-card-tag-bg);
   color: var(--color-text-muted);
   font-weight: 500;
@@ -372,13 +359,10 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
-/* Label/tag hover effect */
 .post-card .label-tag:hover {
   background-color: var(--color-border);
   color: var(--color-text);
 }
-/* --- END: Revised .post-card styles --- */
-
 
 .prose {
   max-width: 100%;
