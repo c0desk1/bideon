@@ -1,9 +1,0 @@
----
-// src/components/posts/PostBody.astro
-interface Props {
-  content: string;
-}
-
-const { content } = Astro.props;
----
-<div class="prose" set:html={content} />
