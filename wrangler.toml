@@ -1,0 +1,3 @@
+name = "Bima Akbar"
+main = "./dist/server/entry.mjs" # Ini lokasi output Worker dari Astro
+compatibility_date = "2025-07-07"
