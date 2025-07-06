@@ -64,6 +64,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     context.locals.blogData = blogData as BlogInfo;
     context.locals.recentPosts = recentPosts.sort((a: Post, b: Post) => new Date(b.published).getTime() - new Date(a.published).getTime());
+context.locals.blogName = blogData.name;
 
   } catch (error) {
     console.error("Error di middleware:", error);
@@ -73,6 +74,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       image: { url: "/bimaakbar-og-default.png" }
     } as BlogInfo;
     context.locals.recentPosts = [];
+context.locals.blogName = "Bima Akbar";
   }
 
   return next();
