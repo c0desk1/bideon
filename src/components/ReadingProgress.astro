@@ -1,0 +1,23 @@
+---
+---
+<script is:inline>
+  window.addEventListener("scroll", () => {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const progress = (scrollTop / scrollHeight) * 100;
+
+    const bar = document.querySelector("#readingProgressBar");
+    if (bar) {
+      bar.style.width = progress + "%";
+    }
+  });
+</script>
+
+<style>
+  #readingProgressBar {
+    transition: width 0.2s ease-out;
+  }
+</style>
+<div class="fixed top-0 left-0 right-0 h-[4px] z-50 bg-transparent">
+  <div id="readingProgressBar" class="h-full bg-white/50 w-0 rounded-full"></div>
+</div>

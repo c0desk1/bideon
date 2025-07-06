@@ -1,0 +1,92 @@
+---
+// src/components/TableOfContents.astro
+interface HeadingData {
+  id: string;
+  level: number;
+  text: string;
+}
+
+interface Props {
+  headings: HeadingData[];
+}
+
+const { headings } = Astro.props;
+const filteredHeadings = headings.filter(h => h.level >= 2 && h.level <= 3);
+
+const getIndentClass = (level: number) => {
+  if (level === 3) return 'ml-4';
+  if (level === 4) return 'ml-8';
+  return '';
+};
+---
+
+{filteredHeadings.length > 0 && (
+  <nav class="toc-container py-4">
+    <h3 class="text-xl font-bold text-color-text mb-4">Daftar isi:</h3>
+    <ul id="toc-list" class="space-y-2">
+      {filteredHeadings.map((heading) => (
+        <li class="toc-item" data-id={heading.id}>
+          <a href={`#${heading.id}`} class={`block text-color-text-muted hover:text-color-text transition ${getIndentClass(heading.level)}`}>
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style>
+  .toc-container {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+
+  html.light-mode .toc-container {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .toc-container ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  .toc-item {
+    position: relative;
+    padding-left: 1.25rem;
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-left 0.2s ease-in-out;
+  }
+
+  .toc-item::before {
+    content: '- ';
+    position: absolute;
+    left: 0;
+    color: var(--color-text-muted);
+    font-weight: normal;
+    line-height: inherit;
+  }
+
+  html.light-mode .toc-item::before {
+    color: var(--light-color-text-muted);
+  }
+
+  .toc-item.active a {
+    color: var(--color-text);
+    font-weight: bold;
+  }
+
+  .toc-item.active::before {
+    color: var(--color-text-muted);
+  }
+
+  .toc-container a {
+    word-break: break-word;
+    line-height: 1.4;
+  }
+  .toc-item:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+</style>

@@ -1,0 +1,220 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostHeader from '../../components/posts/PostHeader.astro';
+import PostBody from '../../components/posts/PostBody.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import ShareButtons from '../../components/posts/SharePosts.astro';
+import ReadingProgress from '../../components/ReadingProgress.astro';
+import RelatedPosts from '../../components/posts/RelatedPosts.astro';
+import PostNavigation from '../../components/posts/PostNavigation.astro';
+import AuthorProfile from '../../components/AuthorProfile.astro';
+import Feedback from '../../components/Feedback.astro';
+import PostComments from '../../components/posts/PostComments.astro';
+import NewsletterForm from '../../components/NewsletterForm.astro';
+
+import { parse as parseHtml } from 'node-html-parser';
+import { formatDate, estimateReadTime, getRelatedPosts } from '../../utils/helpers';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
+  const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
+
+  if (!BLOG_ID || !API_KEY) {
+    console.error("[getStaticPaths] Missing Blogger Blog ID or API Key.");
+    return [];
+  }
+
+  let allPosts: any[] = [];
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}&maxResults=100&fetchImages=true&orderBy=published`
+    );
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.items) {
+        allPosts = data.items;
+      }
+    } else {
+      console.error(`[getStaticPaths] Error fetching posts: ${response.status} - ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error("Failed to fetch posts for getStaticPaths:", error);
+  }
+
+  const authorProfiles = new Map();
+  const uniqueAuthorIds = [...new Set(allPosts.map(p => p.author.id))];
+
+  await Promise.all(
+    uniqueAuthorIds.map(async (authorId) => {
+      if (!authorId) return;
+      try {
+        const res = await fetch(`https://www.googleapis.com/blogger/v3/users/${authorId}?key=${API_KEY}`);
+        if (res.ok) {
+          const profileData = await res.json();
+          authorProfiles.set(authorId, profileData);
+        }
+      } catch (e) {
+        console.error(`Gagal mengambil profil untuk penulis ID: ${authorId}`, e);
+      }
+    })
+  );
+
+  allPosts.sort((a, b) => new Date(a.published).getTime() - new Date(b.published).getTime());
+
+  return allPosts.map((post, index) => {
+    const relatedPosts = getRelatedPosts(allPosts, post, 3);
+    const homeCrumb = { name: "Home", url: "/" };
+    const categoryCrumb = post?.labels && post.labels.length > 0
+      ? { name: post.labels[0], url: `/category/${encodeURIComponent(post.labels[0])}` }
+      : null;
+
+    const prevPost = allPosts[index - 1] ?? undefined;
+    const nextPost = allPosts[index + 1] ?? undefined;
+
+    const authorId = post.author.id;
+    const authorProfile = authorProfiles.get(authorId);
+    const authorAbout = authorProfile?.about || "Penulis dan kreator di blog ini."
+
+    return {
+      params: { postId: post.id },
+      props: {
+        post: post,
+        relatedPosts: relatedPosts,
+        homeCrumb: homeCrumb,
+        categoryCrumb: categoryCrumb,
+        authorAbout,
+        prevPost,
+        nextPost,
+      },
+    };
+  });
+}
+
+const { post, relatedPosts, homeCrumb, categoryCrumb, authorAbout, prevPost, nextPost } = Astro.props;
+
+const postTitle = post?.title || 'No Title';
+const postPublishedDate = formatDate(post?.published || '');
+const postUpdatedDate = formatDate(post?.updated || '');
+const postReadTime = estimateReadTime(post?.content || post?.summary || '');
+const postAuthorName = post?.author?.displayName || '';
+const postAuthorImage = post?.author?.image?.url;
+const postLabels = post?.labels || [];
+
+const authorName = post?.author?.displayName || '';
+const authorImage = post?.author?.image?.url || '';
+const authorUrl = post?.author?.url || '';
+
+const root = parseHtml(post.content || '');
+const plainText = root.innerText;
+const postDescription = plainText.slice(0, 150);
+let ogImage = null;
+const firstImg = root.querySelector('img');
+if (firstImg) {
+  ogImage = firstImg.getAttribute('src');
+}
+
+
+interface HeadingData {
+  id: string;
+  level: number;
+  text: string;
+}
+
+let tocHeadings: HeadingData[] = [];
+if (post?.content) {
+  const root = parseHtml(post.content);
+  let headingCounter = 0;
+  root.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(headingEl => {
+    const level = parseInt(headingEl.tagName.substring(1), 10);
+    let id = headingEl.id || `heading-${headingCounter++}`;
+    headingEl.setAttribute('id', id);
+
+    tocHeadings.push({ id, level, text: headingEl.innerText });
+  });
+  post.content = root.outerHTML;
+}
+
+const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
+---
+
+<BaseLayout
+  title={post.title}
+  description={postDescription}
+  image={ogImage || '/bimaakbar-og-default.png'}
+  url={`https://bimaakbar.my.id/post/${post.id}`}>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pt-16">
+    {post ? (
+      <article>
+        <PostHeader title={postTitle} authorName={postAuthorName} authorImage={postAuthorImage} publishedDate={postPublishedDate} updatedDate={postUpdatedDate} readTime={postReadTime} labels={postLabels} homeCrumb={homeCrumb} categoryCrumb={categoryCrumb} />
+        {tocHeadings.length > 0 && (
+          <TableOfContents headings={tocHeadings} />
+        )}
+        <PostBody content={post.content} />
+        <Feedback postId={post.id} />
+        <ShareButtons title={postTitle} url={Astro.url.href} />
+        <PostComments postId={post.id} blogId={BLOG_ID} />
+        <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+        {relatedPosts && relatedPosts.length > 0 && (
+          <RelatedPosts relatedPosts={relatedPosts} />
+        )}
+        <AuthorProfile authorName={authorName} authorImage={authorImage} authorUrl={authorUrl} authorAbout={authorAbout} />
+      </article>
+    ) : (
+      <p class="text-center text-color-text-muted">Post not found.</p>
+    )}
+    <NewsletterForm />
+  </div>
+  <ReadingProgress />
+  
+  <script>
+    if (typeof window !== 'undefined') {
+      document.addEventListener("DOMContentLoaded", () => {
+        const tocList = document.getElementById('toc-list');
+        if (!tocList) return;
+
+        const tocItems = tocList.querySelectorAll('.toc-item');
+        const headingElements: HTMLElement[] = [];
+
+        tocItems.forEach(item => {
+          const id = (item as HTMLElement).dataset.id;
+          if (id) {
+            const heading = document.getElementById(id);
+            if (heading) {
+              headingElements.push(heading);
+            }
+          }
+        });
+
+        if (headingElements.length === 0) return;
+        const observerOptions = {
+          root: null,
+          rootMargin: '-50% 0px -50% 0px',
+          threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            const targetId = entry.target.id;
+            const correspondingTocItem = tocList.querySelector(`[data-id="${targetId}"]`) as HTMLElement;
+
+            if (correspondingTocItem) {
+              if (entry.isIntersecting) {
+                tocItems.forEach(item => item.classList.remove('active'));
+                correspondingTocItem.classList.add('active');
+              }
+            }
+          });
+        }, observerOptions);
+        headingElements.forEach(heading => observer.observe(heading));
+        if (headingElements.length > 0) {
+            const firstTocItem = tocList.querySelector(`[data-id="${headingElements[0].id}"]`) as HTMLElement;
+            if (firstTocItem && !tocList.querySelector('.toc-item.active')) {
+                firstTocItem.classList.add('active');
+            }
+        }
+      });
+    }
+  </script>
+</BaseLayout>
