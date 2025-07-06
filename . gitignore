@@ -1,2 +1,33 @@
-# .gitignore
+# Node
+node_modules/
+bun.lockb
+package-lock.json
+npm-debug.log*
 .env
+.env.*
+
+# Astro build output
+dist/
+.cache/
+.output/
+
+# Vite cache
+.vite/
+
+# Astro SSR build output
+dist/_worker.js
+dist/_routes.json
+
+# Optional: ignore system files
+.DS_Store
+Thumbs.db
+
+# Optional: your own logs or debug
+logs/
+*.log
+
+# Prevent accidental commit of wrangler deploy logs
+.wrangler/
+
+# Optional: Astro image cache
+/public/_image/
