@@ -14,12 +14,13 @@ export default defineConfig({
   output: 'server',
   adapter: cloudflare({
     imageService: 'cloudflare',
-    mode: 'directory',
-    bindings: {
-      BIMA__KV_SPACE: {
-        type: 'kv',
-        namespace_id: process.env.CLOUDFLARE_KV_NAMESPACE_ID,
+    platformProxy: {
+      enabled: true,
+      configPath: 'wrangler.toml',
+      persist: {
+        path: './.cache/wrangler/v3'
       },
     },
+    sessionKVBindingName: 'BIMA_KV_SPACE',
  }),
 });
