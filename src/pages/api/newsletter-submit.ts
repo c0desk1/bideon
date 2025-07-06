@@ -1,19 +1,12 @@
 import type { APIContext } from "astro";
-import { verifyTurnstile } from "../../utils/turnstile";
 import { subscribeToButtondown } from "../../utils/buttondown";
 
 export async function POST({ request }: APIContext) {
   const formData = await request.formData();
   const email = formData.get("email")?.toString();
-  const token = formData.get("cf-turnstile-response")?.toString();
 
-  if (!email || !token) {
-    return new Response("Data tidak lengkap", { status: 400 });
-  }
-
-  const isHuman = await verifyTurnstile(token);
-  if (!isHuman) {
-    return new Response("Verifikasi bot gagal", { status: 403 });
+  if (!email) {
+    return new Response("Email tidak boleh kosong", { status: 400 });
   }
 
   const success = await subscribeToButtondown(email);
