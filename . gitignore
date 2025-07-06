@@ -1,33 +1,28 @@
-# Node
-node_modules/
-bun.lockb
-package-lock.json
-npm-debug.log*
-.env
-.env.*
-
-# Astro build output
+# build output
 dist/
-.cache/
-.output/
+# generated types
+.astro/
 
-# Vite cache
-.vite/
+# dependencies
+node_modules/
 
-# Astro SSR build output
-dist/_worker.js
-dist/_routes.json
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Optional: ignore system files
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
 .DS_Store
-Thumbs.db
 
-# Optional: your own logs or debug
-logs/
-*.log
+# jetbrains setting folder
+.idea/
 
-# Prevent accidental commit of wrangler deploy logs
-.wrangler/
-
-# Optional: Astro image cache
-/public/_image/
+# wrangler files
+.wrangler
+.dev.vars*
