@@ -3,13 +3,31 @@ const siteKey = import.meta.env.VITE_PUBLIC_TURNSTILE_SITE_KEY;
 
 const turnstile = `
   window.onTurnstileSuccess = function (token) {
-    const input = document.getElementById("cf-turnstile-token");
     const form = document.getElementById("newsletter-form");
+    const emailInput = form.querySelector('input[name="email"]');
+    const email = emailInput?.value || "";
 
-    if (input && form && "value" in input && typeof form.submit === "function") {
-      input.value = token;
-      form.submit();
+    if (!email || !token) {
+      alert("Email atau token kosong.");
+      return;
     }
+
+    fetch("/api/newsletter-submit", {
+      method: "POST",
+      body: new URLSearchParams({
+        email: email,
+        "cf-turnstile-response": token
+      })
+    })
+    .then(res => {
+      if (res.ok) {
+        alert("Langganan berhasil!");
+        form.reset();
+      } else {
+        res.text().then(text => alert("Gagal: " + text));
+      }
+    })
+    .catch(() => alert("Gagal mengirim form."));
   };
 
   window.addEventListener("DOMContentLoaded", function () {
@@ -24,6 +42,7 @@ const turnstile = `
     }
   });
 `;
+
 ---
 
 <section class="max-w-2xl mx-auto px-4 py-16 text-center">
@@ -34,8 +53,6 @@ const turnstile = `
 
   <form
     id="newsletter-form"
-    method="POST"
-    action="/api/newsletter-submit"
     class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-2"
   >
     <input
@@ -43,7 +60,6 @@ const turnstile = `
       name="email"
       placeholder="email@example.com"
       required
-      autocomplete="email"
       class="w-full sm:w-auto sm:flex-grow rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
     />
     <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-token" />
