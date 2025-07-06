@@ -148,14 +148,14 @@ const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
           <TableOfContents headings={tocHeadings} />
         )}
         <PostBody content={post.content} />
-        <ShareButtons title={postTitle} url={Astro.url.href} />
-        <PostNavigation prevPost={prevPost} nextPost={nextPost} />
         <Feedback postId={post.id} />
+        <ShareButtons title={postTitle} url={Astro.url.href} />
         <PostComments postId={post.id} blogId={BLOG_ID} />
-        <AuthorProfile authorName={authorName} authorImage={authorImage} authorUrl={authorUrl} authorAbout={authorAbout} />
+        <PostNavigation prevPost={prevPost} nextPost={nextPost} />
         {relatedPosts && relatedPosts.length > 0 && (
           <RelatedPosts relatedPosts={relatedPosts} />
         )}
+        <AuthorProfile authorName={authorName} authorImage={authorImage} authorUrl={authorUrl} authorAbout={authorAbout} />
       </article>
     ) : (
       <p class="text-center text-color-text-muted">Post not found.</p>
