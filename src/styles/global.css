@@ -203,10 +203,10 @@ html.light-mode .theme-toggle .sun-icon { color: var(--color-text); }
 html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
 
 @media (max-width: 768px) { 
-  .theme-toggle { width: 25px; height: 13px; }
   .theme-toggle-thumb { width: 14px; height: 14px; }
-  .theme-toggle .icon { font-size: 0.9rem; }
-  html.light-mode .theme-toggle-thumb { transform: translateX(18px); }
+  .theme-toggle .icon { font-size: 0.85rem; }
+  html.light-mode .theme-toggle .icon { font-size: 0.85rem; }
+  html.light-mode .theme-toggle-thumb { transform: translateX(16px); }
 }
 
 @media (min-width: 768px) {
