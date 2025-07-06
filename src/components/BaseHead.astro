@@ -1,13 +1,22 @@
 ---
-// src/components/BaseHead.astro
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  url?: string;
 }
-const { 
-  title = "Bima Akbar",
-  description = "Bima Akbar - tempat berbagi konten menarik" 
+
+const {
+  title,
+  description,
+  image,
+  url,
 } = Astro.props;
+
+const blogData = Astro.locals.blogData;
+const siteName = blogData?.name || "Bima Akbar";
+const siteDescription = blogData?.description || "It's okay for now.";
+const finalTitle = title ? `${title} × ${siteName}` : siteName;
 
 const GTM_ID = import.meta.env.VITE_GTM_ID;
 const GSV_ID = import.meta.env.VITE_GOOGLE_SITE_VERIFY;
@@ -26,10 +35,17 @@ f.parentNode.insertBefore(j,f);
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="google-site-verification" content={GSV_ID} />
 
-  <title>{title}</title>
-  <meta name="description" content={description} />
-  <link rel="icon" href={faviconUrl} />
+  <title>{finalTitle}</title>
+  <meta name="description" content={description ?? siteDescription} />
 
+  <!-- Open Graph -->
+  <meta property="og:title" content={finalTitle} />
+  <meta property="og:description" content={description ?? siteDescription} />
+  {image && <meta property="og:image" content={image} />}
+  <meta property="og:url" content={url ?? 'https://bimaakbar.my.id'} />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon" href={faviconUrl} />
   <link rel="sitemap" href="/sitemap-index.xml" />
 
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
