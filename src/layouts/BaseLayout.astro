@@ -7,22 +7,14 @@ import NewsletterForm from '../components/NewsletterForm.astro';
 import Footer from "../components/Footer.astro";
 import BackToTop from '../components/BackToTop.astro';
 
-interface Props {
-  title?: string;
-}
 const { title: pageTitle } = Astro.props;
 
 const blogData = Astro.locals.blogData;
-const siteName = blogData?.name || "Bima Akbar";
-
-const headerTitle = siteName;
-
-const finalSeoTitle = pageTitle ? `${pageTitle} | ${siteName}` : siteName;
-const seoDescription = blogData?.description || "Bima Akbar - tempat berbagi konten menarik";
+const headerTitle = blogData?.name || "Bima Akbar";
 ---
 
 <html lang="id">
-  <BaseHead title={finalSeoTitle} description={seoDescription} />
+  <BaseHead title={pageTitle} />
   <body class="min-h-screen">
     <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${import.meta.env.VITE_GTM_ID}`} height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <Header title={headerTitle} />
