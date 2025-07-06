@@ -1,4 +1,3 @@
----
 // src/components/PostCard.astro
 import {
   formatDate,
@@ -26,49 +25,46 @@ const authorImage = post.author?.image?.url;
 const labels = post.labels ?? [];
 ---
 
-<article class="rounded-xl overflow-hidden border border-neutral-800 bg-neutral-900/60 hover:bg-neutral-800 transition-all">
-  <div class="relative">
-    <img
-      src={image}
-      alt={title}
-      loading="lazy"
-      class="w-full aspect-[16/9] object-cover border-b border-neutral-800"
+<article class="post-card">
+  <div class="image-wrapper">
+    <img src={image} alt={title} loading="lazy"
+      class="post-image"
     />
     {isFeatured && (
-      <span class="absolute top-3 left-3 bg-yellow-500 text-black text-xs font-semibold px-2 py-1 rounded shadow">
+      <span class="featured-badge">
         FEATURED
       </span>
     )}
   </div>
 
-  <div class="p-4 space-y-3">
-    <div class="flex items-center text-xs text-neutral-400 gap-2">
-      <i class="ri-calendar-line text-sm"></i>
+  <div class="content-section">
+    <div class="meta-info">
+      <i class="ri-calendar-line"></i>
       <time>{published}</time>
-      <span>•</span>
-      <i class="ri-time-line text-sm"></i>
+      <span>•</span> {/* Mengubah 'x' menjadi '•' agar lebih umum */}
+      <i class="ri-time-line"></i>
       <span>{readTime}</span>
     </div>
 
-    <h3 class="text-base text-white font-semibold leading-snug hover:underline">
+    <h3 class="post-title">
       <a href={postUrl}>{title}</a>
     </h3>
 
-    <p class="text-sm text-neutral-400">{summary}...</p>
+    <p class="post-summary">{summary}...</p>
 
-    <div class="flex items-center gap-2 mt-2">
+    <div class="author-section">
       <img
         src={authorImage}
         alt={author}
-        class="w-6 h-6 rounded-full border border-neutral-700 object-cover"
+        class="author-image"
       />
-      <span class="text-xs text-neutral-300">{author}</span>
+      <span class="author-name">{author}</span>
     </div>
 
     {labels.length > 0 && (
-      <div class="flex flex-wrap gap-2 mt-2">
+      <div class="labels-container">
         {labels.slice(0, 3).map((label: any) => (
-          <span class="text-xs px-2 py-0.5 rounded bg-neutral-800 text-neutral-400">
+          <span class="label-tag">
             {label}
           </span>
         ))}
