@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import RecentPosts from '../components/RecentPosts.astro';
+import NewsletterForm from '../components/NewsletterForm.astro';
+
+const { name: siteName, description: siteDescription, image } = Astro.locals.blogData;
+const ogImage = image?.url;
+---
+
+<BaseLayout description={siteDescription} image={ogImage} url="https://bimaakbar.my.id">
+  <Hero />
+  <RecentPosts />
+  <NewsletterForm />
+</BaseLayout>
