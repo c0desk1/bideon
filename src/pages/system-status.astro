@@ -1,0 +1,335 @@
+---
+//system-status.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Statistik Sistem">
+    <main class="container">
+      <header class="header">
+        <h1 class="title">Statistik Sistem</h1>
+        <p class="description">Informasi real-time mengenai status dan performa layanan Anda.</p>
+      </header>
+  
+      <section class="status-overview">
+        <div class="status-card" id="global-status-card">
+          <h2 class="card-title">Status Global Sistem</h2>
+          <p class="status-text" id="global-status-text">Memuat...</p>
+          <div class="status-indicator" id="global-status-indicator"></div>
+        </div>
+  
+        <div class="last-updated">
+          Terakhir diperbarui: <span id="last-updated-time">Memuat...</span>
+        </div>
+      </section>
+  
+      <section class="details-section">
+        <h2 class="section-title">Detail Layanan</h2>
+        <div id="service-details-container" class="grid-container">
+          <p>Memuat detail layanan...</p>
+        </div>
+      </section>
+  
+      <section class="details-section">
+        <h2 class="section-title">Metrik Infrastruktur Utama</h2>
+        <div id="metric-details-container" class="grid-container">
+          <p>Memuat metrik...</p>
+        </div>
+      </section>
+  
+      <a href="/" class="back-link">← Kembali ke Beranda</a>
+    </main>
+  
+    <style>
+      .container {
+        padding: 2rem;
+        max-width: 960px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+  
+      .header {
+        text-align: center;
+      }
+  
+      .title {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        color: var(--geist-foreground);
+        font-weight: 700;
+        letter-spacing: -0.05em;
+      }
+  
+      .description {
+        font-size: 1.1rem;
+        color: var(--geist-accents-5);
+        margin-top: 0;
+      }
+  
+      .status-overview {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+  
+      .status-card {
+        background-color: var(--geist-background);
+        border: 1px solid var(--geist-accents-2);
+        border-radius: 0.75rem;
+        padding: 1.5rem 2rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+        width: 100%;
+        max-width: 400px;
+      }
+  
+      .card-title {
+        font-size: 1.25rem;
+        color: var(--geist-accents-6);
+        margin-bottom: 0.75rem;
+      }
+  
+      .status-text {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+  
+      .status-indicator {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        margin: 0.5rem auto 0;
+        border: 2px solid;
+      }
+  
+      .status-safe .status-text { color: var(--geist-success); }
+      .status-safe .status-indicator { background-color: var(--geist-success); border-color: var(--geist-success-dark); }
+      .status-operational-text { color: var(--geist-success); }
+  
+      .status-warning .status-text { color: var(--geist-warning); }
+      .status-warning .status-indicator { background-color: var(--geist-warning); border-color: var(--geist-warning-dark); }
+      .status-warning-text { color: var(--geist-warning); }
+  
+      .status-error .status-text { color: var(--geist-error); }
+      .status-error .status-indicator { background-color: var(--geist-error); border-color: var(--geist-error-dark); }
+      .status-error-text { color: var(--geist-error); }
+  
+  
+      .last-updated {
+        font-size: 0.85rem;
+        color: var(--geist-accents-4);
+      }
+  
+      .details-section {
+        background-color: var(--geist-background);
+        border: 1px solid var(--geist-accents-2);
+        border-radius: 0.75rem;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+      }
+  
+      .section-title {
+        font-size: 1.75rem;
+        color: var(--geist-foreground);
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+      }
+  
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+  
+      .detail-card {
+        background-color: var(--geist-accents-1);
+        border: 1px solid var(--geist-accents-2);
+        border-radius: 0.5rem;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+  
+      .detail-card-title {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--geist-accents-6);
+      }
+  
+      .detail-card-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--geist-foreground);
+      }
+  
+      .metric-good { color: var(--geist-success); }
+      .metric-warning { color: var(--geist-warning); }
+      .metric-bad { color: var(--geist-error); }
+  
+      .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background-color: var(--geist-accents-2);
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        overflow: hidden;
+      }
+  
+      .progress-bar {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s ease-in-out;
+      }
+  
+      .progress-bar.good { background-color: var(--geist-success); }
+      .progress-bar.warning { background-color: var(--geist-warning); }
+      .progress-bar.bad { background-color: var(--geist-error); }
+  
+      .back-link {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.75rem 1.25rem;
+        background-color: var(--geist-success);
+        color: white;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: background-color 0.2s ease-in-out;
+        font-weight: 500;
+      }
+  
+      .back-link:hover {
+        background-color: var(--geist-success-dark);
+        text-decoration: none;
+      }
+    </style>
+  
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', async () => {
+        const globalStatusCard = document.getElementById('global-status-card');
+        const globalStatusText = document.getElementById('global-status-text');
+        const globalStatusIndicator = document.getElementById('global-status-indicator');
+        const lastUpdatedTime = document.getElementById('last-updated-time');
+        const serviceDetailsContainer = document.getElementById('service-details-container');
+        const metricDetailsContainer = document.getElementById('metric-details-container');
+  
+        const fetchDetailedSystemStatus = async () => {
+          try {
+            const response = await fetch('/api/system-status.json');
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+
+            globalStatusCard.classList.remove('status-safe', 'status-warning', 'status-error');
+            if (data.status === 'aman') {
+              globalStatusCard.classList.add('status-safe');
+              globalStatusText.textContent = 'Semua Sistem Beroperasi Penuh';
+            } else if (data.status === 'bermasalah') {
+              globalStatusCard.classList.add('status-error');
+              globalStatusText.textContent = 'Insiden Dilaporkan!';
+            } else if (data.status === 'perhatian') {
+              globalStatusCard.classList.add('status-warning');
+              globalStatusText.textContent = 'Perhatian Diperlukan';
+            } else {
+              globalStatusCard.classList.add('status-warning');
+              globalStatusText.textContent = 'Status Tidak Diketahui';
+            }
+  
+            lastUpdatedTime.textContent = new Date(data.timestamp).toLocaleString('id-ID', {
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit',
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric'
+            });
+  
+            let serviceHtml = '';
+            if (data.services && data.services.length > 0) {
+              data.services.forEach(service => {
+                let serviceStatusClass = '';
+                let serviceStatusTextClass = '';
+                if (service.status === 'operational') {
+                  serviceStatusClass = 'status-safe';
+                  serviceStatusTextClass = 'status-operational-text';
+                } else if (service.status === 'perhatian') {
+                  serviceStatusClass = 'status-warning';
+                  serviceStatusTextClass = 'status-warning-text';
+                } else if (service.status === 'bermasalah') {
+                  serviceStatusClass = 'status-error';
+                  serviceStatusTextClass = 'status-error-text';
+                }
+  
+                serviceHtml += `
+                  <div class="detail-card ${serviceStatusClass}">
+                    <p class="detail-card-title">${service.name}</p>
+                    <p class="detail-card-value ${serviceStatusTextClass}">${service.message || service.status.toUpperCase()}</p>
+                    ${service.latency ? `<p class="detail-card-value" style="font-size:1rem; font-weight: normal; color: var(--geist-accents-5);">Latensi: ${service.latency}</p>` : ''}
+                    ${service.errorRate ? `<p class="detail-card-value" style="font-size:1rem; font-weight: normal; color: var(--geist-error);">Error Rate: ${service.errorRate}</p>` : ''}
+                  </div>
+                `;
+              });
+            } else {
+              serviceHtml = '<p>Tidak ada detail layanan yang tersedia saat ini.</p>';
+            }
+            serviceDetailsContainer.innerHTML = serviceHtml;
+  
+            let metricHtml = '';
+            const metrics = data.metrics || {};
+            for (const key in metrics) {
+              let value = metrics[key];
+              let valueClass = '';
+              let progressBarHtml = '';
+  
+              if (key === 'cpu_usage' || key === 'memory_usage' || key === 'disk_usage') {
+                const num = parseFloat(String(value));
+                if (num > 80) valueClass = 'metric-bad';
+                else if (num > 60) valueClass = 'metric-warning';
+                else valueClass = 'metric-good';
+  
+                progressBarHtml = `
+                  <div class="progress-bar-container">
+                    <div class="progress-bar ${valueClass}" style="width: ${num}%;"></div>
+                  </div>
+                `;
+              } else if (key === 'network_throughput') {
+                const num = parseFloat(String(value));
+                if (num < 200) valueClass = 'metric-warning';
+                else if (num < 100) valueClass = 'metric-bad';
+                else valueClass = 'metric-good';
+              }
+  
+              metricHtml += `
+                <div class="detail-card">
+                  <p class="detail-card-title">${key.replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</p>
+                  <p class="detail-card-value ${valueClass}">${value}</p>
+                  ${progressBarHtml}
+                </div>
+              `;
+            }
+            if (metricHtml === '') {
+              metricDetailsContainer.innerHTML = '<p>Tidak ada metrik infrastruktur yang tersedia saat ini.</p>';
+            } else {
+              metricDetailsContainer.innerHTML = metricHtml;
+            }
+  
+          } catch (error) {
+            console.error('Gagal memuat detail sistem:', error);
+            globalStatusText.textContent = 'Status Tidak Tersedia';
+            globalStatusCard.classList.remove('status-safe', 'status-warning');
+            globalStatusCard.classList.add('status-error');
+            lastUpdatedTime.textContent = 'N/A';
+            serviceDetailsContainer.innerHTML = '<p style="color: var(--geist-error);">Maaf, gagal memuat detail layanan sistem.</p>';
+            metricDetailsContainer.innerHTML = '<p style="color: var(--geist-error);">Maaf, gagal memuat metrik infrastruktur.</p>';
+          }
+        };
+  
+        fetchDetailedSystemStatus();
+        setInterval(fetchDetailedSystemStatus, 30 * 1000); // Polling setiap 30 detik
+      });
+    </script>
+</BaseLayout>
