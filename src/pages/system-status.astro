@@ -1,85 +1,51 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
 const res = await fetch('/api/status');
 const data = await res.json();
 ---
 
-<html lang="id">
-  <head>
-    <title>Status Sistem</title>
-    <meta charset="UTF-8" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-      :root {
-        --color-bg: #000000;
-        --color-bg-rgb: 0, 0, 0;
-        --color-text: #ffffff;
-        --color-text-muted: #888888;
-        --color-border: rgba(255, 255, 255, 0.1);
-        --color-card-bg: #111111;
-        --color-accent: #0070f3;
-        --color-accent-dark: #005bb5;
-      }
+<BaseLayout title="Status Sistem">
+  <h1 class="text-2xl font-bold mb-4">Status Sistem</h1>
+  <p class="text-sm text-muted mb-6">Diperbarui: {new Date(data.lastUpdated).toLocaleString()}</p>
 
-      body {
-        background-color: var(--color-bg);
-        color: var(--color-text);
-        font-family: system-ui, sans-serif;
-        padding: 2rem;
-      }
-
-      .card {
-        background: var(--color-card-bg);
-        border: 1px solid var(--color-border);
-        border-radius: 12px;
-        padding: 1rem 1.5rem;
-        margin-bottom: 1rem;
-      }
-
-      .ok {
-        color: #22c55e;
-      }
-
-      .fail {
-        color: #ef4444;
-      }
-    </style>
-  </head>
-  <body>
-    <h1 class="text-2xl font-bold mb-4">Status Sistem</h1>
-    <p class="text-sm text-muted mb-6">Diperbarui: {new Date(data.lastUpdated).toLocaleString()}</p>
-
+  <div class="grid gap-4">
     {data.services.map(service => (
-      <div class="card">
-        <h2>{service.name}</h2>
-        <p>Status: <span class={service.ok ? 'ok' : 'fail'}>{service.ok ? '✅ Online' : '❌ Down'}</span></p>
+      <div class="bg-[#111] border border-[rgba(255,255,255,0.1)] p-4 rounded-md">
+        <h2 class="text-lg">{service.name}</h2>
+        <p>Status: <span class={service.ok ? 'text-green-400' : 'text-red-400'}>
+          {service.ok ? '✅ Online' : '❌ Down'}
+        </span></p>
         <p>Latensi: {service.latency} ms</p>
       </div>
     ))}
+  </div>
 
-    <canvas id="latencyChart" height="150" class="mt-4"></canvas>
+  <canvas id="latencyChart" class="mt-6"></canvas>
 
-    <script>
-      const ctx = document.getElementById('latencyChart');
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: {JSON.stringify(data.services.map(s => s.name))},
-          datasets: [{
-            label: 'Latensi (ms)',
-            data: {JSON.stringify(data.services.map(s => s.latency))},
-            backgroundColor: 'rgba(0, 112, 243, 0.8)',
-            borderRadius: 4
-          }]
+  <script type="module" is:raw>
+    import Chart from "https://cdn.jsdelivr.net/npm/chart.js";
+
+    const ctx = document.getElementById('latencyChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {JSON.stringify(data.services.map(s => s.name))},
+        datasets: [{
+          label: 'Latensi (ms)',
+          data: {JSON.stringify(data.services.map(s => s.latency))},
+          backgroundColor: 'rgba(0, 112, 243, 0.8)',
+          borderRadius: 4
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
         },
-        options: {
-          scales: {
-            y: { beginAtZero: true }
-          },
-          plugins: {
-            legend: { display: false }
-          }
+        plugins: {
+          legend: { display: false }
         }
-      });
-    </script>
-  </body>
-</html>
+      }
+    });
+  </script>
+</BaseLayout>
