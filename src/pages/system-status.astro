@@ -1,51 +1,536 @@
----
-import BaseLayout from '../layouts/BaseLayout.astro';
+<main class="container">
+  <header class="header">
+    <h1 class="title">Statistik Sistem</h1>
+    <p class="description">Informasi real-time mengenai status dan performa layanan Anda.</p>
+  </header>
 
-const res = await fetch('/api/status');
-const data = await res.json();
----
+  <section class="status-overview">
+    <div class="status-card" id="global-status-card">
+      <h2 class="card-title">Status Global Sistem</h2>
+      <p class="status-text" id="global-status-text">Memuat...</p>
+      <div class="status-indicator" id="global-status-indicator"></div>
+    </div>
 
-<BaseLayout title="Status Sistem">
-  <h1 class="text-2xl font-bold mb-4">Status Sistem</h1>
-  <p class="text-sm text-muted mb-6">Diperbarui: {new Date(data.lastUpdated).toLocaleString()}</p>
+    <div class="last-updated">
+      Terakhir diperbarui: <span id="last-updated-time">Memuat...</span>
+    </div>
+  </section>
 
-  <div class="grid gap-4">
-    {data.services.map(service => (
-      <div class="bg-[#111] border border-[rgba(255,255,255,0.1)] p-4 rounded-md">
-        <h2 class="text-lg">{service.name}</h2>
-        <p>Status: <span class={service.ok ? 'text-green-400' : 'text-red-400'}>
-          {service.ok ? '✅ Online' : '❌ Down'}
-        </span></p>
-        <p>Latensi: {service.latency} ms</p>
+  <section class="details-section">
+    <h2 class="section-title">Detail Layanan</h2>
+    <div id="service-details-container" class="grid-container">
+      <p>Memuat detail layanan...</p>
+    </div>
+  </section>
+
+  <section class="details-section">
+    <h2 class="section-title">Metrik Infrastruktur Utama</h2>
+    <div id="metric-details-container" class="grid-container">
+      <p>Memuat metrik...</p>
+    </div>
+  </section>
+
+  <section class="details-section chart-section">
+    <h2 class="section-title">Grafik Performa Sistem (24 Jam Terakhir)</h2>
+    <div class="chart-grid">
+      <div class="chart-container">
+        <canvas id="cpuChart"></canvas>
       </div>
-    ))}
-  </div>
+      <div class="chart-container">
+        <canvas id="memoryChart"></canvas>
+      </div>
+      <div class="chart-container full-width-chart">
+        <canvas id="latencyChart"></canvas>
+      </div>
+    </div>
+  </section>
 
-  <canvas id="latencyChart" class="mt-6"></canvas>
+  <a href="/" class="back-link">← Kembali ke Beranda</a>
+</main>
 
-  <script type="module" is:raw>
-    import Chart from "https://cdn.jsdelivr.net/npm/chart.js";
+<style>
+  /* CSS untuk halaman statistik, menggunakan variabel dari global.css Anda */
+  .container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
 
-    const ctx = document.getElementById('latencyChart');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: {JSON.stringify(data.services.map(s => s.name))},
-        datasets: [{
-          label: 'Latensi (ms)',
-          data: {JSON.stringify(data.services.map(s => s.latency))},
-          backgroundColor: 'rgba(0, 112, 243, 0.8)',
-          borderRadius: 4
-        }]
-      },
-      options: {
-        scales: {
-          y: { beginAtZero: true }
-        },
-        plugins: {
-          legend: { display: false }
-        }
+  .header {
+    text-align: center;
+  }
+
+  .title {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    margin-top: 0;
+  }
+
+  .status-overview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .status-card {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .status-text {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .status-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin: 0.5rem auto 0;
+    border: 2px solid;
+  }
+
+  .status-safe .status-text { color: var(--color-accent); }
+  .status-safe .status-indicator { background-color: var(--color-accent); border-color: var(--color-accent-dark); }
+  .status-operational-text { color: var(--color-accent); }
+
+  .status-warning .status-text { color: #f5a623; }
+  .status-warning .status-indicator { background-color: #f5a623; border-color: #ab782f; }
+  .status-warning-text { color: #f5a623; }
+
+  .status-error .status-text { color: #ff0000; }
+  .status-error .status-indicator { background-color: #ff0000; border-color: #c50000; }
+  .status-error-text { color: #ff0000; }
+
+  .last-updated {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  .details-section {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+    color: var(--color-text);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .detail-card {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .detail-card-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+  }
+
+  .detail-card-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .metric-good { color: var(--color-accent); }
+  .metric-warning { color: #f5a623; }
+  .metric-bad { color: #ff0000; }
+
+  .progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--color-border);
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease-in-out;
+  }
+
+  .progress-bar.good { background-color: var(--color-accent); }
+  .progress-bar.warning { background-color: #f5a623; }
+  .progress-bar.bad { background-color: #ff0000; }
+
+  .chart-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+
+  .chart-container.full-width-chart {
+    grid-column: 1 / -1;
+    height: 300px;
+  }
+
+  @media (max-width: 767px) {
+    .chart-grid {
+      grid-template-columns: 1fr;
+    }
+    .chart-container.full-width-chart {
+      height: 250px;
+    }
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--color-accent);
+    color: var(--color-text);
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease-in-out;
+    font-weight: 500;
+  }
+
+  .back-link:hover {
+    background-color: var(--color-accent-dark);
+    text-decoration: none;
+  }
+</style>
+
+<script is:inline>
+  import Chart from 'chart.js/auto';
+
+  let cpuChartInstance, memoryChartInstance, latencyChartInstance;
+
+  const getCssVar = (varName) => getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  const parseRgb = (rgbString) => {
+    const parts = rgbString.match(/\d+/g);
+    return parts ? parts.map(Number) : [0, 0, 0];
+  };
+
+  const updateChartColors = (chartInstance) => {
+      if (!chartInstance) return;
+
+      const textColor = getCssVar('--color-text');
+      const textMutedColor = getCssVar('--color-text-muted');
+      const borderColor = getCssVar('--color-border');
+      const accentColor = getCssVar('--color-accent');
+      const accentRgb = parseRgb(getCssVar('--color-text-rgb'));
+      const warningColor = '#f5a623';
+      const errorColor = '#ff0000';
+
+      if (chartInstance.options.scales.x) chartInstance.options.scales.x.ticks.color = textMutedColor;
+      if (chartInstance.options.scales.y) chartInstance.options.scales.y.ticks.color = textMutedColor;
+      if (chartInstance.options.scales.x) chartInstance.options.scales.x.grid.color = borderColor;
+      if (chartInstance.options.scales.y) chartInstance.options.scales.y.grid.color = borderColor;
+      if (chartInstance.options.plugins && chartInstance.options.plugins.legend) chartInstance.options.plugins.legend.labels.color = textColor;
+      if (chartInstance.options.plugins && chartInstance.options.plugins.tooltip) {
+          chartInstance.options.plugins.tooltip.titleColor = textColor;
+          chartInstance.options.plugins.tooltip.bodyColor = textColor;
+          chartInstance.options.plugins.tooltip.backgroundColor = getCssVar('--color-card-bg');
+          chartInstance.options.plugins.tooltip.borderColor = borderColor;
       }
+
+      chartInstance.data.datasets.forEach(dataset => {
+          if (dataset.label.includes('CPU') || dataset.label.includes('Memory') || dataset.label.includes('Disk')) {
+              dataset.borderColor = accentColor;
+              dataset.backgroundColor = `rgba(${accentRgb[0]}, ${accentRgb[1]}, ${accentRgb[2]}, 0.1)`;
+          } else if (dataset.label.includes('Latency') || dataset.label.includes('API Response Time')) {
+              dataset.borderColor = warningColor;
+              dataset.backgroundColor = `rgba(245, 166, 35, 0.1)`;
+          }
+      });
+      chartInstance.update();
+  };
+
+  const createOrUpdateChart = (canvasId, label, unit, data, instanceRef) => {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return null;
+
+    const textColor = getCssVar('--color-text');
+    const textMutedColor = getCssVar('--color-text-muted');
+    const borderColor = getCssVar('--color-border');
+    const accentColor = getCssVar('--color-accent');
+    const accentRgb = parseRgb(getCssVar('--color-text-rgb'));
+    const warningColor = '#f5a623';
+
+    const datasetColor = label.includes('Latency') ? warningColor : accentColor;
+    const datasetBgColor = label.includes('Latency') ? `rgba(245, 166, 35, 0.1)` : `rgba(${accentRgb[0]}, ${accentRgb[1]}, ${accentRgb[2]}, 0.1)`;
+
+    if (instanceRef) {
+      instanceRef.data.labels = data.map(d => d.time);
+      instanceRef.data.datasets[0].data = data.map(d => d.value);
+      instanceRef.update();
+    } else {
+      instanceRef = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map(d => d.time),
+          datasets: [{
+            label: `${label} (${unit})`,
+            data: data.map(d => d.value),
+            borderColor: datasetColor,
+            backgroundColor: datasetBgColor,
+            tension: 0.4,
+            fill: true,
+            pointRadius: 0,
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+              duration: 500
+          },
+          scales: {
+            x: {
+              grid: {
+                color: borderColor,
+                drawBorder: false,
+              },
+              ticks: {
+                color: textMutedColor,
+              }
+            },
+            y: {
+              grid: {
+                color: borderColor,
+                drawBorder: false,
+              },
+              ticks: {
+                color: textMutedColor,
+                callback: function(value) {
+                  return `${value}${unit}`;
+                }
+              },
+              min: 0,
+              max: (label.includes('CPU') || label.includes('Memory') || label.includes('Disk')) ? 100 : undefined,
+            }
+          },
+          plugins: {
+            legend: {
+              display: true,
+              labels: {
+                color: textColor,
+              }
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              backgroundColor: getCssVar('--color-card-bg'),
+              titleColor: textColor,
+              bodyColor: textColor,
+              borderColor: borderColor,
+              borderWidth: 1,
+              padding: 10,
+              callbacks: {
+                  label: function(context) {
+                      return `${context.dataset.label}: ${context.raw}${unit}`;
+                  }
+              }
+            }
+          }
+        }
+      });
+    }
+    updateChartColors(instanceRef);
+    return instanceRef;
+  };
+
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const globalStatusCard = document.getElementById('global-status-card');
+    const globalStatusText = document.getElementById('global-status-text');
+    const globalStatusIndicator = document.getElementById('global-status-indicator');
+    const lastUpdatedTime = document.getElementById('last-updated-time');
+    const serviceDetailsContainer = document.getElementById('service-details-container');
+    const metricDetailsContainer = document.getElementById('metric-details-container');
+
+    const fetchDetailedSystemStatus = async () => {
+      try {
+        const response = await fetch('/api/system-status.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        globalStatusCard.classList.remove('status-safe', 'status-warning', 'status-error');
+        if (data.status === 'aman') {
+          globalStatusCard.classList.add('status-safe');
+          globalStatusText.textContent = 'Semua Sistem Beroperasi Penuh';
+        } else if (data.status === 'bermasalah') {
+          globalStatusCard.classList.add('status-error');
+          globalStatusText.textContent = 'Insiden Dilaporkan!';
+        } else if (data.status === 'perhatian') {
+          globalStatusCard.classList.add('status-warning');
+          globalStatusText.textContent = 'Perhatian Diperlukan';
+        } else {
+          globalStatusCard.classList.add('status-warning');
+          globalStatusText.textContent = 'Status Tidak Diketahui';
+        }
+
+        lastUpdatedTime.textContent = new Date(data.timestamp).toLocaleString('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        });
+
+        let serviceHtml = '';
+        if (data.services && data.services.length > 0) {
+          data.services.forEach(service => {
+            let serviceStatusClass = '';
+            let serviceStatusTextClass = '';
+            if (service.status === 'operational') {
+              serviceStatusClass = 'status-safe';
+              serviceStatusTextClass = 'status-operational-text';
+            } else if (service.status === 'perhatian') {
+              serviceStatusClass = 'status-warning';
+              serviceStatusTextClass = 'status-warning-text';
+            } else if (service.status === 'bermasalah') {
+              serviceStatusClass = 'status-error';
+              serviceStatusTextClass = 'status-error-text';
+            }
+
+            serviceHtml += `
+              <div class="detail-card ${serviceStatusClass}">
+                <p class="detail-card-title">${service.name}</p>
+                <p class="detail-card-value ${serviceStatusTextClass}">${service.message || service.status.toUpperCase()}</p>
+                ${service.latency ? `<p class="detail-card-value" style="font-size:1rem; font-weight: normal; color: var(--color-text-muted);">Latensi: ${service.latency}</p>` : ''}
+                ${service.errorRate ? `<p class="detail-card-value" style="font-size:1rem; font-weight: normal; color: var(--color-error);">Error Rate: ${service.errorRate}</p>` : ''}
+              </div>
+            `;
+          });
+        } else {
+          serviceHtml = '<p>Tidak ada detail layanan yang tersedia saat ini.</p>';
+        }
+        serviceDetailsContainer.innerHTML = serviceHtml;
+
+        let metricHtml = '';
+        const metrics = data.metrics || {};
+        for (const key in metrics) {
+          let value = metrics[key];
+          let valueClass = '';
+          let progressBarHtml = '';
+
+          if (key === 'cpu_usage' || key === 'memory_usage' || key === 'disk_usage') {
+            const num = parseFloat(String(value));
+            if (num > 80) valueClass = 'metric-bad';
+            else if (num > 60) valueClass = 'metric-warning';
+            else valueClass = 'metric-good';
+
+            progressBarHtml = `
+              <div class="progress-bar-container">
+                <div class="progress-bar ${valueClass}" style="width: ${num}%;"></div>
+              </div>
+            `;
+          } else if (key === 'network_throughput') {
+            const num = parseFloat(String(value));
+            if (num < 200) valueClass = 'metric-warning';
+            else if (num < 100) valueClass = 'metric-bad';
+            else valueClass = 'metric-good';
+          }
+
+          metricHtml += `
+            <div class="detail-card">
+              <p class="detail-card-title">${key.replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</p>
+              <p class="detail-card-value ${valueClass}">${value}</p>
+              ${progressBarHtml}
+            </div>
+          `;
+        }
+        if (metricHtml === '') {
+          metricDetailsContainer.innerHTML = '<p>Tidak ada metrik infrastruktur yang tersedia saat ini.</p>';
+        } else {
+          metricDetailsContainer.innerHTML = metricHtml;
+        }
+
+        const history = data.history || [];
+        const cpuData = history.map(h => ({ time: h.time, value: parseFloat(h.cpu_usage) }));
+        const memoryData = history.map(h => ({ time: h.time, value: parseFloat(h.memory_usage) }));
+        const latencyData = history.map(h => ({ time: h.time, value: parseFloat(h.network_latency) }));
+
+        cpuChartInstance = createOrUpdateChart('cpuChart', 'CPU Usage', '%', cpuData, cpuChartInstance);
+        memoryChartInstance = createOrUpdateChart('memoryChart', 'Memory Usage', '%', memoryData, memoryChartInstance);
+        latencyChartInstance = createOrUpdateChart('latencyChart', 'Network Latency', 'ms', latencyData, latencyChartInstance);
+
+      } catch (error) {
+        console.error('Gagal memuat detail sistem:', error);
+        globalStatusText.textContent = 'Status Tidak Tersedia';
+        globalStatusCard.classList.remove('status-safe', 'status-warning');
+        globalStatusCard.classList.add('status-error');
+        lastUpdatedTime.textContent = 'N/A';
+        serviceDetailsContainer.innerHTML = '<p style="color: #ff0000;">Maaf, gagal memuat detail layanan sistem.</p>';
+        metricDetailsContainer.innerHTML = '<p style="color: #ff0000;">Maaf, gagal memuat metrik infrastruktur.</p>';
+      }
+    };
+
+    const themeObserver = new MutationObserver(() => {
+        updateChartColors(cpuChartInstance);
+        updateChartColors(memoryChartInstance);
+        updateChartColors(latencyChartInstance);
     });
-  </script>
-</BaseLayout>
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    fetchDetailedSystemStatus();
+    setInterval(fetchDetailedSystemStatus, 30 * 1000);
+  });
+</script>
