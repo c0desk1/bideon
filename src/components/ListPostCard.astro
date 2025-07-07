@@ -1,0 +1,76 @@
+---
+// src/components/posts/ListPostCard.astro
+import {
+  formatDate,
+  estimateReadTime,
+  getImageUrl,
+  getAstroPostUrl,
+  stripHtml
+} from '../utils/helpers';
+
+import type { Post } from '../utils/blogger';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+
+const postUrl = getAstroPostUrl(post);
+const title = post.title ?? "Tanpa Judul";
+const image = getImageUrl(post);
+const rawSummary = stripHtml(post.summary || post.content || "");
+const maxLength = 150;
+const summary = rawSummary.slice(0, maxLength);
+const showEllipsis = rawSummary.length > maxLength;
+const published = formatDate(post.published);
+const readTime = estimateReadTime(post.content || post.summary || "");
+const author = post.author?.displayName ?? "Bima Akbar";
+const authorImage = post.author?.image?.url;
+const labels = post.labels ?? [];
+---
+
+<article class="list-post-card group">
+  <a href={postUrl} class="image-link">
+    <div class="image-wrapper">
+      <img src={image} alt={title} loading="lazy"
+        class="post-image"
+      />
+    </div>
+  </a>
+
+  <div class="content-section">
+    <div class="meta-info">
+      <i class="ri-calendar-line"></i>
+      <time>{published}</time>
+      <span>&times;</span>
+      <i class="ri-time-line"></i>
+      <span>{readTime}</span>
+    </div>
+
+    <h3 class="post-title">
+      <a href={postUrl} class="group-hover:underline">{title}</a>
+    </h3>
+
+    <p class="post-summary">{summary}{showEllipsis ? '...' : ''}</p>
+
+    <div class="author-section">
+      <img
+        src={authorImage}
+        alt={author}
+        class="author-image"
+      />
+      <span class="author-name">{author}</span>
+    </div>
+
+    {labels.length > 0 && (
+      <div class="labels-container">
+        {labels.slice(0, 3).map((label: string) => (
+          <a href={`/blog?label=${encodeURIComponent(label)}`} class="label-tag">
+            {label}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</article>
