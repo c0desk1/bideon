@@ -1,0 +1,52 @@
+---
+// StatusWidget.astro
+const status = await fetch('/api/status').then(res => res.json());
+const healthy = status.ok;
+---
+
+<style>
+  .status-indicator {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    z-index: 9999;
+    transition: background-color 0.3s ease;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background-color: ${healthy ? 'var(--color-accent)' : 'red'};
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(0.9);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(0.9);
+      opacity: 0.7;
+    }
+  }
+</style>
+
+<a href="/system-status" class="status-indicator">
+  <div class="dot"></div>
+  {healthy ? 'Semua Sistem Aman' : 'Ada Gangguan Sistem'}
+</a>
