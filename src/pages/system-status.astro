@@ -1,6 +1,9 @@
 ---
-// src/pages/system-status.astro
-import BaseLayout from '../layouts/BaseLayout.astro';
+// src/pages/statistik-system.astro
+import BaseLayout from '../layouts/BaseLayout.astro'; // Pastikan PATH ini sesuai dengan lokasi BaseLayout Anda
+
+// Pastikan registerables terdaftar
+Chart.register(...registerables);
 
 interface Props {
   title?: string;
@@ -11,49 +14,61 @@ const { title = "Status Sistem" } = Astro.props;
 
 <BaseLayout title={title}>
   <main class="container">
-    <header class="header">
-      <h1 class="title">Statistik Sistem</h1>
-      <p class="description">Informasi real-time mengenai status dan performa layanan Anda.</p>
-    </header>
-
-    <section class="status-overview">
-      <div class="status-card" id="global-status-card">
-        <h2 class="card-title">Status Global Sistem</h2>
-        <p class="status-text" id="global-status-text">Memuat...</p>
-        <div class="status-indicator" id="global-status-indicator"></div>
+    <div class="status-summary-top-card" id="status-summary-top-card">
+      <div class="icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="status-icon" id="global-status-icon">
+          <path id="status-icon-path-safe" fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+          <path id="status-icon-path-warning" class="hidden" fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.153 12.492c1.155 2-.291 4.5-2.599 4.5H4.847c-2.308 0-3.754-2.5-2.599-4.5L9.401 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 6a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" clip-rule="evenodd" />
+        </svg>
       </div>
-
-      <div class="last-updated">
-        Terakhir diperbarui: <span id="last-updated-time">Memuat...</span>
+      <div class="text-content">
+        <h1 class="main-status-text" id="main-status-text">Semua Sistem Beroperasi</h1>
+        <p class="last-updated-text">Terakhir diperbarui: <span id="last-updated-time">Memuat...</span></p>
       </div>
-    </section>
+    </div>
 
-    <section class="details-section">
+    <section class="section">
       <h2 class="section-title">Detail Layanan</h2>
-      <div id="service-details-container" class="grid-container">
-        <p>Memuat detail layanan...</p>
+      <div id="service-details-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <p class="text-color-text-muted">Memuat detail layanan...</p>
       </div>
     </section>
 
-    <section class="details-section">
-      <h2 class="section-title">Metrik Infrastruktur Utama</h2>
-      <div id="metric-details-container" class="grid-container">
-        <p>Memuat metrik...</p>
-      </div>
-    </section>
-
-    <section class="details-section chart-section">
-      <h2 class="section-title">Grafik Performa Sistem (24 Jam Terakhir)</h2>
+    <section class="section chart-section">
+      <h2 class="section-title">Metrik Performa Sistem (24 Jam Terakhir)</h2>
       <div class="chart-grid">
-        <div class="chart-container">
-          <canvas id="cpuChart"></canvas>
+        <div class="chart-card">
+          <h3 class="chart-card-title">CPU Usage</h3>
+          <div class="chart-container">
+            <canvas id="cpuChart"></canvas>
+          </div>
         </div>
-        <div class="chart-container">
-          <canvas id="memoryChart"></canvas>
+        <div class="chart-card">
+          <h3 class="chart-card-title">Memory Usage</h3>
+          <div class="chart-container">
+            <canvas id="memoryChart"></canvas>
+          </div>
         </div>
-        <div class="chart-container full-width-chart">
-          <canvas id="latencyChart"></canvas>
+        <div class="chart-card full-width-chart">
+          <h3 class="chart-card-title">Network Latency</h3>
+          <div class="chart-container">
+            <canvas id="latencyChart"></canvas>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <section class="section" id="past-incidents-section">
+      <h2 class="section-title">Insiden Lalu</h2>
+      <div id="past-incidents-container" class="space-y-4">
+        <p class="text-color-text-muted">Memuat insiden lalu...</p>
+      </div>
+    </section>
+
+    <section class="section" id="scheduled-maintenance-section">
+      <h2 class="section-title">Pemeliharaan Terjadwal</h2>
+      <div id="scheduled-maintenance-container" class="space-y-4">
+        <p class="text-color-text-muted">Memuat pemeliharaan terjadwal...</p>
       </div>
     </section>
 
@@ -62,95 +77,76 @@ const { title = "Status Sistem" } = Astro.props;
 </BaseLayout>
 
 <style>
-  /* CSS untuk halaman statistik, menggunakan variabel dari global.css Anda */
+  /* Base Layout Styling (from your global.css variables) */
   .container {
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 3rem; /* Lebih banyak ruang antar bagian */
   }
 
-  .header {
-    text-align: center;
-  }
-
-  .title {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-    color: var(--color-text);
-    font-weight: 700;
-    letter-spacing: -0.05em;
-  }
-
-  .description {
-    font-size: 1.1rem;
-    color: var(--color-text-muted);
-    margin-top: 0;
-  }
-
-  .status-overview {
+  /* Top Status Summary Card (Vercel-like) */
+  .status-summary-top-card {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 1rem;
-  }
-
-  .status-card {
+    gap: 1.5rem;
     background-color: var(--color-card-bg);
     border: 1px solid var(--color-border);
     border-radius: 0.75rem;
-    padding: 1.5rem 2rem;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
-    width: 100%;
-    max-width: 400px;
+    padding: 1.5rem 2.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    margin-bottom: 2rem;
+    text-align: left; /* Align text to left within the card */
   }
 
-  .card-title {
-    font-size: 1.25rem;
+  .status-summary-top-card .icon-wrapper {
+    flex-shrink: 0;
+  }
+
+  .status-summary-top-card .status-icon {
+    width: 3rem;
+    height: 3rem;
+    color: var(--color-accent); /* Default to green for operational */
+  }
+  .status-summary-top-card.status-warning .status-icon {
+    color: #f5a623; /* Vercel orange */
+  }
+  .status-summary-top-card.status-error .status-icon {
+    color: #ff0000; /* Vercel red */
+  }
+
+  .status-summary-top-card .main-status-text {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+  }
+  .status-summary-top-card.status-safe .main-status-text {
+    color: var(--color-accent); /* Text accent for safe */
+  }
+  .status-summary-top-card.status-warning .main-status-text {
+    color: #f5a623; /* Text warning for warning */
+  }
+  .status-summary-top-card.status-error .main-status-text {
+    color: #ff0000; /* Text error for error */
+  }
+
+
+  .status-summary-top-card .last-updated-text {
+    font-size: 0.9rem;
     color: var(--color-text-muted);
-    margin-bottom: 0.75rem;
+    margin: 0;
   }
 
-  .status-text {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-  }
-
-  .status-indicator {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    margin: 0.5rem auto 0;
-    border: 2px solid;
-  }
-
-  .status-safe .status-text { color: var(--color-accent); }
-  .status-safe .status-indicator { background-color: var(--color-accent); border-color: var(--color-accent-dark); }
-  .status-operational-text { color: var(--color-accent); }
-
-  .status-warning .status-text { color: #f5a623; }
-  .status-warning .status-indicator { background-color: #f5a623; border-color: #ab782f; }
-  .status-warning-text { color: #f5a623; }
-
-  .status-error .status-text { color: #ff0000; }
-  .status-error .status-indicator { background-color: #ff0000; border-color: #c50000; }
-  .status-error-text { color: #ff0000; }
-
-  .last-updated {
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-  }
-
-  .details-section {
+  /* General Section Styling */
+  .section {
     background-color: var(--color-card-bg);
     border: 1px solid var(--color-border);
     border-radius: 0.75rem;
     padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
 
   .section-title {
@@ -158,14 +154,60 @@ const { title = "Status Sistem" } = Astro.props;
     color: var(--color-text);
     margin-bottom: 1.5rem;
     font-weight: 600;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1rem;
   }
 
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
+  /* Service Details Grid */
+  .grid {
+    display: grid; /* Tailwind's grid class */
+    gap: 1rem; /* Tailwind's gap-4 */
+  }
+  /* Adjusted for Tailwind classes */
+  .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  @media (min-width: 768px) { /* md */
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) { /* lg */
+    .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 
+  .service-card {
+    background-color: var(--color-bg); /* Background card layanan */
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: all 0.2s ease-in-out;
+  }
+  .service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-accent);
+  }
+
+  .service-card-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .service-status-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .service-status-text.operational { color: var(--color-accent); }
+  .service-status-text.perhatian { color: #f5a623; }
+  .service-status-text.bermasalah { color: #ff0000; }
+
+  .service-metrics {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  /* Metrics (reused from previous, updated variables) */
   .detail-card {
     background-color: var(--color-bg);
     border: 1px solid var(--color-border);
@@ -175,42 +217,31 @@ const { title = "Status Sistem" } = Astro.props;
     flex-direction: column;
     gap: 0.5rem;
   }
-
   .detail-card-title {
     font-size: 1rem;
     font-weight: 500;
     color: var(--color-text-muted);
   }
-
   .detail-card-value {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--color-text);
   }
-
   .metric-good { color: var(--color-accent); }
   .metric-warning { color: #f5a623; }
   .metric-bad { color: #ff0000; }
-
   .progress-bar-container {
-    width: 100%;
-    height: 8px;
-    background-color: var(--color-border);
-    border-radius: 4px;
-    margin-top: 0.5rem;
-    overflow: hidden;
+    width: 100%; height: 8px; background-color: var(--color-border);
+    border-radius: 4px; margin-top: 0.5rem; overflow: hidden;
   }
-
   .progress-bar {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease-in-out;
+    height: 100%; border-radius: 4px; transition: width 0.5s ease-in-out;
   }
-
   .progress-bar.good { background-color: var(--color-accent); }
   .progress-bar.warning { background-color: #f5a623; }
   .progress-bar.bad { background-color: #ff0000; }
 
+  /* Chart Styling */
   .chart-section {
     display: flex;
     flex-direction: column;
@@ -223,30 +254,104 @@ const { title = "Status Sistem" } = Astro.props;
     gap: 1.5rem;
   }
 
-  .chart-container {
-    position: relative;
-    width: 100%;
-    height: 250px;
-    background-color: var(--color-bg);
+  .chart-card {
+    background-color: var(--color-bg); /* Background kartu chart */
     border: 1px solid var(--color-border);
     border-radius: 0.5rem;
     padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .chart-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 1rem;
+    text-align: center;
   }
 
-  .chart-container.full-width-chart {
-    grid-column: 1 / -1;
-    height: 300px;
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 250px; /* Tinggi default untuk chart */
+    flex-grow: 1; /* Pastikan chart container mengisi ruang */
+  }
+
+  .chart-card.full-width-chart {
+    grid-column: 1 / -1; /* Mengambil seluruh lebar di grid */
+    height: 350px; /* Lebih tinggi untuk chart yang lebih lebar */
   }
 
   @media (max-width: 767px) {
+    .status-summary-top-card {
+      flex-direction: column;
+      text-align: center;
+    }
     .chart-grid {
       grid-template-columns: 1fr;
     }
-    .chart-container.full-width-chart {
+    .chart-card.full-width-chart {
       height: 250px;
     }
   }
 
+  /* Incident & Maintenance Cards */
+  .incident-card, .maintenance-card {
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 1.25rem;
+    transition: all 0.2s ease-in-out;
+  }
+  .incident-card:hover, .maintenance-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-accent);
+  }
+
+  .incident-card-title, .maintenance-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+  }
+  .incident-card-status {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #ff0000; /* Merah untuk insiden */
+    margin-bottom: 0.5rem;
+  }
+  .maintenance-card-status {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #f5a623; /* Oranye untuk maintenance */
+    margin-bottom: 0.5rem;
+  }
+
+  .incident-card-time, .maintenance-card-time {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+  }
+  .incident-card-description, .maintenance-card-description {
+    font-size: 0.9rem;
+    color: var(--color-text);
+    line-height: 1.5;
+  }
+  .incident-card-link, .maintenance-card-link {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .incident-card-link:hover, .maintenance-card-link:hover {
+    color: var(--color-accent-dark);
+    text-decoration: underline;
+  }
+
+  /* Back Link */
   .back-link {
     display: inline-block;
     margin-top: 2rem;
@@ -266,10 +371,13 @@ const { title = "Status Sistem" } = Astro.props;
 </style>
 
 <script is:inline>
-  // Variabel global untuk menyimpan instance chart
-  let cpuChartInstance, memoryChartInstance, latencyChartInstance;
+  // Import Chart from 'chart.js/auto' is already handled by Astro component script scope
+  // when using `import Chart from 'chart.js/auto';` at the top of the Astro component script.
+  // The global `Chart` object is then available.
 
-  // Fungsi untuk mendapatkan nilai variabel CSS dari elemen <html>
+   let cpuChartInstance, memoryChartInstance, latencyChartInstance;
+
+  // ... (sisa script JavaScript Anda, tidak ada perubahan di sini) ...
   const getCssVar = (varName) => getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
   const parseRgb = (rgbString) => {
     const parts = rgbString.match(/\d+/g);
@@ -329,7 +437,8 @@ const { title = "Status Sistem" } = Astro.props;
       instanceRef.data.datasets[0].data = data.map(d => d.value);
       instanceRef.update();
     } else {
-      instanceRef = new Chart(ctx, { // `Chart` akan tersedia secara global dari CDN
+      // Chart akan dikenali dari global scope
+      instanceRef = new Chart(ctx, {
         type: 'line',
         data: {
           labels: data.map(d => d.time),
@@ -407,12 +516,17 @@ const { title = "Status Sistem" } = Astro.props;
 
 
   document.addEventListener('DOMContentLoaded', async () => {
-    const globalStatusCard = document.getElementById('global-status-card');
-    const globalStatusText = document.getElementById('global-status-text');
-    const globalStatusIndicator = document.getElementById('global-status-indicator');
+    const statusSummaryTopCard = document.getElementById('status-summary-top-card');
+    const mainStatusText = document.getElementById('main-status-text');
+    const globalStatusIcon = document.getElementById('global-status-icon');
+    const statusIconPathSafe = document.getElementById('status-icon-path-safe');
+    const statusIconPathWarning = document.getElementById('status-icon-path-warning');
     const lastUpdatedTime = document.getElementById('last-updated-time');
     const serviceDetailsContainer = document.getElementById('service-details-container');
     const metricDetailsContainer = document.getElementById('metric-details-container');
+    const pastIncidentsContainer = document.getElementById('past-incidents-container');
+    const scheduledMaintenanceContainer = document.getElementById('scheduled-maintenance-container');
+
 
     const fetchDetailedSystemStatus = async () => {
       try {
@@ -422,19 +536,26 @@ const { title = "Status Sistem" } = Astro.props;
         }
         const data = await response.json();
 
-        globalStatusCard.classList.remove('status-safe', 'status-warning', 'status-error');
+        statusSummaryTopCard.classList.remove('status-safe', 'status-warning', 'status-error');
+        statusIconPathSafe.classList.add('hidden');
+        statusIconPathWarning.classList.add('hidden');
+
         if (data.status === 'aman') {
-          globalStatusCard.classList.add('status-safe');
-          globalStatusText.textContent = 'Semua Sistem Beroperasi Penuh';
+          statusSummaryTopCard.classList.add('status-safe');
+          mainStatusText.textContent = data.message || 'Semua Sistem Beroperasi Penuh';
+          statusIconPathSafe.classList.remove('hidden');
         } else if (data.status === 'bermasalah') {
-          globalStatusCard.classList.add('status-error');
-          globalStatusText.textContent = 'Insiden Dilaporkan!';
+          statusSummaryTopCard.classList.add('status-error');
+          mainStatusText.textContent = data.message || 'Insiden Dilaporkan!';
+          statusIconPathWarning.classList.remove('hidden');
         } else if (data.status === 'perhatian') {
-          globalStatusCard.classList.add('status-warning');
-          globalStatusText.textContent = 'Perhatian Diperlukan';
+          statusSummaryTopCard.classList.add('status-warning');
+          mainStatusText.textContent = data.message || 'Perhatian Diperlukan';
+          statusIconPathWarning.classList.remove('hidden');
         } else {
-          globalStatusCard.classList.add('status-warning');
-          globalStatusText.textContent = 'Status Tidak Diketahui';
+          statusSummaryTopCard.classList.add('status-warning');
+          mainStatusText.textContent = 'Status Tidak Diketahui';
+          statusIconPathWarning.classList.remove('hidden');
         }
 
         lastUpdatedTime.textContent = new Date(data.timestamp).toLocaleString('id-ID', {
@@ -450,29 +571,23 @@ const { title = "Status Sistem" } = Astro.props;
         if (data.services && data.services.length > 0) {
           data.services.forEach(service => {
             let serviceStatusClass = '';
-            let serviceStatusTextClass = '';
-            if (service.status === 'operational') {
-              serviceStatusClass = 'status-safe';
-              serviceStatusTextClass = 'status-operational-text';
-            } else if (service.status === 'perhatian') {
-              serviceStatusClass = 'status-warning';
-              serviceStatusTextClass = 'status-warning-text';
-            } else if (service.status === 'bermasalah') {
-              serviceStatusClass = 'status-error';
-              serviceStatusTextClass = 'status-error-text';
-            }
+            if (service.status === 'operational') serviceStatusClass = 'operational';
+            else if (service.status === 'perhatian') serviceStatusClass = 'perhatian';
+            else if (service.status === 'bermasalah') serviceStatusClass = 'bermasalah';
 
             serviceHtml += `
-              <div class="detail-card ${serviceStatusClass}">
-                <p class="detail-card-title">${service.name}</p>
-                <p class="detail-card-value ${serviceStatusTextClass}">${service.message || service.status.toUpperCase()}</p>
-                ${service.latency ? `<p class="detail-card-value" style="font-size:1rem; font-weight: normal; color: var(--color-text-muted);">Latensi: ${service.latency}</p>` : ''}
-                ${service.errorRate ? `<p class="detail-card-value" style="font-size:1rem; font-weight: normal; color: var(--color-error);">Error Rate: ${service.errorRate}</p>` : ''}
+              <div class="service-card">
+                <h3 class="service-card-title">${service.name}</h3>
+                <p class="service-status-text ${serviceStatusClass}">${service.message || service.status.toUpperCase()}</p>
+                <div class="service-metrics">
+                  ${service.latency ? `<span>Latensi: ${service.latency}</span>` : ''}
+                  ${service.errorRate ? `<span>Error Rate: ${service.errorRate}</span>` : ''}
+                </div>
               </div>
             `;
           });
         } else {
-          serviceHtml = '<p>Tidak ada detail layanan yang tersedia saat ini.</p>';
+          serviceHtml = '<p class="text-color-text-muted">Tidak ada detail layanan yang tersedia saat ini.</p>';
         }
         serviceDetailsContainer.innerHTML = serviceHtml;
 
@@ -510,7 +625,7 @@ const { title = "Status Sistem" } = Astro.props;
           `;
         }
         if (metricHtml === '') {
-          metricDetailsContainer.innerHTML = '<p>Tidak ada metrik infrastruktur yang tersedia saat ini.</p>';
+          metricDetailsContainer.innerHTML = '<p class="text-color-text-muted">Tidak ada metrik infrastruktur yang tersedia saat ini.</p>';
         } else {
           metricDetailsContainer.innerHTML = metricHtml;
         }
@@ -524,14 +639,54 @@ const { title = "Status Sistem" } = Astro.props;
         memoryChartInstance = createOrUpdateChart('memoryChart', 'Memory Usage', '%', memoryData, memoryChartInstance);
         latencyChartInstance = createOrUpdateChart('latencyChart', 'Network Latency', 'ms', latencyData, latencyChartInstance);
 
+        let incidentsHtml = '';
+        if (data.pastIncidents && data.pastIncidents.length > 0) {
+          data.pastIncidents.forEach(incident => {
+            incidentsHtml += `
+              <div class="incident-card">
+                <h3 class="incident-card-title">${incident.title}</h3>
+                <p class="incident-card-status">Status: ${incident.status}</p>
+                <p class="incident-card-time">${incident.date}</p>
+                <p class="incident-card-description">${incident.description}</p>
+                ${incident.link ? `<a href="${incident.link}" class="incident-card-link">Lihat Detail →</a>` : ''}
+              </div>
+            `;
+          });
+        } else {
+          incidentsHtml = '<p class="text-color-text-muted">Tidak ada insiden yang dilaporkan baru-baru ini.</p>';
+        }
+        pastIncidentsContainer.innerHTML = incidentsHtml;
+
+        let maintenanceHtml = '';
+        if (data.scheduledMaintenances && data.scheduledMaintenances.length > 0) {
+          data.scheduledMaintenances.forEach(maintenance => {
+            maintenanceHtml += `
+              <div class="maintenance-card">
+                <h3 class="maintenance-card-title">${maintenance.title}</h3>
+                <p class="maintenance-card-status">Status: ${maintenance.status}</p>
+                <p class="maintenance-card-time">${maintenance.date}</p>
+                <p class="maintenance-card-description">${maintenance.description}</p>
+                ${maintenance.link ? `<a href="${maintenance.link}" class="maintenance-card-link">Lihat Detail →</a>` : ''}
+              </div>
+            `;
+          });
+        } else {
+          maintenanceHtml = '<p class="text-color-text-muted">Tidak ada pemeliharaan terjadwal saat ini.</p>';
+        }
+        scheduledMaintenanceContainer.innerHTML = maintenanceHtml;
+
       } catch (error) {
         console.error('Gagal memuat detail sistem:', error);
-        globalStatusText.textContent = 'Status Tidak Tersedia';
-        globalStatusCard.classList.remove('status-safe', 'status-warning');
-        globalStatusCard.classList.add('status-error');
+        statusSummaryTopCard.classList.remove('status-safe', 'status-warning');
+        statusSummaryTopCard.classList.add('status-error');
+        mainStatusText.textContent = 'Status Tidak Tersedia';
+        statusIconPathSafe.classList.add('hidden');
+        statusIconPathWarning.classList.remove('hidden');
         lastUpdatedTime.textContent = 'N/A';
-        serviceDetailsContainer.innerHTML = '<p style="color: #ff0000;">Maaf, gagal memuat detail layanan sistem.</p>';
-        metricDetailsContainer.innerHTML = '<p style="color: #ff0000;">Maaf, gagal memuat metrik infrastruktur.</p>';
+        serviceDetailsContainer.innerHTML = '<p class="text-color-text-muted">Maaf, gagal memuat detail layanan sistem.</p>';
+        metricDetailsContainer.innerHTML = '<p class="text-color-text-muted">Maaf, gagal memuat metrik infrastruktur.</p>';
+        pastIncidentsContainer.innerHTML = '<p class="text-color-text-muted">Gagal memuat insiden lalu.</p>';
+        scheduledMaintenanceContainer.innerHTML = '<p class="text-color-text-muted">Gagal memuat pemeliharaan terjadwal.</p>';
       }
     };
 
@@ -540,7 +695,7 @@ const { title = "Status Sistem" } = Astro.props;
         updateChartColors(memoryChartInstance);
         updateChartColors(latencyChartInstance);
     });
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme'] });
 
     fetchDetailedSystemStatus();
     setInterval(fetchDetailedSystemStatus, 30 * 1000);
