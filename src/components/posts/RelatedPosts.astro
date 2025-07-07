@@ -1,0 +1,46 @@
+---
+import { getImageUrl, formatDate, stripHtml } from '../../utils/helpers';
+
+interface RelatedPostData {
+  id: string;
+  title: string;
+  url: string;
+  images?: any[];
+  published: string;
+  summary?: string;
+  content?: string;
+}
+
+interface Props {
+  relatedPosts: RelatedPostData[];
+}
+
+const { relatedPosts } = Astro.props;
+---
+
+
+<section class="py-8 border-t border-[var(--color-border)]">
+  <h2 class="text-2xl font-bold text-[var(--color-text)] mb-6">Baca Juga</h2>
+  {relatedPosts && relatedPosts.length > 0 && (
+    <div class="grid grid-cols-1 md:grid-cols-1 gap-6 min-w-full">
+      {relatedPosts.map((post) => (
+        <a href={`/post/${post.id}`} class="flex gap-4 p-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] hover:border-[var(--color-accent)] hover:shadow-lg transition-all">
+          <div class="flex-shrink-0">
+            <img src={getImageUrl(post)} alt={post.title} class="w-28 h-28 object-cover rounded-md" loading="lazy" decoding="async" />
+          </div>
+          <div class="flex flex-col justify-between overflow-hidden">
+            <h4 class="text-sm font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] truncate">
+              {post.title}
+            </h4>
+            <p class="text-sm text-[var(--color-text-muted)] mt-1 line-clamp-3">
+              {stripHtml(post.content || post.summary || '').substring(0, 80)}...
+            </p>
+            <time class="text-xs text-[var(--color-text-muted)] mt-2">
+              {formatDate(post.published)}
+            </time>
+          </div>
+        </a>
+      ))}
+    </div>
+  )}
+</section>
