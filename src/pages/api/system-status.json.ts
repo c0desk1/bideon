@@ -1,4 +1,4 @@
-// src/api/status.ts
+// src/api/status
 export const onRequestGet: PagesFunction = async () => {
   // Simulasi status real; bisa diganti dengan health check nyata
   const status = {
