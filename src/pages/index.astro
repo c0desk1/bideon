@@ -13,7 +13,7 @@ const recentPosts = Astro.locals.recentPosts;
 
 <BaseLayout description={pageDescription} image={ogImage} url="https://bimaakbar.my.id">
 <SystemAlert />
-  <Hero />
   <FeaturedRecentSection posts={recentPosts} />
   <NewsletterForm />
+  <Hero />
 </BaseLayout>
