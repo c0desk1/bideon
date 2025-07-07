@@ -1,5 +1,4 @@
 // src/pages/api/system-status.json.ts
-// Ini adalah file API Endpoint yang akan dijalankan di Cloudflare Worker.
 
 interface MetricHistoryEntry {
   time: string;
@@ -8,10 +7,26 @@ interface MetricHistoryEntry {
   network_latency: string;
 }
 
+interface Incident {
+  title: string;
+  status: string; // e.g., 'Resolved', 'Investigating'
+  date: string;
+  description: string;
+  link?: string;
+}
+
+interface Maintenance {
+  title: string;
+  status: string; // e.g., 'Completed', 'Scheduled'
+  date: string;
+  description: string;
+  link?: string;
+}
+
 // NOTE: Dalam produksi, Anda akan menyimpan histori ini di database,
 // Cloudflare KV, atau Durable Objects. Ini hanya simulasi in-memory.
 const metricHistory: MetricHistoryEntry[] = [];
-const MAX_HISTORY_POINTS = 30; // Jumlah titik data di grafik (sekitar 15 menit jika polling 30 detik)
+const MAX_HISTORY_POINTS = 30; // Sekitar 15 menit data jika polling 30 detik
 
 const getRandomValue = (min: number, max: number) => {
   return (Math.random() * (max - min) + min);
@@ -20,13 +35,9 @@ const getRandomValue = (min: number, max: number) => {
 export async function GET({ request }: { request: Request }) {
   let response: Response | undefined;
   
-  // Deteksi lingkungan Cloudflare Worker dengan lebih aman untuk TypeScript.
   const isCloudflareWorkerEnv = typeof caches !== 'undefined' && typeof (caches as any).default !== 'undefined';
-
-  // Inisialisasi defaultCache hanya jika di lingkungan Worker
   const defaultCache: Cache | null = isCloudflareWorkerEnv ? (caches as any).default : null;
 
-  // Coba ambil dari cache hanya jika defaultCache terdefinisi
   if (defaultCache) {
     const cacheKey = new Request(request.url, {
       headers: request.headers,
@@ -35,13 +46,7 @@ export async function GET({ request }: { request: Request }) {
     response = await defaultCache.match(cacheKey);
   }
  
-  // Jika tidak ada respons dari cache, atau jika tidak di lingkungan Worker (defaultCache adalah null)
   if (!response) {
-    // --- Simulasi Data Real-time ---
-    // Di dunia nyata, ini akan diganti dengan panggilan ke monitoring API Anda (UptimeRobot, Prometheus, Datadog, dll.)
-    // Atau membaca dari Cloudflare KV/Durable Objects jika Anda menyimpan status di sana.
-
-    // Definisikan layanan yang akan dipantau
     const services = [
       { name: 'API Gateway', status: 'operational', minLatency: 20, maxLatency: 80, errorChance: 0.02 }, // 2% chance of error
       { name: 'Database Service', status: 'operational', minLatency: 30, maxLatency: 100, errorChance: 0.01 }, // 1% chance of error
@@ -54,14 +59,12 @@ export async function GET({ request }: { request: Request }) {
     let overallDetails = '';
     const serviceStatuses: { name: string; status: string; latency?: string; errorRate?: string; message?: string }[] = [];
 
-    // Simulasi status dan metrik untuk setiap layanan
     for (const service of services) {
       let serviceCurrentStatus: 'operational' | 'perhatian' | 'bermasalah' = 'operational';
       let serviceMessage = 'Operasional';
       let serviceLatency = `${getRandomValue(service.minLatency, service.maxLatency).toFixed(0)}ms`;
       let serviceErrorRate: string | undefined = undefined;
 
-      // Simulasi masalah acak
       if (Math.random() < service.errorChance) {
         const problemType = Math.random();
         if (problemType < 0.6) { // Masalah kecil (latency tinggi, warning)
@@ -126,6 +129,43 @@ export async function GET({ request }: { request: Request }) {
       metricHistory.shift(); // Hapus data terlama
     }
 
+    // --- Data Simulasi Insiden dan Pemeliharaan ---
+    // Di dunia nyata, ini akan diambil dari CMS atau database insiden/pemeliharaan Anda.
+    const pastIncidents: Incident[] = [
+      {
+        title: 'Peningkatan Latensi Database',
+        status: 'Resolved',
+        date: '05 Juli 2025, 14:30 WIB',
+        description: 'Terjadi peningkatan latensi signifikan pada Database Service utama yang memengaruhi respons aplikasi. Masalah telah diidentifikasi dan diselesaikan.',
+        link: '#incident-detail-1'
+      },
+      {
+        title: 'Gangguan API Gateway Parsial',
+        status: 'Resolved',
+        date: '01 Juli 2025, 09:00 WIB',
+        description: 'Beberapa request ke API Gateway mengalami kegagalan intermittent. Masalah diatasi setelah restart service. Semua sistem kembali normal.',
+        link: '#incident-detail-2'
+      }
+    ];
+
+    const scheduledMaintenances: Maintenance[] = [
+      {
+        title: 'Pembaruan Firmware Server Utama',
+        status: 'Completed',
+        date: '10 Juli 2025, 02:00 - 03:00 WIB',
+        description: 'Melakukan pembaruan firmware rutin pada server infrastruktur untuk peningkatan keamanan dan performa. Downtime singkat yang tidak signifikan diperkirakan terjadi.',
+        link: '#maintenance-detail-1'
+      },
+      {
+        title: 'Upgrade Versi Database',
+        status: 'Scheduled',
+        date: '20 Juli 2025, 01:00 - 04:00 WIB',
+        description: 'Upgrade versi major Database Service untuk fitur baru dan stabilitas. Diperkirakan ada downtime sekitar 15-30 menit selama periode ini.',
+        link: '#maintenance-detail-2'
+      }
+    ];
+
+
     const statusData = {
       status: overallStatus,
       message: overallMessage,
@@ -133,7 +173,9 @@ export async function GET({ request }: { request: Request }) {
       details: overallDetails.trim() || 'Semua layanan beroperasi pada performa optimal.',
       services: serviceStatuses,
       metrics: globalMetrics,
-      history: metricHistory, // Ini yang akan digunakan oleh Chart.js
+      history: metricHistory,
+      pastIncidents: pastIncidents, // Tambahkan ini
+      scheduledMaintenances: scheduledMaintenances, // Tambahkan ini
     };
 
     // Buat respons baru
