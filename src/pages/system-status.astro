@@ -1,52 +1,65 @@
-<main class="container">
-  <header class="header">
-    <h1 class="title">Statistik Sistem</h1>
-    <p class="description">Informasi real-time mengenai status dan performa layanan Anda.</p>
-  </header>
+---
+// src/pages/system-status.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
 
-  <section class="status-overview">
-    <div class="status-card" id="global-status-card">
-      <h2 class="card-title">Status Global Sistem</h2>
-      <p class="status-text" id="global-status-text">Memuat...</p>
-      <div class="status-indicator" id="global-status-indicator"></div>
-    </div>
+interface Props {
+  title?: string;
+}
 
-    <div class="last-updated">
-      Terakhir diperbarui: <span id="last-updated-time">Memuat...</span>
-    </div>
-  </section>
+const { title = "Status Sistem" } = Astro.props;
+---
 
-  <section class="details-section">
-    <h2 class="section-title">Detail Layanan</h2>
-    <div id="service-details-container" class="grid-container">
-      <p>Memuat detail layanan...</p>
-    </div>
-  </section>
+<BaseLayout title={title}>
+  <main class="container">
+    <header class="header">
+      <h1 class="title">Statistik Sistem</h1>
+      <p class="description">Informasi real-time mengenai status dan performa layanan Anda.</p>
+    </header>
 
-  <section class="details-section">
-    <h2 class="section-title">Metrik Infrastruktur Utama</h2>
-    <div id="metric-details-container" class="grid-container">
-      <p>Memuat metrik...</p>
-    </div>
-  </section>
-
-  <section class="details-section chart-section">
-    <h2 class="section-title">Grafik Performa Sistem (24 Jam Terakhir)</h2>
-    <div class="chart-grid">
-      <div class="chart-container">
-        <canvas id="cpuChart"></canvas>
+    <section class="status-overview">
+      <div class="status-card" id="global-status-card">
+        <h2 class="card-title">Status Global Sistem</h2>
+        <p class="status-text" id="global-status-text">Memuat...</p>
+        <div class="status-indicator" id="global-status-indicator"></div>
       </div>
-      <div class="chart-container">
-        <canvas id="memoryChart"></canvas>
-      </div>
-      <div class="chart-container full-width-chart">
-        <canvas id="latencyChart"></canvas>
-      </div>
-    </div>
-  </section>
 
-  <a href="/" class="back-link">← Kembali ke Beranda</a>
-</main>
+      <div class="last-updated">
+        Terakhir diperbarui: <span id="last-updated-time">Memuat...</span>
+      </div>
+    </section>
+
+    <section class="details-section">
+      <h2 class="section-title">Detail Layanan</h2>
+      <div id="service-details-container" class="grid-container">
+        <p>Memuat detail layanan...</p>
+      </div>
+    </section>
+
+    <section class="details-section">
+      <h2 class="section-title">Metrik Infrastruktur Utama</h2>
+      <div id="metric-details-container" class="grid-container">
+        <p>Memuat metrik...</p>
+      </div>
+    </section>
+
+    <section class="details-section chart-section">
+      <h2 class="section-title">Grafik Performa Sistem (24 Jam Terakhir)</h2>
+      <div class="chart-grid">
+        <div class="chart-container">
+          <canvas id="cpuChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="memoryChart"></canvas>
+        </div>
+        <div class="chart-container full-width-chart">
+          <canvas id="latencyChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <a href="/" class="back-link">← Kembali ke Beranda</a>
+  </main>
+</BaseLayout>
 
 <style>
   /* CSS untuk halaman statistik, menggunakan variabel dari global.css Anda */
@@ -253,10 +266,10 @@
 </style>
 
 <script is:inline>
-  import Chart from 'chart.js/auto';
-
+  // Variabel global untuk menyimpan instance chart
   let cpuChartInstance, memoryChartInstance, latencyChartInstance;
 
+  // Fungsi untuk mendapatkan nilai variabel CSS dari elemen <html>
   const getCssVar = (varName) => getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
   const parseRgb = (rgbString) => {
     const parts = rgbString.match(/\d+/g);
@@ -272,7 +285,6 @@
       const accentColor = getCssVar('--color-accent');
       const accentRgb = parseRgb(getCssVar('--color-text-rgb'));
       const warningColor = '#f5a623';
-      const errorColor = '#ff0000';
 
       if (chartInstance.options.scales.x) chartInstance.options.scales.x.ticks.color = textMutedColor;
       if (chartInstance.options.scales.y) chartInstance.options.scales.y.ticks.color = textMutedColor;
@@ -317,7 +329,7 @@
       instanceRef.data.datasets[0].data = data.map(d => d.value);
       instanceRef.update();
     } else {
-      instanceRef = new Chart(ctx, {
+      instanceRef = new Chart(ctx, { // `Chart` akan tersedia secara global dari CDN
         type: 'line',
         data: {
           labels: data.map(d => d.time),
