@@ -33,26 +33,6 @@
   --post-card-bg: var(--color-card-bg);
   --post-bg: var(--color-bg);
   --post-card-tag-bg: var(--color-card-bg);
-
-  --geist-foreground: #FFFFFF;
-  --geist-background: #000000;
-  --geist-success-light: #3291EE;
-  --geist-success: #0070F3;
-  --geist-success-dark: #0366D6;
-  --geist-warning-light: #F7B955;
-  --geist-warning: #F5A623;
-  --geist-warning-dark: #AB782F;
-  --geist-error-light: #FF3B30;
-  --geist-error: #FF0000;
-  --geist-error-dark: #C50000;
-  --geist-accents-1: #111111;
-  --geist-accents-2: #333333;
-  --geist-accents-3: #444444;
-  --geist-accents-4: #666666;
-  --geist-accents-5: #888888;
-  --geist-accents-6: #999999;
-  --geist-accents-7: #EAEAEA;
-  --geist-accents-8: #FAFAFA;
 }
 
 :root {
@@ -87,26 +67,6 @@
   --light-hero-muted-foreground: var(--light-hero-muted-foreground);
   --light-post-card-bg: var(--light-color-card-bg);
   --light-post-card-tag-bg: var(--light-color-card-bg);
-
-  --geist-foreground: #000000;
-  --geist-background: #FFFFFF;
-  --geist-success-light: #3291EE;
-  --geist-success: #0070F3;
-  --geist-success-dark: #0366D6;
-  --geist-warning-light: #F7B955;
-  --geist-warning: #F5A623;
-  --geist-warning-dark: #AB782F;
-  --geist-error-light: #FF3B30;
-  --geist-error: #FF0000;
-  --geist-error-dark: #C50000;
-  --geist-accents-1: #FAFAFA;
-  --geist-accents-2: #EAEAEA;
-  --geist-accents-3: #999999;
-  --geist-accents-4: #888888;
-  --geist-accents-5: #666666;
-  --geist-accents-6: #444444;
-  --geist-accents-7: #333333;
-  --geist-accents-8: #111111;
 }
 
 html.light-mode {
