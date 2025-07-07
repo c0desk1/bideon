@@ -1,5 +1,5 @@
 ---
-//Header.astro
+// Header.astro
 import { Image } from 'astro:assets';
 import logo from '../assets/bimaakbar-logo.svg';
 
@@ -19,15 +19,25 @@ const navItems = [
 
 <header id="main-header" class="fixed top-0 inset-x-0 z-50 backdrop-blur">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 w-full flex items-center justify-between gap-4">
+    
+    <!-- Left Section -->
     <div class="flex items-center md:flex-1 md:justify-start space-x-3">
       <button id="menu-button" class="text-color-text text-2xl md:hidden" aria-label="Toggle Menu">
         <i id="menu-icon" class="ri-menu-3-line"></i>
       </button>
       <a href="/" class="hidden md:flex items-center space-x-2">
-        <Image src={logo} alt="Logo" width={32} height={32} class="object-contain h-6 w-6 text-[var(--color-text)] hover:text-[var(--color-text-hover)]" />
+        <Image 
+          src={logo} 
+          alt="Logo" 
+          width={32} 
+          height={32} 
+          class="object-contain h-6 w-6 text-[var(--color-text)] hover:text-[var(--color-text-hover)]" 
+        />
         <span class="text-color-text text-base font-semibold">{title}</span>
       </a>
     </div>
+
+    <!-- Center Section -->
     <div class="flex-1 text-center min-w-0">
       <a href="/" class="md:hidden inline-flex justify-center items-center">
         <Image src={logo} alt="Logo" class="h-8 w-8 object-contain mx-auto" />
@@ -38,6 +48,8 @@ const navItems = [
         ))}
       </nav>
     </div>
+
+    <!-- Right Section -->
     <div class="w-10 md:w-auto flex justify-end items-center md:flex-1 md:justify-end space-x-3 text-color-text text-xl">
       <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark/Light Mode">
         <i class="icon sun-icon ri-sun-line"></i>
@@ -46,6 +58,8 @@ const navItems = [
       </button>
     </div>
   </div>
+
+  <!-- Mobile Navigation -->
   <div id="mobile-menu" class="mobile-menu-bg rounded-lg md:hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
     <nav class="flex flex-col px-6 py-4 space-y-4 uppercase text-sm font-medium items-center">
       {navItems.map((item) => (
@@ -55,6 +69,7 @@ const navItems = [
   </div>
 </header>
 
+<!-- Scripts -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const menuButton = document.getElementById("menu-button");
@@ -64,8 +79,9 @@ const navItems = [
     const themeToggle = document.getElementById("theme-toggle");
     const htmlElement = document.documentElement;
 
+    // Theme Toggle
     if (themeToggle && htmlElement) {
-      const setTheme = (theme: 'dark' | 'light') => {
+      const setTheme = (theme) => {
         if (theme === 'light') {
           htmlElement.classList.add('light-mode');
           localStorage.setItem('theme', 'light');
@@ -79,11 +95,9 @@ const navItems = [
       const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
 
       if (storedTheme) {
-        setTheme(storedTheme as 'dark' | 'light');
-      } else if (prefersLight) {
-        setTheme('light');
+        setTheme(storedTheme);
       } else {
-        setTheme('dark');
+        setTheme(prefersLight ? 'light' : 'dark');
       }
 
       themeToggle.addEventListener('click', () => {
@@ -91,6 +105,8 @@ const navItems = [
         setTheme(currentTheme === 'dark' ? 'light' : 'dark');
       });
     }
+
+    // Mobile Menu Toggle
     if (menuButton && mobileMenu && menuIcon) {
       menuButton.addEventListener("click", () => {
         mobileMenu.classList.toggle("max-h-0");
@@ -100,6 +116,8 @@ const navItems = [
         menuIcon.className = isOpen ? "ri-menu-3-line" : "ri-close-line";
       });
     }
+
+    // Header Scroll Behavior
     if (mainHeader) {
       const handleScroll = () => {
         if (window.scrollY > 5) {
@@ -108,6 +126,7 @@ const navItems = [
           mainHeader.classList.remove("scrolled-header");
         }
       };
+
       window.addEventListener("scroll", handleScroll);
       handleScroll();
     }
