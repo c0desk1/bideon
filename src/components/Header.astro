@@ -60,7 +60,7 @@ const navItems = [
   </div>
 
   <!-- Mobile Navigation -->
-  <div id="mobile-menu" class="mobile-menu-bg rounded-lg md:hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+  <div id="mobile-menu" class="md:hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out mobile-menu-bg rounded-lg">
     <nav class="flex flex-col px-6 py-4 space-y-4 uppercase text-sm font-medium items-center">
       {navItems.map((item) => (
         <a href={item.href} class="text-[var(--color-text)] hover:text-[var(--color-text-hover)] transition">{item.label}</a>
