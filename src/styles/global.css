@@ -235,6 +235,8 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
 }
 
 .post-card {
+  display: flex;
+  flex-direction: column;
   border-radius: 0.75rem;
   overflow: hidden;
   border: 2px solid var(--color-border);
@@ -252,6 +254,7 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
 
 .post-card .image-wrapper {
   position: relative;
+  flex-shrink: 0;
 }
 
 .post-card .post-image {
@@ -286,6 +289,7 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   flex-direction: column;
   gap: 0.75rem;
   background-color: var(--post-card-bg);
+  flex-grow: 1;
 }
 
 .post-card .meta-info {
@@ -294,6 +298,7 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   font-size: 0.70rem;
   color: var(--color-text-muted);
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .post-card .meta-info i {
@@ -305,6 +310,7 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   color: var(--color-text);
   font-weight: 600;
   line-height: 1.375;
+  flex-shrink: 0;
 }
 
 .post-card .post-title a {
@@ -319,13 +325,14 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
 .post-card .post-summary {
   font-size: 0.875rem;
   color: var(--color-text-muted);
+  flex-grow: 1;
 }
 
 .post-card .author-section {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: auto;
 }
 
 .post-card .author-image {
@@ -345,7 +352,7 @@ html.light-mode .theme-toggle .moon-icon { color: var(--color-text-muted); }
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+
 }
 
 .post-card .label-tag {
