@@ -12,7 +12,7 @@ export const GET: APIRoute = async () => {
   const res = await fetch(`https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}`);
   const data = await res.json();
 
-  const baseUrl = 'https://yourdomain.com'; // Ganti sesuai domain kamu
+  const baseUrl = 'https://bimaakbar.my.id';
 
   const urls = data.items?.map((post: any) => {
     return `
