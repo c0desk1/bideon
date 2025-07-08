@@ -1,9 +1,6 @@
 ---
 // src/pages/statistik-system.astro
-import BaseLayout from '../layouts/BaseLayout.astro'; // Pastikan PATH ini sesuai dengan lokasi BaseLayout Anda
-
-// Pastikan registerables terdaftar
-Chart.register(...registerables);
+import BaseLayout from '../layouts/BaseLayout.astro';
 
 interface Props {
   title?: string;
@@ -72,22 +69,20 @@ const { title = "Status Sistem" } = Astro.props;
       </div>
     </section>
 
-    <a href="/" class="back-link">← Kembali ke Beranda</a>
+    <a href="/" class="back-link">«Kembali ke Beranda</a>
   </main>
 </BaseLayout>
 
 <style>
-  /* Base Layout Styling (from your global.css variables) */
   .container {
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 3rem; /* Lebih banyak ruang antar bagian */
+    gap: 3rem;
   }
 
-  /* Top Status Summary Card (Vercel-like) */
   .status-summary-top-card {
     display: flex;
     align-items: center;
@@ -98,7 +93,7 @@ const { title = "Status Sistem" } = Astro.props;
     padding: 1.5rem 2.5rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     margin-bottom: 2rem;
-    text-align: left; /* Align text to left within the card */
+    text-align: left;
   }
 
   .status-summary-top-card .icon-wrapper {
@@ -108,13 +103,13 @@ const { title = "Status Sistem" } = Astro.props;
   .status-summary-top-card .status-icon {
     width: 3rem;
     height: 3rem;
-    color: var(--color-accent); /* Default to green for operational */
+    color: var(--color-accent);
   }
   .status-summary-top-card.status-warning .status-icon {
-    color: #f5a623; /* Vercel orange */
+    color: #f5a623;
   }
   .status-summary-top-card.status-error .status-icon {
-    color: #ff0000; /* Vercel red */
+    color: #ff0000;
   }
 
   .status-summary-top-card .main-status-text {
@@ -124,13 +119,13 @@ const { title = "Status Sistem" } = Astro.props;
     margin: 0;
   }
   .status-summary-top-card.status-safe .main-status-text {
-    color: var(--color-accent); /* Text accent for safe */
+    color: var(--color-accent);
   }
   .status-summary-top-card.status-warning .main-status-text {
-    color: #f5a623; /* Text warning for warning */
+    color: #f5a623;
   }
   .status-summary-top-card.status-error .main-status-text {
-    color: #ff0000; /* Text error for error */
+    color: #ff0000;
   }
 
 
@@ -140,7 +135,6 @@ const { title = "Status Sistem" } = Astro.props;
     margin: 0;
   }
 
-  /* General Section Styling */
   .section {
     background-color: var(--color-card-bg);
     border: 1px solid var(--color-border);
@@ -158,22 +152,21 @@ const { title = "Status Sistem" } = Astro.props;
     padding-bottom: 1rem;
   }
 
-  /* Service Details Grid */
   .grid {
-    display: grid; /* Tailwind's grid class */
-    gap: 1rem; /* Tailwind's gap-4 */
+    display: grid;
+    gap: 1rem;
   }
-  /* Adjusted for Tailwind classes */
+  
   .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-  @media (min-width: 768px) { /* md */
+  @media (min-width: 768px) {
     .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  @media (min-width: 1024px) { /* lg */
+  @media (min-width: 1024px) {
     .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 
   .service-card {
-    background-color: var(--color-bg); /* Background card layanan */
+    background-color: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 0.5rem;
     padding: 1.25rem;
@@ -207,7 +200,6 @@ const { title = "Status Sistem" } = Astro.props;
     color: var(--color-text-muted);
   }
 
-  /* Metrics (reused from previous, updated variables) */
   .detail-card {
     background-color: var(--color-bg);
     border: 1px solid var(--color-border);
@@ -241,7 +233,6 @@ const { title = "Status Sistem" } = Astro.props;
   .progress-bar.warning { background-color: #f5a623; }
   .progress-bar.bad { background-color: #ff0000; }
 
-  /* Chart Styling */
   .chart-section {
     display: flex;
     flex-direction: column;
@@ -255,7 +246,7 @@ const { title = "Status Sistem" } = Astro.props;
   }
 
   .chart-card {
-    background-color: var(--color-bg); /* Background kartu chart */
+    background-color: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 0.5rem;
     padding: 1rem;
@@ -273,8 +264,8 @@ const { title = "Status Sistem" } = Astro.props;
   .chart-container {
     position: relative;
     width: 100%;
-    height: 250px; /* Tinggi default untuk chart */
-    flex-grow: 1; /* Pastikan chart container mengisi ruang */
+    height: 250px;
+    flex-grow: 1;
   }
 
   .chart-card.full-width-chart {
@@ -295,7 +286,6 @@ const { title = "Status Sistem" } = Astro.props;
     }
   }
 
-  /* Incident & Maintenance Cards */
   .incident-card, .maintenance-card {
     background-color: var(--color-bg);
     border: 1px solid var(--color-border);
@@ -318,13 +308,13 @@ const { title = "Status Sistem" } = Astro.props;
   .incident-card-status {
     font-size: 0.9rem;
     font-weight: 500;
-    color: #ff0000; /* Merah untuk insiden */
+    color: #ff0000;
     margin-bottom: 0.5rem;
   }
   .maintenance-card-status {
     font-size: 0.9rem;
     font-weight: 500;
-    color: #f5a623; /* Oranye untuk maintenance */
+    color: #f5a623;
     margin-bottom: 0.5rem;
   }
 
@@ -351,7 +341,6 @@ const { title = "Status Sistem" } = Astro.props;
     text-decoration: underline;
   }
 
-  /* Back Link */
   .back-link {
     display: inline-block;
     margin-top: 2rem;
@@ -371,13 +360,7 @@ const { title = "Status Sistem" } = Astro.props;
 </style>
 
 <script is:inline>
-  // Import Chart from 'chart.js/auto' is already handled by Astro component script scope
-  // when using `import Chart from 'chart.js/auto';` at the top of the Astro component script.
-  // The global `Chart` object is then available.
-
    let cpuChartInstance, memoryChartInstance, latencyChartInstance;
-
-  // ... (sisa script JavaScript Anda, tidak ada perubahan di sini) ...
   const getCssVar = (varName) => getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
   const parseRgb = (rgbString) => {
     const parts = rgbString.match(/\d+/g);
@@ -437,7 +420,6 @@ const { title = "Status Sistem" } = Astro.props;
       instanceRef.data.datasets[0].data = data.map(d => d.value);
       instanceRef.update();
     } else {
-      // Chart akan dikenali dari global scope
       instanceRef = new Chart(ctx, {
         type: 'line',
         data: {
