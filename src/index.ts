@@ -6,7 +6,7 @@ export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
 
-    if (url.pathname === "/api/visit") {
+    if (url.pathname === "/api/visitor") {
       const today = new Date().toISOString().split("T")[0];
       const key = `visits:${today}`;
       const current = await env.BIMA_KV_SPACE.get(key);
@@ -21,8 +21,6 @@ export default {
       });
     }
 
-    return new Response("Worker aktif, tapi route tidak cocok", {
-      status: 404
-    });
+    return new Response("Route not found", { status: 404 });
   }
 }
