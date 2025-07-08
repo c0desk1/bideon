@@ -4,7 +4,7 @@ import { APIContext } from 'astro';
 export async function GET({ site }: APIContext) {
   const sitemapUrls = [
     new URL('/sitemap-posts.xml', site).href,
-new URL ('/sitempa-pages.xml', site).href,
+new URL ('/sitemap-pages.xml', site).href,
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
