@@ -1,6 +1,6 @@
 export async function GET() {
   try {
-    const res = await fetch("https://bima-akbar-dev.bimasaktiakbarr.workers.dev/api/visitor", {
+    const res = await fetch("https://bima-akbar-dev.bimasaktiakbarr.workers.dev/api/visit", {
       headers: {
         "Accept": "application/json"
       }
