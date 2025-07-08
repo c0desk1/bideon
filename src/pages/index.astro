@@ -3,7 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import FeaturedRecentSection  from "../components/FeaturedRecentSection.astro";
 import NewsletterForm from '../components/NewsletterForm.astro';
-import SystemWidget from '../components/SystemWidget.astro';
+import StatusAlert from '../components/StatusAlert.astro';
 
 const blogData = Astro.locals.blogData;
 const pageDescription = blogData?.description;
@@ -12,8 +12,8 @@ const recentPosts = Astro.locals.recentPosts;
 ---
 
 <BaseLayout description={pageDescription} image={ogImage} url="https://bimaakbar.my.id">
-<Hero />
+  <Hero />
   <FeaturedRecentSection posts={recentPosts} />
   <NewsletterForm />
-  <SystemWidget />
+  <StatusAlert />
 </BaseLayout>
