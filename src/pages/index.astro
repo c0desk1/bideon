@@ -3,7 +3,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import FeaturedRecentSection  from "../components/FeaturedRecentSection.astro";
 import NewsletterForm from '../components/NewsletterForm.astro';
-import StatusAlert from '../components/StatusAlert.astro';
 
 const blogData = Astro.locals.blogData;
 const pageDescription = blogData?.description;
@@ -15,5 +14,4 @@ const recentPosts = Astro.locals.recentPosts;
   <Hero />
   <FeaturedRecentSection posts={recentPosts} />
   <NewsletterForm />
-  <StatusAlert />
 </BaseLayout>
