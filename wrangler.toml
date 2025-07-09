@@ -1,5 +1,5 @@
 name = "bima-akbar-dev"
-main = "dist/_worker.js"
+main = "dist/_worker.js/index.js"
 compatibility_date = "2025-07-05"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 observability = { enabled = true }
