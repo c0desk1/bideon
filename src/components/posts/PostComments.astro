@@ -1,5 +1,4 @@
 ---
-// src/components/posts/PostComments.astro
 interface Props {
   postId: string;
   blogId: string;
@@ -8,7 +7,7 @@ interface Props {
 const { postId, blogId } = Astro.props;
 const apiKey = import.meta.env.VITE_BLOGGER_API_KEY;
 const googleClientId = import.meta.env.VITE_PUBLIC_GOOGLE_CLIENT_ID;
-const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY; 
 ---
 
 <section id="comments-section" class="border-t border-[var(--color-border)] py-8">
@@ -35,7 +34,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           class="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-card-bg)] p-3 text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
           required
         ></textarea>
-        <div class="cf-turnstile" data-sitekey={turnstileSiteKey}></div>
+        <div id="turnstile-container"></div> 
         <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
         <button type="submit" id="submit-comment-button" class="mt-3 rounded-md bg-[var(--color-accent)] px-5 py-2 font-semibold text-white transition hover:bg-[var(--color-accent-dark)] disabled:cursor-not-allowed disabled:bg-opacity-50 cursor-pointer">
           Kirim
@@ -62,7 +61,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   </template>
 </section>
 
-<script is:inline define:vars={{ postId, blogId, apiKey, googleClientId, turnstileSiteKey }}>
+<script is:inline type="module" define:vars={{ postId, blogId, apiKey, googleClientId, turnstileSiteKey }}>
   let tokenClient;
   let accessToken = null;
   let currentUserInfo = null;
@@ -76,6 +75,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const commentForm = document.getElementById('comment-form');
   const commentTextarea = document.getElementById('comment-textarea');
   const submitCommentButton = document.getElementById('submit-comment-button');
+  const turnstileContainer = document.getElementById('turnstile-container');
 
   document.addEventListener('DOMContentLoaded', () => {
     loadGsiClient();
@@ -96,7 +96,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   function initializeGsi() {
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: googleClientId,
-      scope: 'https://www.googleapis.com/auth/blogger',
+      scope: 'https://www.googleapis.com/auth/blogger profile email', 
       callback: handleTokenResponse,
     });
   }
@@ -113,7 +113,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       await updateUiForAuthState();
     } else {
       console.error("Failed to obtain access token.");
-    
     }
   }
 
@@ -141,6 +140,21 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     } else {
         signinPrompt.classList.remove('hidden');
         commentFormContainer.classList.add('hidden');
+    }
+  }
+
+  function renderTurnstile() {
+    console.log('Turnstile SiteKey (from define:vars):', turnstileSiteKey, typeof turnstileSiteKey);
+
+    if (turnstileSiteKey && typeof turnstileSiteKey === 'string' && window.turnstile) {
+      window.turnstile.render(turnstileContainer, {
+        sitekey: turnstileSiteKey,
+      });
+    } else {
+      console.error("Cloudflare Turnstile script not loaded or sitekey is invalid.");
+      if (!turnstileSiteKey) console.error("Sitekey is missing or null!");
+      if (typeof turnstileSiteKey !== 'string') console.error("Sitekey is not a string, type:", typeof turnstileSiteKey);
+      if (!window.turnstile) console.error("window.turnstile object not found. Ensure the Turnstile script is loaded.");
     }
   }
 
@@ -190,9 +204,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
       addCommentToDom(newComment, true);
       commentTextarea.value = '';
       
-     
       if (window.turnstile) {
-          window.turnstile.reset();
+        window.turnstile.reset();
       }
 
     } catch (error) {
@@ -234,9 +247,8 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   }
 
   function addCommentToDom(comment, prepend = false) {
-
     if (commentsList.querySelector('.comment-item') === null && commentsList.querySelector('p')) {
-        commentsList.innerHTML = '';
+      commentsList.innerHTML = '';
     }
 
     const templateNode = commentTemplate.content.cloneNode(true);
