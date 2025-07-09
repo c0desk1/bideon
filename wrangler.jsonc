@@ -5,7 +5,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "bima-akbar-dev",
-	"main": "src/index.ts",
+	"main": "./dist/_worker.js/index.js",
 	"compatibility_date": "2025-07-05",
 	"compatibility_flags": [
 		"nodejs_compat",
