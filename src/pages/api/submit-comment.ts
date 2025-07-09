@@ -16,7 +16,6 @@ interface TurnstileVerificationResult {
   hostname?: string;
 }
 
-
 const TURNSTILE_SECRET_KEY = import.meta.env.VITE_TURNSTILE_SECRET_TOKEN;
 
 export const POST: APIRoute = async ({ request }) => {
@@ -32,6 +31,11 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
+    if (!TURNSTILE_SECRET_KEY) {
+      console.error("TURNSTILE_SECRET_KEY is not defined.");
+      return new Response(JSON.stringify({ message: "Server configuration error: Turnstile secret key missing." }), { status: 500 });
+    }
+
     const turnstileFormData = new URLSearchParams();
     turnstileFormData.append('secret', TURNSTILE_SECRET_KEY);
     turnstileFormData.append('response', turnstileToken);
@@ -55,16 +59,13 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     const userinfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-      headers: { 'Authorization': `Bearer ${accessToken}` }
+        headers: { 'Authorization': `Bearer ${accessToken}` }
     });
     if (!userinfoResponse.ok) {
       const errorData = await userinfoResponse.json();
       console.error("Google user info error:", userinfoResponse.status, errorData);
       return new Response(JSON.stringify({ message: "Authentication failed. Invalid or expired Google login.", details: errorData }), { status: 401 });
     }
-    const userInfo = await userinfoResponse.json();
-    console.log("User Info:", userInfo);
-
   } catch (error) {
     console.error("Access Token validation failed:", error);
     return new Response(JSON.stringify({ message: "Authentication failed. Please login again." }), { status: 401 });
