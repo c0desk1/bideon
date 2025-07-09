@@ -77,7 +77,6 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const submitCommentButton = document.getElementById('submit-comment-button');
   const turnstileContainer = document.getElementById('turnstile-container');
 
-  // Callback global untuk Turnstile
   window.onloadTurnstileCallback = function() {
     renderTurnstile();
   };
@@ -101,7 +100,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   function initializeGsi() {
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: googleClientId,
-      scope: 'https://www.googleapis.com/auth/blogger profile email', 
+      scope: 'https://www.googleapis.com/auth/blogger profile email', // Pastikan scope ini benar
       callback: handleTokenResponse,
     });
   }
@@ -160,6 +159,10 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         'error-callback': function (error) {
           console.error('Turnstile widget error:', error);
           alert('Terjadi kesalahan pada verifikasi bot. Silakan refresh halaman.');
+        },
+        'expired-callback': function() {
+            console.warn('Turnstile Challenge Expired, resetting...');
+            if (window.turnstile) window.turnstile.reset();
         }
       });
     } else {
@@ -184,7 +187,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
     const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
     if (!turnstileToken) {
-      alert("Verifikasi bot gagal. Coba ulangi atau refresh halaman.");
+      alert("Verifikasi bot gagal. Coba ulangi atau refresh halaman."); // ALERT INI YANG MUNCUL
       return;
     }
 
