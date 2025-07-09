@@ -35,7 +35,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
           required
         ></textarea>
         <div id="turnstile-container"></div> 
-        <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
         <button type="submit" id="submit-comment-button" class="mt-3 rounded-md bg-[var(--color-accent)] px-5 py-2 font-semibold text-white transition hover:bg-[var(--color-accent-dark)] disabled:cursor-not-allowed disabled:bg-opacity-50 cursor-pointer">
           Kirim
         </button>
@@ -76,6 +76,11 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
   const commentTextarea = document.getElementById('comment-textarea');
   const submitCommentButton = document.getElementById('submit-comment-button');
   const turnstileContainer = document.getElementById('turnstile-container');
+
+  // Callback global untuk Turnstile
+  window.onloadTurnstileCallback = function() {
+    renderTurnstile();
+  };
 
   document.addEventListener('DOMContentLoaded', () => {
     loadGsiClient();
@@ -149,12 +154,19 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
     if (turnstileSiteKey && typeof turnstileSiteKey === 'string' && window.turnstile) {
       window.turnstile.render(turnstileContainer, {
         sitekey: turnstileSiteKey,
+        callback: function (token) {
+          console.log('Turnstile challenge completed, token:', token);
+        },
+        'error-callback': function (error) {
+          console.error('Turnstile widget error:', error);
+          alert('Terjadi kesalahan pada verifikasi bot. Silakan refresh halaman.');
+        }
       });
     } else {
       console.error("Cloudflare Turnstile script not loaded or sitekey is invalid.");
       if (!turnstileSiteKey) console.error("Sitekey is missing or null!");
       if (typeof turnstileSiteKey !== 'string') console.error("Sitekey is not a string, type:", typeof turnstileSiteKey);
-      if (!window.turnstile) console.error("window.turnstile object not found. Ensure the Turnstile script is loaded.");
+      if (!window.turnstile) console.error("window.turnstile object not found. Ensure the Turnstile script is loaded before this function is called.");
     }
   }
 
