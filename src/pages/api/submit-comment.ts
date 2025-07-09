@@ -16,7 +16,7 @@ interface TurnstileVerificationResult {
   hostname?: string;
 }
 
-const TURNSTILE_SECRET_KEY = import.meta.env.VITE_TURNSTILE_SECRET_TOKEN;
+const TURNSTILE_SECRET_KEY = import.meta.env.VITE_TURNSTILE_SECRET_TOKEN; 
 
 export const POST: APIRoute = async ({ request }) => {
   if (request.headers.get("Content-Type") !== "application/json") {
@@ -32,7 +32,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     if (!TURNSTILE_SECRET_KEY) {
-      console.error("TURNSTILE_SECRET_KEY is not defined.");
+      console.error("TURNSTILE_SECRET_KEY is not defined in server environment.");
       return new Response(JSON.stringify({ message: "Server configuration error: Turnstile secret key missing." }), { status: 500 });
     }
 
