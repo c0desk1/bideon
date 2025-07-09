@@ -94,17 +94,14 @@ const navItems = [
               </summary>
               <div class="pl-4 mt-2 space-y-">
                 {item.children.map((child) => (
-                  <a href={child.href} class="block text-[var(--color-text-muted)] hover:text-[var(--color-text)]">
+                  <a href={child.href} class="block py-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]">
                     {child.label}
                   </a>
                 ))}
               </div>
             </details>
           ) : (
-            <a
-              href={item.href}
-              class="block text-[var(--color-text-muted)] hover:text-[var(--color-text-hover)]"
-            >
+            <a href={item.href} class="block text-[var(--color-text-muted)] hover:text-[var(--color-text-hover)]">
               {item.label}
             </a>
           )}
