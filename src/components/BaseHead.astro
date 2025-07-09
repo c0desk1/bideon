@@ -15,8 +15,8 @@ const {
 } = Astro.props;
 
 const blogData = Astro.locals.blogData;
-const siteName = blogData?.name || "Bima Akbar";
-const siteDescription = blogData?.description || "It's okay for now.";
+const siteName = blogData?.name;
+const siteDescription = blogData?.description;
 const finalTitle = title ?? siteName;
 const finalDescription = description ?? siteDescription;
 const finalUrl = url ?? 'https://bimaakbar.my.id';
@@ -25,11 +25,11 @@ const finalImage = image ?? blogData?.image?.url ?? '/bimaakbar-og-default.png';
 const GTM_ID = import.meta.env.VITE_GTM_ID;
 const GSV_ID = import.meta.env.VITE_GOOGLE_SITE_VERIFY;
 
-const faviconUrl = "/favicon.ico";
-const faviconUrl16 = "/favicon-16x16.png";
-const faviconUrl32 = "/favicon-32x32.png";
-const appletouch = "/apple-touch-icon.png";
-const webmanifest= "/site.webmanifest";
+const faviconUrl = "./favicon.ico";
+const faviconUrl16 = "./favicon-16x16.png";
+const faviconUrl32 = "./favicon-32x32.png";
+const appletouch = "./apple-touch-icon.png";
+const webmanifest= "./site.webmanifest";
 const sitemap = "/sitemap-index.xml";
 
 const gtmScript = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
