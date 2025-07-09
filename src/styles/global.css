@@ -727,7 +727,12 @@ html.light-mode .prose tr:nth-child(even) {
   }
 
 @media (min-width: 768px) {
-  .header-inner-wrapper { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 60px;}
+  .header-inner-wrapper { 
+		display: flex; 
+		align-items: center; 
+		justify-content: space-between; 
+		width: 100%; 
+	}
   .header-left-section { flex-basis: 33.333333%; flex-shrink: 0; text-align: left; }
   .header-center-section { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
   .header-right-section { flex-basis: 33.333333%; flex-shrink: 0; display: flex; justify-content: flex-end; }
