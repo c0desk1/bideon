@@ -14,6 +14,19 @@
 	"observability": {
 		"enabled": true
 	},
+	"vars": {
+		"VITE_BLOGGER_API_KEY": "AIzaSyAF5IX_benL0vfFXYas3BYQrenGpbl4hek",
+		"VITE_BLOGGER_BLOG_ID": "5920132421647282747",
+		"VITE_GTM_ID": "GTM-TJXJBGLX",
+		"VITE_PUBLIC_GOOGLE_CLIENT_ID": "521611265429-oma91ab92cg59bi0ej3gqrun13i3vjgs.apps.googleusercontent.com",
+		"VITE_GOOGLE_SITE_VERIFY": "tiYzo71ZJobcRYToMChdQ0bGyrGX1JdMK1zcr3EyaOQ",
+		"VITE_FORMSPREE_ID": "xgvybkyq",
+		"PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAABiIS_tkWq-i5Ls-",
+		"VITE_TURNSTILE_SECRET_TOKEN": "0x4AAAAAABiISzH3HKdVO6JZ_SfFyBxVkNo",
+		"CLOUDFLARE_API_TOKEN": "b_uqgdwW57jy879v9owT-onwxfuHnAVK4qA7cySe",
+		"CLOUDFLARE_ACCOUNT_ID": "8e94efe1a171c4e2a353d5dd280d75d8",
+		"CLOUDFLARE_KV_NAMESPACE_ID": "30c729861a2b4e21b15c8ce0f5539e75"
+	},
 	"kv_namespaces": [
 		{
 		  "binding": "BIMA_KV_SPACE",
