@@ -17,7 +17,7 @@ interface TurnstileVerificationResult {
 
 }
 
-const TURNSTILE_SECRET_KEY = import.meta.env.VITE_TURNSTILE_SECRET_KEY;
+const TURNSTILE_SECRET_KEY = import.meta.env.VITE_TURNSTILE_SECRET_TOKEN;
 
 export const POST: APIRoute = async ({ request }) => {
   if (request.headers.get("Content-Type") !== "application/json") {
