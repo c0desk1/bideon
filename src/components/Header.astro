@@ -105,34 +105,6 @@ const navItems = [
 </header>
 
 <script>
-  function toggleDropdown(index: number) {
-    const dropdown = document.getElementById(`dropdown-${index}`);
-    if (dropdown) {
-      dropdown.classList.toggle('hidden');
-    }
-  }
-
-  function openDropdown(index: number) {
-    const dropdown = document.getElementById(`dropdown-${index}`);
-    if (dropdown) {
-      dropdown.classList.remove('hidden');
-    }
-  }
-
-  function closeDropdown(index: number) {
-    const dropdown = document.getElementById(`dropdown-${index}`);
-    if (dropdown) {
-      dropdown.classList.add('hidden');
-    }
-  }
-
-  document.addEventListener('click', function (event) {
-    const nav = document.querySelector('nav');
-    if (nav && !nav.contains(event.target as Node)) {
-      document.querySelectorAll('.dropdown-content').forEach(el => el.classList.add('hidden'));
-    }
-  });
-
   document.addEventListener("DOMContentLoaded", () => {
     const menuButton = document.getElementById("menu-button");
     const mobileMenu = document.getElementById("mobile-menu");
