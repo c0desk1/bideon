@@ -9,7 +9,7 @@ export default {
     const url = new URL(request.url);
     const pathname = url.pathname;
 
-    if (pathname === "/posts") {
+    if (pathname === "/post") {
       const maxResults = url.searchParams.get("maxResults") || "9";
       const cacheKey = `posts:maxResults=${maxResults}`;
       const cached = await env.BIMA_KV_SPACE.get(cacheKey);
@@ -32,6 +32,38 @@ export default {
 
       return new Response(data, {
         headers: { "Content-Type": "application/json", "X-Cache": "MISS" },
+      });
+    }
+
+    return new Response("Not Found", { status: 404 });
+  },
+};
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const postIdMatch = url.pathname.match(/^\/post\/([^/]+)$/);
+
+    if (postIdMatch && request.method === 'GET') {
+      const postId = postIdMatch[1];
+      const cacheKey = `post_${postId}`;
+      const refresh = url.searchParams.get("refresh") === "true";
+
+      let cachedPost = !refresh ? await env.BIMA_KV_SPACE.get(cacheKey, "json") : null;
+
+      if (!cachedPost) {
+        const res = await fetch(`https://www.googleapis.com/blogger/v3/blogs/${env.VITE_BLOGGER_BLOG_ID}/posts/${postId}?key=${env.VITE_BLOGGER_API_KEY}`);
+
+        if (!res.ok) {
+          return new Response("Post not found", { status: 404 });
+        }
+
+        cachedPost = await res.json();
+        await env.BIMA_KV_SPACE.put(cacheKey, JSON.stringify(cachedPost), { expirationTtl: 600 });
+      }
+
+      return new Response(JSON.stringify({ post: cachedPost }), {
+        headers: { 'Content-Type': 'application/json' }
       });
     }
 
