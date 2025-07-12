@@ -1,0 +1,35 @@
+---
+// src/components/posts/RelatedPosts.astro
+
+// Kita hanya perlu formatDate. getImageUrl dan stripHtml tidak diperlukan lagi di sini
+import { formatDate } from '../../utils/helpers';
+import type { Post } from '../../lib/blogger';
+
+interface Props {
+  relatedPosts: Post[];
+}
+
+const { relatedPosts } = Astro.props;
+---
+
+<section class="py-8 border-t border-[var(--color-border)]">
+  <h2 class="text-2xl font-bold text-[var(--color-text)] mb-6">Baca Juga</h2>
+  {relatedPosts && relatedPosts.length > 0 ? (
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"> {/* Mengurangi gap menjadi 4 */}
+      {relatedPosts.map((post) => (
+        <a href={`/post/${post.id}`} class="block p-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-card-bg)] hover:border-[var(--color-accent)] hover:shadow-md transition-all group"> {/* Padding lebih kecil, shadow lebih lembut */}
+          <div class="flex flex-col justify-center h-full"> {/* Memusatkan konten secara vertikal jika ada ruang */}
+            <h4 class="text-base font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] mb-1 line-clamp-2"> {/* Judul sedikit lebih kecil, mb-1 */}
+              {post.title}
+            </h4>
+            <time class="text-xs text-[var(--color-text-muted)]">
+              {formatDate(post.published)}
+            </time>
+          </div>
+        </a>
+      ))}
+    </div>
+  ) : (
+    <p class="text-center text-[var(--color-text-muted)]">Tidak ada postingan terkait.</p>
+  )}
+</section>

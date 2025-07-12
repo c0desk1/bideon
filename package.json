@@ -3,12 +3,12 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-		"dev": "astro dev",
-		"build": "astro build",
-		"preview": "astro build && wrangler dev",
-		"astro": "astro",
-		"deploy": "astro build && wrangler deploy",
-		"cf-typegen": "wrangler types"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro build && wrangler dev",
+    "astro": "astro",
+    "deploy": "astro build && wrangler deploy",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.0",
@@ -16,13 +16,13 @@
     "@tailwindcss/vite": "^4.1.11",
     "astro": "^5.11.0",
     "cheerio": "^1.1.0",
-    "jsdom": "^26.1.0",
     "node-html-parser": "^7.0.1",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
     "@types/node": "^24.0.10",
-		"wrangler": "^4.23.0"
+    "jsdom": "^26.1.0",
+    "wrangler": "^4.23.0"
   }
 }
