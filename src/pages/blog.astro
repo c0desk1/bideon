@@ -1,0 +1,169 @@
+---
+// src/pages/blog.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ListPostCard from '../components/ListPostCard.astro';
+import { fetchBlogPosts } from '../lib/blogger';
+
+const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
+const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
+
+const url = Astro.url;
+const pageToken = url.searchParams.get('pageToken');
+const currentLabel = url.searchParams.get('label');
+const postsPerPage = 9; 
+const searchQuery = url.searchParams.get('q');
+
+
+let posts: Post[] = [];
+let nextPageToken: string | undefined = undefined;
+let errorFetching: boolean = false;
+
+if (BLOG_ID && API_KEY) {
+  try {
+    if (searchQuery) {
+      const res = await fetch(`https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts/search?q=${encodeURIComponent(searchQuery)}&key=${API_KEY}`);
+      const result = await res.json();
+      posts = result.items || [];
+      nextPageToken = undefined;
+    } else {
+     
+      const result = await fetchBlogPosts(
+        BLOG_ID,
+        API_KEY,
+        postsPerPage,
+        pageToken || undefined,
+        currentLabel || undefined
+      );
+      posts = result.posts;
+      nextPageToken = result.nextPageToken;
+    }
+  } catch (error) {
+    console.error("Error loading blog posts:", error);
+    errorFetching = true;
+  }
+} else {
+  console.warn("BLOG_ID or API_KEY not set for /blog page. Cannot fetch posts.");
+  errorFetching = true;
+}
+
+
+const prevUrl = new URL(url);
+if (pageToken) {
+    prevUrl.searchParams.delete('pageToken'); 
+}
+const prevPageUrl = pageToken ? prevUrl.toString() : undefined;
+
+const nextUrl = new URL(url);
+if (nextPageToken) {
+    nextUrl.searchParams.set('pageToken', nextPageToken);
+} else {
+    nextUrl.searchParams.delete('pageToken');
+}
+const nextPageUrl = nextPageToken ? nextUrl.toString() : undefined;
+
+const pageTitle =
+  searchQuery
+    ? `Hasil Pencarian: "${searchQuery}"`
+    : currentLabel
+      ? `Postingan Kategori: ${currentLabel}`
+      : 'Daftar Postingan Terbaru';
+
+const labelMap: Record<string, number> = {};
+for (const post of posts) {
+  if (post.labels) {
+    for (const label of post.labels) {
+      labelMap[label] = (labelMap[label] || 0) + 1;
+    }
+  }
+}
+
+---
+
+<BaseLayout title={pageTitle}>
+  <section class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-4 text-center">{pageTitle}</h1>
+    <form method="GET" action="/blog" class="max-w-md mx-auto mb-6 flex">
+      <input
+        type="text"
+        name="q"
+        placeholder="Cari postingan..."
+        value={url.searchParams.get('q') || ''}
+        class="flex-grow px-4 py-2 rounded-l-md border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)]"
+      />
+      <button
+        type="submit"
+        class="px-4 py-2 rounded-r-md bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-dark)]"
+      >
+        Cari
+      </button>
+    </form>
+    {searchQuery && (
+      <div class="text-center mb-4">
+        <span class="inline-flex items-center rounded-md bg-[var(--color-bg)] border border-[var(--color-border)] px-3 py-1 text-sm font-semibold text-[var(--color-text)]">
+          Pencarian: "{searchQuery}"
+          <a href="/blog" class="ml-2 text-[var(--color-text)] hover:text-[var(--color-text-hover)] transition" aria-label="Reset">
+            <i class="ri-close-line"></i>
+          </a>
+        </span>
+      </div>
+    )}
+    {Object.keys(labelMap).length > 0 && (
+      <div class="flex flex-wrap gap-2 justify-center mb-6">
+        {Object.entries(labelMap).map(([label, count]) => (
+          <a
+            href={`/blog?label=${encodeURIComponent(label)}`}
+            class="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-bg)] border border-[var(--color-border)] text-sm text-[var(--color-text)] hover:border-[var(--color-accent)] transition"
+          >
+            {label} ({count})
+          </a>
+        ))}
+      </div>
+    )}    
+    {currentLabel && (
+      <div class="text-center mb-8">
+        <span class="inline-flex items-center rounded-md bg-[var(--color-bg)] border border-[var(--color-border)] hover:bg-[var(--color-bg)] hover:border-[var(--color-accent)] px-3 py-1 text-sm font-semibold text-[var(--color-text)]">
+          Filter: {currentLabel}
+          <a href="/blog" class="ml-2 text-[var(--color-text)] hover:text-[var(--color-text-hover)] transition" aria-label="Hapus Filter">
+            <i class="ri-close-line"></i>
+          </a>
+        </span>
+      </div>
+    )}
+    {errorFetching ? (
+      <p class="text-[var(--color-text-muted)] text-center text-lg mt-10">
+        Maaf, gagal memuat postingan. Silakan periksa koneksi atau kredensial API Anda.
+      </p>
+    ) : (
+      <>
+        {posts.length === 0 ? (
+          <p class="text-[var(--color-text-muted)] text-center text-lg mt-10">
+            {currentLabel ? `Tidak ada postingan dengan label '${currentLabel}'.` : 'Belum ada postingan yang diterbitkan.'}
+          </p>
+        ) : (
+          <div class="grid grid-cols-1 gap-6">
+            {posts.map(post => (
+              <ListPostCard post={post} />
+            ))}
+          </div>
+        )}
+        <div class="flex justify-between items-center mt-12 pt-4">
+          {pageToken ? (
+            <a href={prevPageUrl} class="px-5 py-2 rounded-md bg-[var(--color-accent)] text-[var(--color-text)] hover:bg-[var(--color-accent-dark)] transition">
+              &larr; Sebelumnya
+            </a>
+          ) : (
+            <div></div> 
+          )}
+          
+          {nextPageToken ? (
+            <a href={nextPageUrl} class="px-5 py-2 rounded-md bg-[var(--color-accent)] text-[var(--color-text)] hover:bg-[var(--color-accent-dark)] transition">
+              Selanjutnya &rarr;
+            </a>
+          ) : (
+            <div></div> 
+          )}
+        </div>
+      </>
+    )}
+  </section>
+</BaseLayout>
