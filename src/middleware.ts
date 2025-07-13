@@ -1,9 +1,10 @@
+import './utils/mock-cache';
 import { defineMiddleware } from "astro:middleware";
-import {fetchBlogInfo, fetchRecentPosts} from './lib/blogger';
+import {fetchBlogInfo, fetchRecentPosts } from './lib/blogger';
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
-  const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
+  const BLOG_ID = context.locals.runtime.env.VITE_BLOGGER_BLOG_ID;
+  const API_KEY = context.locals.runtime.env.VITE_BLOGGER_API_KEY;
 
   if (!BLOG_ID || !API_KEY) {
     console.error("Middleware: Kredensial Blogger tidak ditemukan.");

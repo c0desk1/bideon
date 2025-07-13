@@ -1,4 +1,5 @@
 ---
+// src/components/posts/PostCard.astro
 import {
   formatDate,
   estimateReadTime,
@@ -7,8 +8,10 @@ import {
   stripHtml
 } from '../utils/helpers';
 
+import type { Post } from '../lib/blogger';
+
 interface Props {
-  post: any;
+  post: Post;
   isFeatured?: boolean;
 }
 
@@ -18,29 +21,31 @@ const postUrl = getAstroPostUrl(post);
 const title = post.title ?? "Tanpa Judul";
 const image = getImageUrl(post);
 
-const rawSummary = stripHtml(post.summary || post.content || "");
+const rawSummary = stripHtml(post.content || post.summary || "");
 const maxLength = 150;
 const summary = rawSummary.slice(0, maxLength);
 const showEllipsis = rawSummary.length > maxLength;
 
 const published = formatDate(post.published);
-const readTime = estimateReadTime(post.content || post.summary || "");
-const authorName = post.author?.displayName;
-const authorImage = post.author?.image?.url;
+const readTime = estimateReadTime(post.content || "");
+const authorName = post.author?.displayName ?? "Anonim";
+const authorImage = post.author?.image?.url ?? '/default-author.png';
 const labels = post.labels ?? [];
 ---
 
 <article class="post-card">
-  <div class="image-wrapper">
-    <img src={image} alt={title} loading="lazy"
-      class="post-image"
-    />
-    {isFeatured && (
-      <span class="featured-badge">
-        FEATURED
-      </span>
-    )}
-  </div>
+  <a href={postUrl} class="image-link">
+    <div class="image-wrapper">
+      <img src={image} alt={title} loading="lazy"
+        class="post-image"
+      />
+      {isFeatured && (
+        <span class="featured-badge">
+          FEATURED
+        </span>
+      )}
+    </div>
+  </a>
 
   <div class="content-section">
     <div class="meta-info">
@@ -56,19 +61,23 @@ const labels = post.labels ?? [];
     </h3>
 
     <p class="post-summary">{summary}{showEllipsis ? '...' : ''}</p>
-    <a href="/about" aria-label={`Tentang ${authorName}`}>
-      <div class="author-section">
-        <img
-          src={authorImage}
-          alt={authorName}
-          class="author-image"
-        />
-        <span class="author-name animated-underline">{authorName}</span>
-      </div>
-    </a>  
+    
+    {authorName && authorImage && (
+      <a href="/about" aria-label={`Tentang ${authorName}`}>
+        <div class="author-section">
+          <img
+            src={authorImage}
+            alt={authorName}
+            class="author-image"
+          />
+          <span class="author-name animated-underline">{authorName}</span>
+        </div>
+      </a>
+    )}
+    
     {labels.length > 0 && (
       <div class="labels-container">
-        {labels.slice(0, 3).map((label: any) => (
+        {labels.slice(0, 3).map((label: string) => (
           <a href={`/blog?label=${encodeURIComponent(label)}`} class="label-tag">
             {label}
           </a>

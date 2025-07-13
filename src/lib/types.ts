@@ -1,4 +1,11 @@
 //src/types.ts
+import type { KVNamespace } from '@cloudflare/workers-types';
+
+interface BlogInfo {
+  name: string;
+  description: string;
+  image: { url: string };
+}
 
 interface Post {
   id: string;
@@ -33,15 +40,16 @@ interface Post {
 }
   
 interface BloggerPostsApiResponse {
-    kind: string;
-    items: Post[];
+    kind?: string;
+    items?: Post[];
     nextPageToken?: string;
     prevPageToken?: string;
     etag?: string;
 }
   
 interface BloggerBlogInfoApiResponse {
-    kind: string;
+    kind?: string;
+    items?: Post[];
     id: string;
     name: string;
     description: string;
@@ -62,4 +70,25 @@ interface BloggerBlogInfoApiResponse {
     images?: {
       url: string;
     };
+}
+
+export interface Env {
+  VITE_BLOGGER_API_KEY: string;
+  VITE_BLOGGER_BLOG_ID: string;
+  BLOGGER_CLIENT_ID: string;
+  BLOGGER_CLIENT_SECRET: string;
+  BLOGGER_REDIRECT_URI: string;
+  BLOGGER_BLOG_ID: string;
+  GITHUB_CLIENT_ID: string;
+  GITHUB_CLIENT_SECRET: string;
+  BIMA_KV_SPACE: KVNamespace;
+  ASSETS: { fetch: (request: Request) => Promise<Response>; };
+}
+
+export interface GitHubTokenResponse {
+  access_token: string;
+  token_type: string;
+  scope: string;
+  error?: string;
+  error_description?: string;
 }

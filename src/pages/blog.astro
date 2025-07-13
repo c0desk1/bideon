@@ -2,10 +2,9 @@
 // src/pages/blog.astro
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ListPostCard from '../components/ListPostCard.astro';
-import { fetchBlogPosts } from '../lib/blogger';
+import { fetchBlogPostsForSSG, type Post } from '../lib/blogger';
+import '../utils/mock-cache';
 
-const BLOG_ID = import.meta.env.VITE_BLOGGER_BLOG_ID;
-const API_KEY = import.meta.env.VITE_BLOGGER_API_KEY;
 
 const url = Astro.url;
 const pageToken = url.searchParams.get('pageToken');
@@ -13,6 +12,8 @@ const currentLabel = url.searchParams.get('label');
 const postsPerPage = 9; 
 const searchQuery = url.searchParams.get('q');
 
+const BLOG_ID = String(Astro.locals.runtime.env.VITE_BLOGGER_BLOG_ID);
+const API_KEY = String(Astro.locals.runtime.env.VITE_BLOGGER_API_KEY);
 
 let posts: Post[] = [];
 let nextPageToken: string | undefined = undefined;
@@ -22,12 +23,14 @@ if (BLOG_ID && API_KEY) {
   try {
     if (searchQuery) {
       const res = await fetch(`https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts/search?q=${encodeURIComponent(searchQuery)}&key=${API_KEY}`);
-      const result = await res.json();
+      if (!res.ok) {
+          throw new Error(`Blogger Search API returned ${res.status}: ${await res.text()}`);
+      }
+      const result: { items?: Post[] } = await res.json();
       posts = result.items || [];
       nextPageToken = undefined;
     } else {
-     
-      const result = await fetchBlogPosts(
+      const result = await fetchBlogPostsForSSG(
         BLOG_ID,
         API_KEY,
         postsPerPage,
@@ -46,10 +49,9 @@ if (BLOG_ID && API_KEY) {
   errorFetching = true;
 }
 
-
 const prevUrl = new URL(url);
 if (pageToken) {
-    prevUrl.searchParams.delete('pageToken'); 
+    prevUrl.searchParams.delete('pageToken');
 }
 const prevPageUrl = pageToken ? prevUrl.toString() : undefined;
 
@@ -69,9 +71,9 @@ const pageTitle =
       : 'Daftar Postingan Terbaru';
 
 const labelMap: Record<string, number> = {};
-for (const post of posts) {
-  if (post.labels) {
-    for (const label of post.labels) {
+for (const postItem of posts) {
+  if (postItem.labels) {
+    for (const label of postItem.labels) {
       labelMap[label] = (labelMap[label] || 0) + 1;
     }
   }
@@ -141,8 +143,8 @@ for (const post of posts) {
           </p>
         ) : (
           <div class="grid grid-cols-1 gap-6">
-            {posts.map(post => (
-              <ListPostCard post={post} />
+            {posts.map(postItem => ( // Ganti `post` menjadi `postItem` agar tidak bentrok dengan nama `posts` di map
+              <ListPostCard post={postItem} />
             ))}
           </div>
         )}

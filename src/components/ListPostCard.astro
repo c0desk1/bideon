@@ -8,20 +8,27 @@ import {
   stripHtml
 } from '../utils/helpers';
 
+import type { Post } from '../lib/blogger';
+
+interface Props {
+  post: Post;
+}
 
 const { post } = Astro.props;
 
 const postUrl = getAstroPostUrl(post);
 const title = post.title ?? "Tanpa Judul";
 const image = getImageUrl(post);
+
 const rawSummary = stripHtml(post.summary || post.content || "");
 const maxLength = 150;
 const summary = rawSummary.slice(0, maxLength);
 const showEllipsis = rawSummary.length > maxLength;
 const published = formatDate(post.published);
+
 const readTime = estimateReadTime(post.content || post.summary || "");
-const authorName = post.author?.displayName;
-const authorImage = post.author?.image?.url;
+const authorName = post.author?.displayName ?? "Anonim";
+const authorImage = post.author?.image?.url ?? '/default-author.png';
 const labels = post.labels ?? [];
 ---
 
@@ -46,16 +53,18 @@ const labels = post.labels ?? [];
       <a href={postUrl} class="group-hover:underline">{title}</a>
     </h3>
     <p class="post-summary">{summary}{showEllipsis ? '...' : ''}</p>
-    <a href="/about" aria-label={`Tentang ${authorName}`}>
-      <div class="author-section">
-        <img
-          src={authorImage}
-          alt={authorName}
-          class="author-image"
-        />
-        <span class="author-name animated-underline">{authorName}</span>
-      </div>
-    </a>
+    {authorName && authorImage && (
+      <a href="/about" aria-label={`Tentang ${authorName}`}>
+        <div class="author-section">
+          <img
+            src={authorImage}
+            alt={authorName}
+            class="author-image"
+          />
+          <span class="author-name animated-underline">{authorName}</span>
+        </div>
+      </a>
+    )}
     {labels.length > 0 && (
       <div class="labels-container">
         {labels.slice(0, 3).map((label: string) => (
