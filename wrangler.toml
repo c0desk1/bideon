@@ -1,0 +1,25 @@
+name = "bima-akbar-dev"
+main = "src/index.ts"
+compatibility_date = "2025-07-05"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+
+[assets]
+binding = "ASSETS"
+directory = "./dist"
+
+[observability]
+enabled = true
+
+[vars]
+VITE_BLOGGER_BLOG_ID = "5920132421647282747"
+VITE_GTM_ID = "GTM-TJXJBGLX"
+PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAABiIS_tkWq-i5Ls-"
+
+[[kv_namespaces]]
+binding = "BIMA_KV_SPACE"
+id = "30c729861a2b4e21b15c8ce0f5539e75"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "bima-akbar-cms-db"
+database_id = "d9487765-9906-4306-b162-bd8fc3775f10"

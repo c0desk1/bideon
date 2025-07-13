@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import logo from '../assets/bimaakbar-logo.png';
+
+const blogData = Astro.locals.blogData;
+
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: {
+    src: string;
+    width?: number;
+    height?: number;
+  };
+}
+
+const siteName = blogData?.name;
+const pageDescription = blogData?.description;
+const ogImage = blogData?.image ?? "/bimaakbar-og-default.png";
+---
+
+<BaseLayout title="About" description={pageDescription} image={ogImage} url="https://bimaakbar.my.id/about">
+  <section class="mt-12 text-center">
+    <Image
+      src={logo}
+      alt="Logo" width={112} height={112}
+      class="logo mx-auto w-28 h-28 rounded-full object-cover mb-6 p-4 border border-[var(--color-border)] text-[var(--color-text)] hover:text-[var(--color-text-hover)]"
+    />
+    <h1 class="text-[var(--color-text)] text-3xl font-bold mb-2">{siteName}</h1>
+    <p class="text-[var(--color-text-muted)] max-w-xl mx-auto">
+      Saya adalah seorang kreator digital yang suka membagikan tulisan, musik, dan eksperimen teknologi. Blog ini menjadi pusat dari semua hal yang saya buat — mulai dari artikel hingga portofolio. Jangan sungkan untuk eksplorasi atau menghubungi saya.
+    </p>
+  </section>
+</BaseLayout>

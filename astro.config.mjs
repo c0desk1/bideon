@@ -16,7 +16,7 @@ export default defineConfig({
     imageService: 'cloudflare',
     platformProxy: {
       enabled: true,
-      configPath: 'wrangler.jsonc',
+      configPath: 'wrangler.toml',
       persist: {
         path: './.cache/wrangler/v3'
       },
